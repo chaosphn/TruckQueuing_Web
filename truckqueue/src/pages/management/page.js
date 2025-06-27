@@ -88,7 +88,7 @@ const CarrierManagement = () => {
 
         {/* Active Carriers */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* {carriers.map((carrier) => (
+          {carriers.map((carrier) => (
             <div
               key={carrier.id}
               className={`${carrier.bgColor} rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/50`}
@@ -144,7 +144,7 @@ const CarrierManagement = () => {
                 </div>
               )}
             </div>
-          ))} */}
+          ))}
         </div>
 
         {/* Upcoming Slots */}

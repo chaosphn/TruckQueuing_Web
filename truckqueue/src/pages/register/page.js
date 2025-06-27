@@ -116,34 +116,24 @@ const RegisterPage = () => {
                 <img alt='logo' src={logoImg} width={100} height={100} className=''/>
                 <div>
                   <h1 className="text-2xl font-bold text-white drop-shadow-lg">PTT LNG</h1>
-                  <p className="text-blue-100 text-lg drop-shadow">ระบบบริหารจัดการคิวรถบรรทุก</p>
+                  <p className="text-blue-100 text-xl drop-shadow mt-1">ระบบบริหารจัดการคิวรถบรรทุก</p>
                 </div>
               </div>
             </div>
+
+            {/* <div className='h-auto scale-150'>
+            <TruckModel></TruckModel>
+            </div> */}
             
             <div className="flex items-center space-x-6">
               <div className="text-right">
-                <div className="text-white font-mono text-2xl drop-shadow-lg">
+                <div className="text-white font-mono text-3xl font-bold drop-shadow-lg">
                   {formatTime(currentTime)}
                 </div>
-                <div className="text-blue-100 text-lg drop-shadow">
+                <div className="text-blue-100 text-xl drop-shadow mt-1">
                   {formatDate(currentTime)}
                 </div>
               </div>
-              
-              {/* <div className="flex items-center space-x-3">
-                <button className="relative p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors backdrop-blur-sm">
-                  <Bell className="w-5 h-5 text-white" />
-                  {activeNotifications > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                      {activeNotifications}
-                    </span>
-                  )}
-                </button>
-                <button className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors backdrop-blur-sm">
-                  <Settings className="w-5 h-5 text-white" />
-                </button>
-              </div> */}
             </div>
           </div>
         </div>
@@ -151,10 +141,10 @@ const RegisterPage = () => {
 
       {
         !openQueueDialog && !openDryRunDialog && !openDataDialog ?
-        <main className="relative z-10 max-w-7xl mx-auto px-6 py-12">
+        <main className="relative z-10 max-w-screen-xl mx-auto px-6 py-12">
           {/* Hero Section */}
-          <div className="text-center mb-16 py-10 rounded-lg bg-black/10 backdrop-blur-sm border border-white/20">
-            <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight drop-shadow-2xl">
+          <div className="text-center mb-16 py-12 px-32 rounded-lg bg-black/10 backdrop-blur-sm border border-white/20">
+            <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 tracking-tight drop-shadow-2xl">
               TRUCK LOADING SYSTEM
             </h2>
             {/* <p className="text-xl text-white/90 max-w-2xl mx-auto drop-shadow-lg">
@@ -163,23 +153,23 @@ const RegisterPage = () => {
           </div>
 
           {/* Menu Cards */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-12 max-w-screen-xl mx-auto">
             {menuItems.map((item, index) => (
               <div
                 key={item.id}
-                className="group relative w-96"
+                className="group relative w-full"
                 style={{ animationDelay: `${index * 0.1}s` }}
                 onClick={() => {handleOpenDialog(item.id)}}
               >
                 <div className={`absolute inset-0 bg-gradient-to-r ${item.color} rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-300`}></div>         
-                <button className={`relative w-full bg-gradient-to-r ${item.color} hover:bg-gradient-to-r hover:${item.hoverColor} rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl border border-white/10`}>
+                <button className={`relative w-full bg-gradient-to-r ${item.color} hover:bg-gradient-to-r hover:${item.hoverColor} rounded-2xl p-12 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl border border-white/10`}>
                   <div className="flex flex-col items-center text-center space-y-4">
                     {/* <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 transition-colors">
                       <item.icon className="w-8 h-8 text-white" />
                     </div> */}
                     
                     <div>
-                      <h3 className="text-3xl font-bold text-white mb-2">
+                      <h3 className="text-4xl font-bold text-white mb-2">
                         {item.title}
                       </h3>
                       {/* <p className="text-white/80 text-sm">

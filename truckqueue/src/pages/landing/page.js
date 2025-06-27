@@ -17,6 +17,30 @@ const LandingPage = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message} (${err.name})`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   const handleNavigatePage = (page) => {
     navigate(`/${page}`);
   }
@@ -41,7 +65,7 @@ const LandingPage = () => {
   const menuItems = [
     {
       id: 'register',
-      title: 'Tas Register',
+      title: 'TAS Register',
       subtitle: 'ลงทะเบียนรถบรรทุก',
       page: 'register',
       icon: User,
@@ -50,7 +74,7 @@ const LandingPage = () => {
     },
     {
       id: 'monitoring',
-      title: 'Tas Monitoring',
+      title: 'TAS Monitoring',
       subtitle: 'ติดตามสถานะการโหลด',
       page: 'dashboard',
       icon: Monitor,
@@ -80,59 +104,45 @@ const LandingPage = () => {
         <div className="mx-auto px-16 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-3" onClick={toggleFullscreen}>
                 {/* <div className="w-20 h-20 flex items-center justify-center shadow-lg">
                   <img src={logoImg} width={150} height={100} />
                 </div> */}
                 <img alt='logo' src={logoImg} width={100} height={100} className=''/>
                 <div>
                   <h1 className="text-2xl font-bold text-white drop-shadow-lg">PTT LNG</h1>
-                  <p className="text-blue-100 text-lg drop-shadow">ระบบบริหารจัดการคิวรถบรรทุก</p>
+                  <p className="text-blue-100 text-xl drop-shadow mt-1">ระบบบริหารจัดการคิวรถบรรทุก</p>
                 </div>
               </div>
             </div>
 
-            <div className='h-auto scale-150'>
+            {/* <div className='h-auto scale-150'>
             <TruckModel></TruckModel>
-            </div>
+            </div> */}
             
             <div className="flex items-center space-x-6">
               <div className="text-right">
-                <div className="text-white font-mono text-2xl drop-shadow-lg">
+                <div className="text-white font-mono text-3xl font-bold drop-shadow-lg">
                   {formatTime(currentTime)}
                 </div>
-                <div className="text-blue-100 text-lg drop-shadow">
+                <div className="text-blue-100 text-xl drop-shadow mt-1">
                   {formatDate(currentTime)}
                 </div>
               </div>
-              
-              {/* <div className="flex items-center space-x-3">
-                <button className="relative p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors backdrop-blur-sm">
-                  <Bell className="w-5 h-5 text-white" />
-                  {activeNotifications > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                      {activeNotifications}
-                    </span>
-                  )}
-                </button>
-                <button className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors backdrop-blur-sm">
-                  <Settings className="w-5 h-5 text-white" />
-                </button>
-              </div> */}
             </div>
           </div>
         </div>
       </header>
 
-      <main className="relative z-10 max-w-7xl mx-auto px-6 py-12">
+      <main className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Hero Section */}
-        <div className="text-center mb-16 py-5 rounded-lg bg-black/10 backdrop-blur-sm border-t border-white/20 shadow-2xl">
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight drop-shadow-2xl">
+        <div className="text-center mb-16 py-6 rounded-lg bg-black/10 backdrop-blur-sm border-t border-white/20 shadow-2xl">
+          <h2 className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-tight drop-shadow-2xl">
             TRUCK LOADING SYSTEM
           </h2>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto drop-shadow-lg">
+          {/* <p className="text-xl text-white/90 max-w-2xl mx-auto drop-shadow-lg">
             ระบบจัดการการโหลดรถบรรทุก
-          </p>
+          </p> */}
         </div>
 
         {/* Menu Cards */}
@@ -153,10 +163,10 @@ const LandingPage = () => {
                   </div>
                   
                   <div>
-                    <h3 className="text-2xl font-bold text-white mb-2">
+                    <h3 className="text-3xl font-bold text-white mb-2">
                       {item.title}
                     </h3>
-                    <p className="text-white/80 text-sm">
+                    <p className="text-white/80 text-xl">
                       {item.subtitle}
                     </p>
                   </div>
@@ -172,31 +182,30 @@ const LandingPage = () => {
         </div>
 
         {/* Status Bar */}
-        <div className="mt-16 bg-black/20 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+        <div className="mt-20 bg-black/20 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-400 drop-shadow-lg">12</div>
-              <div className="text-white/80 text-sm drop-shadow">รถในคิว</div>
+              <div className="text-5xl font-bold text-green-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>12</div>
+              <div className="text-white/80 text-2xl mt-4 drop-shadow">รถในคิว</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-400 drop-shadow-lg">3</div>
-              <div className="text-white/80 text-sm drop-shadow">กำลังโหลด</div>
+              <div className="text-5xl font-bold text-blue-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>3</div>
+              <div className="text-white/80 text-2xl mt-4 drop-shadow">กำลังโหลด</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-400 drop-shadow-lg">8</div>
-              <div className="text-white/80 text-sm drop-shadow">รอการตรวจสอบ</div>
+              <div className="text-5xl font-bold text-yellow-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>8</div>
+              <div className="text-white/80 text-2xl mt-4 drop-shadow">รอการตรวจสอบ</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-purple-400 drop-shadow-lg">24</div>
-              <div className="text-white/80 text-sm drop-shadow">เสร็จสิ้นวันนี้</div>
+              <div className="text-5xl font-bold text-purple-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>24</div>
+              <div className="text-white/80 text-2xl mt-4 drop-shadow">เสร็จสิ้นวันนี้</div>
             </div>
           </div>
         </div>
 
       </main>
 
-          
-      <footer className="relative z-10 mt-16 bg-black/20 backdrop-blur-sm border-t border-white/20">
+      <footer className="relative z-10 bg-black/20 backdrop-blur-sm border-t border-white/20">
         <div className="mx-auto px-16 py-6">
           <div className="flex items-center justify-between">
             <div className="text-white/80 text-sm drop-shadow">

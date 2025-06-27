@@ -6,6 +6,7 @@ const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('authToken') !== null; 
 
   if (!isAuthenticated) {
+    console.warn('Unauthorized access attempt detected. Redirecting to home page.');
     return <Navigate to="/" replace />;
   }
 

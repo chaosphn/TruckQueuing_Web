@@ -16,7 +16,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         {/* Protected Route */}
         <Route 
-          path="/" 
+          path="/management" 
           element={
             <PrivateRoute>
               <Route path="/management" element={<CarrierManagement />} />

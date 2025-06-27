@@ -59,6 +59,32 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
     console.log('🔥 Do something with:', row);
   };
 
+  const handleReloadData = async () => {
+    console.log(data, mode, type);
+    if(mode === 'plate'){
+      const plateHead = data[0].FontLicense ?? '';
+      const plateTail = data[0].RearLicense ?? '';
+      const result = await getDatabyPlateNumber(plateHead, plateTail);
+      if(result && result.length > 0){
+        console.log(result);
+        setQueueData(result);
+      } else {
+        alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั้ง');
+      }
+    } else if(mode === 'order'){
+      const orderNumber = data[0].Code ?? '';
+      const result = await getDatabyOrder(orderNumber);
+      if(result && result.length > 0){
+        console.log(result);
+        setQueueData(result);
+      } else {
+        alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั้ง');
+      }
+    } else {
+      alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั้ง');
+    }
+  };
+
   const paginationModel = { page: 0, pageSize: 5 };
   const columns = [
     { field: 'Code', headerName: 'เลขออเดอร์', flex: 0.3, resizable: true },
@@ -84,9 +110,9 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-7xl w-full mx-auto flex flex-col justify-center gap-8 px-4 py-6">
+      <div className="bg-white rounded-xl shadow-2xl max-w-7xl w-full mx-auto flex flex-col justify-center gap-8 p-8  scale-110">
         {/* SEARCH SECTION*/}
-        <div className='w-full flex justify-between items-center'>
+        {/* <div className='w-full flex justify-between items-center'>
           <div className='flex items-center gap-4'>
             <TextField
               placeholder="ค้นหาทะเบียนหัว"
@@ -131,7 +157,7 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
             }}
             sx={{ width: '250px' }}
           />
-        </div>  
+        </div>   */}
         {/* TABLE SECTION*/}
         <div className='min-h-72'>
           <div className="border-box w-full h-full">   
@@ -158,7 +184,7 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
           </div>
         </div> 
         {/* BUTTON SECTION*/}
-        <div className="rounded-b-xl flex justify-between space-x-4 mt-4">
+        <div className="rounded-b-xl flex justify-between space-x-4 mt-12">
           <button
             onClick={onClose}
             className="px-8 py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center space-x-2"
@@ -167,7 +193,7 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
             <span>ย้อนกลับ</span>
           </button>
           <button
-            onClick={handleSave}
+            onClick={handleReloadData}
             className="px-8 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center space-x-2"
           >
             <span>รีโหลด</span>
@@ -175,10 +201,16 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
           </button>
         </div>       
       </div>
-      <DataDetailDialog open={openDataDialog} data={selectionRow} onClose={() => {
-        setOpenDataDialog(false);
-        setSelectionRow(null);
-      }}></DataDetailDialog>
+      <DataDetailDialog open={openDataDialog} data={selectionRow} mode={mode} type={type} 
+        onClose={() => {
+          setOpenDataDialog(false);
+          setSelectionRow(null);
+        }} 
+        onSave={() => {
+          setOpenDataDialog(false);
+          onClose();
+        }}
+      ></DataDetailDialog>
     </div>
   );
 };

@@ -61,27 +61,9 @@ const TruckQueueDialog = ({ open, mode, onSave, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-auto">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-auto scale-125">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-t-xl">
-          {/* <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-                </div>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold">TRUCK QUEUE SYSTEM</h1>
-                <p className="text-blue-100 text-sm">ระบบบริหารจัดการคิวรถบรรทุก</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-blue-100 text-sm">วันเสาร์ 28 พฤษภาคม 2568</p>
-              <p className="text-2xl font-mono font-bold">14:05:00</p>
-            </div>
-          </div> */}
-          
           {/* Tabs */}
           {
             mode == 'multiple' ? 

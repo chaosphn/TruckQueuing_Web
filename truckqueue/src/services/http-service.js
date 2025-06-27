@@ -1,5 +1,5 @@
 import axios from "axios";
-import order_Data from "../mockup/orderData";
+import { bay_Status_Data, order_Data } from "../mockup/orderData";
 
 let token = '';
 
@@ -84,3 +84,85 @@ export const getDatabyPlateNumber = async (headNumer, tailNumber) => {
         return error;
     }
 };
+
+export const selectLoadingQueue = async (data) => {
+    try {
+        const result = Math.random();//order_Data.filter(x => x.FontLicense === headNumer && x.RearLicense === tailNumber);//await api.post('', body);
+        console.log(result);
+        if(result > 0.5){
+            return {
+                success: true,
+                baynumber: 'A',
+                queuenumber: '2',
+                waitingtime: 0,
+                queuebefore: 0,
+                message: 'Loading queue selected successfully.'
+            };
+        } else {
+            return {
+                success: false,
+                baynumber: '',
+                queuenumber: '6',
+                waitingtime: 60,
+                queuebefore: 2,
+                message: 'No free bay available.'
+            };
+        }
+    } catch (error) {
+        return error;
+    }
+};
+
+export const selectDryRunQueue = async (data) => {
+    try {
+        const result = Math.random();//order_Data.filter(x => x.FontLicense === headNumer && x.RearLicense === tailNumber);//await api.post('', body);
+        console.log(result);
+        if(result > 0.5){
+            return {
+                success: true,
+                baynumber: 'A',
+                queuenumber: '2',
+                waitingtime: 0,
+                queuebefore: 0,
+                message: 'Loading queue selected successfully.'
+            };
+        } else {
+            return {
+                success: false,
+                baynumber: '',
+                queuenumber: '6',
+                waitingtime: 60,
+                queuebefore: 2,
+                message: 'No free bay available.'
+            };
+        }
+    } catch (error) {
+        return error;
+    }
+};
+
+export const getBayStatusData = async () => {
+    try {
+        const result = bay_Status_Data.slice(0,4);//await api.post('', body);
+        if(result && result.length > 0){
+            return result;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        return error;
+    }
+};
+
+export const getQueueData = async () => {
+    try {
+        const result = order_Data.slice(0,4);//await api.post('', body);
+        if(result && result.length > 0){
+            return result;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        return error;
+    }
+}
