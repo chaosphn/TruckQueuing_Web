@@ -6,6 +6,7 @@ import LandingPage from './pages/landing/page';
 import CarrierDashboard from './pages/dashboard/page';
 import CarrierManagement from './pages/management/page';
 import RegisterPage from './pages/register/page';
+import LoginPage from './pages/login/page';
 
 function App() {
   return (
@@ -14,12 +15,13 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard" element={<CarrierDashboard />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
         {/* Protected Route */}
         <Route 
           path="/management" 
           element={
             <PrivateRoute>
-              <Route path="/management" element={<CarrierManagement />} />
+              <CarrierManagement />
             </PrivateRoute>
           } 
         />

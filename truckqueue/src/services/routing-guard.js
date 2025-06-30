@@ -3,11 +3,12 @@ import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
 const PrivateRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('authToken') !== null; 
+  const isAuthenticated1 = localStorage.getItem('authToken') !== null; 
+  const isAuthenticated2 = sessionStorage.getItem('authToken') !== null; 
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated1 && !isAuthenticated2) {
     console.warn('Unauthorized access attempt detected. Redirecting to home page.');
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return children ? children : <Outlet />; 

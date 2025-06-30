@@ -49,6 +49,7 @@ export const login = async (username, password) => {
         } else {
             const result =  { data: true };//await api.post('/authen', body);
             if(result && result.data){
+                //localStorage.setItem('authToken', 'xxxxxxx');
                 return result.data;
             } else {
                 return { error: 'username or password is invalid !' };
