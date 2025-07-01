@@ -4,18 +4,20 @@ import { useRouting } from '../../hooks/routing-hook';
 import TruckModel from '../../components/truck/truck-model';
 import Slider from '@mui/material/Slider';
 import QueueManageDialog from '../../components/manage-dialog/dialog';
+import ManageDialog from '../../components/confirm-dialog/dialog';
 
 const CarrierManagement = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [ bayData, setBayData ] = useState([]);
   const [ selectBayData, setSelectBayData ] = useState(null);
+  const [ selectBtnType, setSelectBtnType ] = useState('');
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
   const { navigatePage } = useRouting();
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-      console.log('Updating bay data every second');
+      //console.log('Updating bay data every second');
       setBayData(prevData => prevData.map(c => 
         c.id === c.id && c.counter === 20 && c.state === 'finished' && c.weight < 1000 ? 
           { ...c, state: 'free', status: 'ว่าง', timeLoading: '',weight: 0, loading: null, counter: 0, verified: false } : 
@@ -242,7 +244,7 @@ const CarrierManagement = () => {
                       carrier.state === 'loading' ? 'text-amber-800' : 
                         carrier.state === 'maintenance' ? 'text-red-800' : 
                           carrier.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
-                }`}>BayLoad: {carrier.usage}</div>
+                }`}>BAYLOAD: {carrier.usage}</div>
               </div>
               {
                 carrier.state === 'maintenance' ?
@@ -366,12 +368,18 @@ const CarrierManagement = () => {
                   ${ carrier.state === 'maintenance' ? 'text-slate-200 bg-red-500 border-white' : 'text-black bg-emerald-400 border-emerald-600' } shadow-black/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
                   <div>{carrier.mode}</div>
                 </div>
-                <div onClick={() => setOpenDataDialog(true)} className={`w-full h-full grid place-items-center text-base font-bold rounded-md
+                <div onClick={() => {
+                    setSelectBtnType(carrier.state === 'maintenance' ? 'MANUAL QUEUING' : 'AUTO QUEUING');
+                    setOpenDataDialog(true);
+                  }} className={`w-full h-full grid place-items-center text-base font-bold rounded-md
                   ${ carrier.state === 'dry-run' ? 'text-slate-200 bg-red-500 border-white' : 'text-slate-200 border-slate-200 bg-black/60' } shadow-black/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
                   <div>DRY RUN</div>
                 </div>
-                <div onClick={() => setOpenDataDialog(true)} className={`w-full h-full grid place-items-center text-base font-bold rounded-md text-slate-200 border-slate-200 bg-black/60 shadow-black/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
-                  <div>{ carrier.state === 'maintenance' ? 'MANUAL QUEUING' : 'AUTO QUEUING' }</div>
+                <div onClick={() => {
+                    setSelectBtnType('DRYRUN');
+                    setOpenDataDialog(true);
+                  }} className={`w-full h-full grid place-items-center text-base font-bold rounded-md text-slate-200 border-slate-200 bg-black/60 shadow-black/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
+                  <div>{ carrier.state === 'maintenance' ? 'MANUAL' : 'AUTO' }</div>
                 </div>
               </div>
             </div>

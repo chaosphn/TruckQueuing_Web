@@ -4,17 +4,25 @@ import bayImg from '../../assets/bay.png';
 import TruckModel from '../truck/truck-model';
 import Slider from '@mui/material/Slider';
 import { Settings } from 'lucide-react';
+import ManageDialog from '../confirm-dialog/dialog';
 
-const QueueManageDialog = ({ open, data, onSave, onClose }) => {
+const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [operatingMode, setOperatingMode] = useState('OPERATING MODE');
   const [autoQueuing, setAutoQueuing] = useState(true);
+  const [ openDataDialog, setOpenDataDialog ] = useState(false);
   const [selectedAction, setSelectedAction] = useState('');
+  const [countAction, setcountAction] = useState(0);
 
   const openDialog = () => setIsOpen(true);
   const closeDialog = () => setIsOpen(false);
-  const handleSave = async () => {
+  const handleSave = async (cfmStatus) => {
+    setOpenDataDialog(false);
+    if(cfmStatus){
 
+    } else {
+      setSelectedAction('');
+    }
   };
 
   if (!open) {
@@ -27,7 +35,12 @@ const QueueManageDialog = ({ open, data, onSave, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-screen-lg mx-auto">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-2xl font-bold px-6 py-4 rounded-t-xl">
+        <div className={`bg-gradient-to-l ${ 
+          data.state === 'finished' ? 'from-emerald-400 to-emerald-600' : 
+            data.state === 'loading' ? 'from-amber-400 to-orange-500' : 
+              data.state === 'maintenance' ? 'from-red-400 to-red-600' : 
+                data.state === 'dry-run' ? 'from-blue-400 to-blue-600' : 'from-slate-400 to-slate-600'
+          } text-white text-2xl font-bold px-6 py-4 rounded-t-xl`}>
           Queue management At BAY { data.id }
         </div>
         {/* Content */}
@@ -43,12 +56,13 @@ const QueueManageDialog = ({ open, data, onSave, onClose }) => {
                       <div className="col-span-6 row-span-6 text-3xl font-bold text-slate-700 flex items-center justify-center">
                         <div>คิวที่ {data.queuenumber}</div>
                       </div>
-                      <div className="col-span-6 row-span-3 text-lg font-semibold text-slate-500">ทะเบียนหน้า 67-6255</div>
-                      <div className="col-span-6 row-span-3 text-lg font-semibold text-slate-500">ทะเบียนหลัง 67-6520</div>
+                      <div className="col-span-6 row-span-3 text-lg text-left font-semibold text-slate-500">ทะเบียนหน้า 67-6255</div>
+                      <div className="col-span-6 row-span-3 text-lg text-left font-semibold text-slate-500">ทะเบียนหลัง 67-6520</div>
                     </div>
                   }
                   <div className={`w-full flex flex-col item-center justify-between mb-6 px-20`}>
                     {
+                      data.state == 'free' || data.state == 'maintenance' || data.state == 'dry-run' ? null :
                       data.loading !== null && data.maxLoading !== null && data.verified ? 
                       <div className=''>
                         <Slider
@@ -118,7 +132,7 @@ const QueueManageDialog = ({ open, data, onSave, onClose }) => {
                       </div> : null
                     }
                     {
-                      data.state == 'free' || data.state == 'maintenance' ? 
+                      data.state == 'free' || data.state == 'maintenance' || data.state == 'dry-run' ? 
                       <div className="w-full bg-white/60 backdrop-blur-sm rounded-xl px-4 py-4 shadow-md border border-white/30">
                         <div className='flex items-center justify-center'>
                           <div className={`text-2xl font-bold ${ 
@@ -163,14 +177,14 @@ const QueueManageDialog = ({ open, data, onSave, onClose }) => {
                 <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing Management Status</h4>
                 <div className="space-y-4">
                   <button className={`w-full ${ data.state === 'maintenance' ? 'bg-red-500' : 'bg-green-500' } text-white py-2 px-4 rounded-md text-lg font-medium`}>
-                    OPERATING MODE
-                    <div className="text-xs opacity-80">Signal From DCS</div>
+                    { data.state === 'maintenance' ? 'MAINTENANCE MODE' : 'OPERATING MODE' }
+                  <div className="text-xs opacity-80">Signal From DCS</div>
                   </button>
                   <div className="flex space-x-4">
-                    <button className={`flex-1 ${ data.state === 'maintenance' ? 'bg-red-500' : 'bg-green-500' } text-white py-3 px-3 rounded-lg text-sm font-semibold`}>
-                      AUTO QUEUING
+                    <button className={`flex-1 ${ data.state === 'maintenance' ? 'bg-red-500 text-white' : data.state != 'dry-run' ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700' } py-3 px-3 rounded-lg text-sm font-bold`}>
+                      { data.state === 'maintenance' ? 'MANUAL QUEUING' : 'AUTO QUEUING' }
                     </button>
-                    <button className="flex-1 bg-gray-300 text-gray-700 py-3 px-3 rounded-lg text-sm font-semibold">
+                    <button className={`flex-1 ${ data.state === 'dry-run' ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700' } py-3 px-3 rounded-lg text-sm font-bold`}>
                       DRY RUN
                     </button>
                   </div>
@@ -187,7 +201,10 @@ const QueueManageDialog = ({ open, data, onSave, onClose }) => {
                         ? 'bg-blue-500 text-white' 
                         : 'bg-white text-gray-700 border'
                     }`}
-                    onClick={() => setSelectedAction('Auto Queuing')}
+                    onClick={() => {
+                      setcountAction(0)
+                      setSelectedAction('Auto Queuing')}
+                    }
                   >
                     Auto Queuing
                   </button>
@@ -197,7 +214,10 @@ const QueueManageDialog = ({ open, data, onSave, onClose }) => {
                         ? 'bg-blue-500 text-white' 
                         : 'bg-white text-gray-700 border'
                     }`}
-                    onClick={() => setSelectedAction('Finish Dry Run')}
+                    onClick={() => {
+                      setcountAction(0)
+                      setSelectedAction('Finish Dry Run')}
+                    }
                   >
                     Finish Dry Run
                   </button>
@@ -207,7 +227,10 @@ const QueueManageDialog = ({ open, data, onSave, onClose }) => {
                         ? 'bg-blue-500 text-white' 
                         : 'bg-white text-gray-700 border'
                     }`}
-                    onClick={() => setSelectedAction('Manual Queuing')}
+                    onClick={() => {
+                      setcountAction(0)
+                      setSelectedAction('Manual Queuing')}
+                    }
                   >
                     Manual Queuing
                   </button>
@@ -217,13 +240,25 @@ const QueueManageDialog = ({ open, data, onSave, onClose }) => {
                         ? 'bg-blue-500 text-white' 
                         : 'bg-white text-gray-700 border'
                     }`}
-                    onClick={() => setSelectedAction('Assign')}
+                    onClick={() => {
+                      setcountAction(0)
+                      setSelectedAction('Assign')}
+                    }
                   >
                     Assign
                   </button>
                 </div>
                 
-                <button className="w-full bg-red-400 text-white py-2 px-4 rounded-lg text-sm font-medium">
+                <button className={`w-full ${
+                      selectedAction === 'Cancle' 
+                        ? 'bg-red-500 text-white' 
+                        : 'bg-white text-gray-700 border'
+                  } py-2 px-4 rounded-lg text-sm font-medium`}
+                  onClick={() => {
+                    setcountAction(10)
+                    setSelectedAction('Cancle')}
+                  }
+                >
                   Cancel Queuing
                 </button>
               </div>
@@ -236,11 +271,16 @@ const QueueManageDialog = ({ open, data, onSave, onClose }) => {
             <span>⏮</span>
             <span>ย้อนกลับ</span>
           </button>
-          <button onClick={handleSave} className="px-8 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center space-x-2">
+          <button onClick={() => { setOpenDataDialog(true);  }} className="px-8 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center space-x-2">
             <span>ตกลง</span>
             <span>✓</span>
           </button>
         </div>
+         <ManageDialog opens={openDataDialog} selectedAction={selectedAction} count={countAction} onSave={(st) => {
+          console.log('dialog result: '+st);
+          setcountAction(0);
+          handleSave(st);
+         }}></ManageDialog>
       </div>
     </div>
   );
