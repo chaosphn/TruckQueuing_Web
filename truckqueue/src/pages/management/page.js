@@ -190,7 +190,7 @@ const CarrierManagement = () => {
   };
 
   return (
-    <div className="max-w-screen mx-auto w-full min-h-screen h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 flex flex-col justify-around">
+    <div className="max-w-screen mx-auto w-full min-h-screen h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 py-4 flex flex-col justify-between">
       {/* Header */}
       <div className="">
         <div className="flex items-center justify-between">
@@ -225,7 +225,7 @@ const CarrierManagement = () => {
                 carrier.state === 'loading' ? 'amber' : 
                   carrier.state === 'maintenance' ? 'red' : 
                     carrier.state === 'dry-run' ? 'blue' : 'slate'
-            }-50 rounded-2xl px-6 py-5 shadow-lg border border-white/50`}
+            }-50 rounded-2xl px-6 py-4 shadow-lg border border-white/50`}
           >
             <div className="flex items-center justify-between">
               <div className="flex flex-col items-center gap-3" onClick={() => downLoadBayData(carrier.id)}>
@@ -252,7 +252,7 @@ const CarrierManagement = () => {
                     <Settings className="w-14 h-14 text-red-500 animate-spin" style={{animationDuration: '4s'}} />
                 </div> : carrier.state === 'free' ?  
                 <div className="bg-white/80 rounded-lg p-4 shadow-md mx-10">
-                    <Loader className="w-12 h-12 text-slate-500 animate-spin" style={{animationDuration: '4s'}} />
+                    <Loader className="w-12 h-12 text-slate-500" style={{animationDuration: '4s'}} />
                 </div>  :
                 <div className="text-center box-border">
                   <div className="text-3xl font-bold text-slate-700 pb-2">คิวที่ {carrier.id === 'A' ? '1' : carrier.id === 'B' ? '2' : carrier.id === 'D' ? '3' : ''}</div>
@@ -369,14 +369,14 @@ const CarrierManagement = () => {
                   <div>{carrier.mode}</div>
                 </div>
                 <div onClick={() => {
-                    setSelectBtnType(carrier.state === 'maintenance' ? 'MANUAL QUEUING' : 'AUTO QUEUING');
+                    setSelectBtnType('DRYRUN');
                     setOpenDataDialog(true);
                   }} className={`w-full h-full grid place-items-center text-base font-bold rounded-md
                   ${ carrier.state === 'dry-run' ? 'text-slate-200 bg-red-500 border-white' : 'text-slate-200 border-slate-200 bg-black/60' } shadow-black/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
                   <div>DRY RUN</div>
                 </div>
-                <div onClick={() => {
-                    setSelectBtnType('DRYRUN');
+                <div onClick={() => {                  
+                    setSelectBtnType(carrier.state === 'maintenance' ? 'MANUAL QUEUING' : 'AUTO QUEUING');
                     setOpenDataDialog(true);
                   }} className={`w-full h-full grid place-items-center text-base font-bold rounded-md text-slate-200 border-slate-200 bg-black/60 shadow-black/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
                   <div>{ carrier.state === 'maintenance' ? 'MANUAL' : 'AUTO' }</div>
@@ -385,7 +385,10 @@ const CarrierManagement = () => {
             </div>
           </div>
         ))}
-        <QueueManageDialog open={openDataDialog} data={selectBayData} onClose={() => {setOpenDataDialog(false)}}></QueueManageDialog>
+        <QueueManageDialog open={openDataDialog} data={selectBayData} type={selectBtnType} onClose={() => {
+          setOpenDataDialog(false);
+          setSelectBtnType('');
+        }}></QueueManageDialog>
       </div>
 
       {/* Upcoming Slots */}

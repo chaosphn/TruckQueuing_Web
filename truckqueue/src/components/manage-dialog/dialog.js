@@ -12,6 +12,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const [autoQueuing, setAutoQueuing] = useState(true);
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
   const [selectedAction, setSelectedAction] = useState('');
+  const [selectedMode, setSelectedMode] = useState('');
   const [countAction, setcountAction] = useState(0);
 
   const openDialog = () => setIsOpen(true);
@@ -132,7 +133,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                       </div> : null
                     }
                     {
-                      data.state == 'free' || data.state == 'maintenance' || data.state == 'dry-run' ? 
+                      data.state == 'free' || data.state == 'maintenance' || data.state == 'dry-run' || data.state == 'pending' ? 
                       <div className="w-full bg-white/60 backdrop-blur-sm rounded-xl px-4 py-4 shadow-md border border-white/30">
                         <div className='flex items-center justify-center'>
                           <div className={`text-2xl font-bold ${ 
@@ -182,7 +183,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                   </button>
                   <div className="flex space-x-4">
                     <button className={`flex-1 ${ data.state === 'maintenance' ? 'bg-red-500 text-white' : data.state != 'dry-run' ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700' } py-3 px-3 rounded-lg text-sm font-bold`}>
-                      { data.state === 'maintenance' ? 'MANUAL QUEUING' : 'AUTO QUEUING' }
+                      { type === 'DRYRUN' ? 'AUTO QUEUING' : type }
                     </button>
                     <button className={`flex-1 ${ data.state === 'dry-run' ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700' } py-3 px-3 rounded-lg text-sm font-bold`}>
                       DRY RUN
@@ -202,6 +203,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                         : 'bg-white text-gray-700 border'
                     }`}
                     onClick={() => {
+                      setOpenDataDialog(true); 
                       setcountAction(0)
                       setSelectedAction('Auto Queuing')}
                     }
@@ -215,6 +217,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                         : 'bg-white text-gray-700 border'
                     }`}
                     onClick={() => {
+                      setOpenDataDialog(true); 
                       setcountAction(0)
                       setSelectedAction('Finish Dry Run')}
                     }
@@ -228,6 +231,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                         : 'bg-white text-gray-700 border'
                     }`}
                     onClick={() => {
+                      setOpenDataDialog(true); 
                       setcountAction(0)
                       setSelectedAction('Manual Queuing')}
                     }
@@ -241,6 +245,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                         : 'bg-white text-gray-700 border'
                     }`}
                     onClick={() => {
+                      setOpenDataDialog(true); 
                       setcountAction(0)
                       setSelectedAction('Assign')}
                     }
@@ -250,13 +255,14 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                 </div>
                 
                 <button className={`w-full ${
-                      selectedAction === 'Cancle' 
+                      selectedAction === 'Cancle Queuing' 
                         ? 'bg-red-500 text-white' 
                         : 'bg-white text-gray-700 border'
                   } py-2 px-4 rounded-lg text-sm font-medium`}
                   onClick={() => {
+                    setOpenDataDialog(true); 
                     setcountAction(10)
-                    setSelectedAction('Cancle')}
+                    setSelectedAction('Cancle Queuing')}
                   }
                 >
                   Cancel Queuing
@@ -266,14 +272,14 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
           </div>
         </div>
         {/* Footer */}
-        <div className="p-6 bg-gray-100 rounded-b-xl flex justify-around space-x-4">
+        <div className="p-6 bg-gray-100 rounded-b-xl flex justify-between space-x-4">
           <button onClick={onClose} className="px-8 py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center space-x-2">
             <span>⏮</span>
             <span>ย้อนกลับ</span>
           </button>
           <button onClick={() => { setOpenDataDialog(true);  }} className="px-8 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center space-x-2">
-            <span>ตกลง</span>
             <span>✓</span>
+            <span>ยืนยัน</span>
           </button>
         </div>
          <ManageDialog opens={openDataDialog} selectedAction={selectedAction} count={countAction} onSave={(st) => {

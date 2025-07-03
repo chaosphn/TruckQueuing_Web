@@ -100,7 +100,7 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0 }) {
       <DialogContent>
         <Box sx={{ textAlign: 'center', py: 2 }}>
           <Typography variant="body1" sx={{ mb: 2 }}>
-            กรุณากดตกลง เพื่อยืนยันการ{selectedAction}
+            กรุณากดตกลง เพื่อยืนยันการ {selectedAction}
           </Typography>
           
           {loading && (
