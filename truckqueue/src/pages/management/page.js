@@ -5,6 +5,7 @@ import TruckModel from '../../components/truck/truck-model';
 import Slider from '@mui/material/Slider';
 import QueueManageDialog from '../../components/manage-dialog/dialog';
 import ManageDialog from '../../components/confirm-dialog/dialog';
+import QueueListDialog from '../../components/queuelist-dialog/dialog';
 
 const CarrierManagement = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -12,6 +13,11 @@ const CarrierManagement = () => {
   const [ selectBayData, setSelectBayData ] = useState(null);
   const [ selectBtnType, setSelectBtnType ] = useState('');
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
+  const [ openQueueDialog, setOpenQueueDialog ] = useState(false);
+  const [ openModeDialog, setOpenModeDialog ] = useState(false);
+  const [selectedMode, setSelectedMode] = useState('Online');
+  const [statusMode, setStatusMode] = useState(true);
+  const [selectedAction, setSelectedAction] = useState('');
   const { navigatePage } = useRouting();
 
   useEffect(() => {
@@ -39,7 +45,7 @@ const CarrierManagement = () => {
       // setBayData(randomCarriers);
       //setBayData(carriers.slice(0, 4)); 
     }, 10000);
-    setBayData(getRandomCarriers()); 
+    setBayData(carriers.slice(0, 4)); 
     return () => clearInterval(timer);
   }, []);
 
@@ -78,7 +84,7 @@ const CarrierManagement = () => {
       verified: true,
       frontlicense: '54-1564',
       rearlicense: '54-1563',
-      queuenumber: 1,
+      queuenumber: 21,
       usage: 13,
       mode: 'OPERATING MODE'
     },
@@ -94,10 +100,43 @@ const CarrierManagement = () => {
       verified: true,
       frontlicense: '67-6512',
       rearlicense: '67-6252',
-      queuenumber: 2,
+      queuenumber: 12,
       usage: 1,
       mode: 'OPERATING MODE'
     },
+    // {
+    //   id: 'C',
+    //   status: 'ว่าง',
+    //   weight: 0,
+    //   loading: null,
+    //   maxLoading: 17221, 
+    //   timeLoading: '',
+    //   state: 'free',
+    //   carrier: '',
+    //   verified: false,
+    //   frontlicense: '67-9607',
+    //   rearlicense: '53-1217',
+    //   queuenumber: 0,
+    //   usage: 0,
+    //   mode: 'OPERATING MODE'
+
+    // },
+    // {
+    //   id: 'D',
+    //   status: 'เรียกคิว',
+    //   weight: 0,
+    //   loading: 5000,
+    //   maxLoading: 17221, 
+    //   timeLoading: '',
+    //   state: 'pending',
+    //   carrier: 'CARRIER-TEST1',
+    //   verified: false,
+    //   frontlicense: '67-9607',
+    //   rearlicense: '53-1217',
+    //   queuenumber: 16,
+    //   usage: 3,
+    //   mode: 'OPERATING MODE'
+    // },
     {
       id: 'C',
       status: 'อยู่ระหว่างซ่อมบำรุง',
@@ -130,39 +169,7 @@ const CarrierManagement = () => {
       usage: 1,
       mode: 'OPERATING MODE'
     },
-    {
-      id: 'E',
-      status: 'ว่าง',
-      weight: 0,
-      loading: null,
-      maxLoading: 17221, 
-      timeLoading: '',
-      state: 'free',
-      carrier: '',
-      verified: false,
-      frontlicense: '67-9607',
-      rearlicense: '53-1217',
-      queuenumber: 0,
-      usage: 0,
-      mode: 'OPERATING MODE'
-
-    },
-    {
-      id: 'F',
-      status: 'เรียกคิว',
-      weight: 0,
-      loading: 5000,
-      maxLoading: 17221, 
-      timeLoading: '',
-      state: 'pending',
-      carrier: 'CARRIER-TEST1',
-      verified: false,
-      frontlicense: '67-9607',
-      rearlicense: '53-1217',
-      queuenumber: 6,
-      usage: 3,
-      mode: 'OPERATING MODE'
-    }
+    
   ];
 
   const upcomingSlots = [
@@ -194,13 +201,13 @@ const CarrierManagement = () => {
       {/* Header */}
       <div className="">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4" onClick={() => navigatePage('/')}>
+          <div className="flex items-center gap-4" onClick={() => navigatePage('/overview')}>
             <div className="bg-white p-3 rounded-xl shadow-lg">
               <Truck className="w-8 h-8 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-slate-800">Carrier Management</h1>
-              <p className="text-xl text-slate-600">ระบบบริหารรถขนส่ง</p>
+              <h1 className="text-3xl font-bold text-slate-800">Queue Management</h1>
+              <p className="text-xl text-slate-600">ระบบบริหารคิวรถขนส่ง</p>
             </div>
           </div>
           <div className="text-right">
@@ -221,35 +228,38 @@ const CarrierManagement = () => {
             onClick={() => setSelectBayData(carrier)}
             key={carrier.id}
             className={`bg-${ 
-              carrier.state === 'finished' ? 'emerald' : 
-                carrier.state === 'loading' ? 'amber' : 
-                  carrier.state === 'maintenance' ? 'red' : 
-                    carrier.state === 'dry-run' ? 'blue' : 'slate'
-            }-50 rounded-2xl px-6 py-4 shadow-lg border border-white/50`}
+               carrier.state === 'finished' ? 'emerald-50' : 
+                    carrier.state === 'loading' ? 'amber-50' : 
+                      carrier.state === 'maintenance' ? 'indigo-100' : 
+                        carrier.state === 'dry-run' ? 'blue-50' : 
+                         carrier.state === 'pending' ? 'red-50' : 'slate-50'
+            } rounded-2xl px-6 py-4 shadow-lg border border-white/50`}
           >
             <div className="flex items-center justify-between">
               <div className="flex flex-col items-center gap-3" onClick={() => downLoadBayData(carrier.id)}>
                 <div
                   key={carrier.id} 
                   className={`w-16 h-16 bg-gradient-to-r ${ 
-                    carrier.state === 'finished' ? 'from-emerald-400 to-emerald-600' : 
-                      carrier.state === 'loading' ? 'from-amber-400 to-orange-500' : 
-                        carrier.state === 'maintenance' ? 'from-red-400 to-red-600' : 
-                          carrier.state === 'dry-run' ? 'from-blue-400 to-blue-600' : 'from-slate-400 to-slate-600'
+                     carrier.state === 'finished' ? 'from-emerald-400 to-emerald-600' : 
+                          carrier.state === 'loading' ? 'from-amber-400 to-orange-500' : 
+                            carrier.state === 'maintenance' ? 'from-indigo-400 to-indigo-600' : 
+                              carrier.state === 'dry-run' ? 'from-blue-400 to-blue-600' :
+                                carrier.state === 'pending' ? 'from-red-400 to-red-600' : 'from-slate-400 to-slate-600'
                     } rounded-xl flex items-center justify-center text-white font-bold text-3xl shadow-lg`}>
                   {carrier.id}
                 </div>
                 <div className={`text-xl font-bold ${ 
                     carrier.state === 'finished' ? 'text-emerald-800' : 
-                      carrier.state === 'loading' ? 'text-amber-800' : 
-                        carrier.state === 'maintenance' ? 'text-red-800' : 
-                          carrier.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
+                          carrier.state === 'loading' ? 'text-amber-800' : 
+                            carrier.state === 'maintenance' ? 'text-indigo-800' : 
+                              carrier.state === 'dry-run' ? 'text-blue-800 ' :
+                                carrier.state === 'pending' ? 'text-red-800' : 'text-slate-800'
                 }`}>BAYLOAD: {carrier.usage}</div>
               </div>
               {
                 carrier.state === 'maintenance' ?
                 <div className="bg-white/80 rounded-lg p-4 shadow-md mx-10">
-                    <Settings className="w-14 h-14 text-red-500 animate-spin" style={{animationDuration: '4s'}} />
+                    <Settings className="w-14 h-14 text-indigo-500 " style={{animationDuration: '4s'}} />
                 </div> : carrier.state === 'free' ?  
                 <div className="bg-white/80 rounded-lg p-4 shadow-md mx-10">
                     <Loader className="w-12 h-12 text-slate-500" style={{animationDuration: '4s'}} />
@@ -326,15 +336,17 @@ const CarrierManagement = () => {
                   <div className='flex items-center justify-between'>
                     <div className={`text-lg font-semibold ${ 
                       carrier.state === 'finished' ? 'text-emerald-800' : 
-                        carrier.state === 'loading' ? 'text-amber-800' : 
-                          carrier.state === 'maintenance' ? 'text-red-800' : 
-                            carrier.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
+                          carrier.state === 'loading' ? 'text-amber-800' : 
+                            carrier.state === 'maintenance' ? 'text-indigo-800' : 
+                              carrier.state === 'dry-run' ? 'text-blue-800 ' :
+                                carrier.state === 'pending' ? 'text-red-800' : 'text-slate-800'
                     }`}>สถานะ: {carrier.status}</div>
                     <div className={`text-lg font-semibold ${ 
                       carrier.state === 'finished' ? 'text-emerald-800' : 
-                        carrier.state === 'loading' ? 'text-amber-800' : 
-                          carrier.state === 'maintenance' ? 'text-red-800' : 
-                            carrier.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
+                          carrier.state === 'loading' ? 'text-amber-800' : 
+                            carrier.state === 'maintenance' ? 'text-indigo-800' : 
+                              carrier.state === 'dry-run' ? 'text-blue-800 ' :
+                                carrier.state === 'pending' ? 'text-red-800' : 'text-slate-800'
                     }`}>{carrier.timeLoading}</div>
                   </div>
                 </div>
@@ -365,21 +377,21 @@ const CarrierManagement = () => {
               </div>
               <div className='w-1/5 min-h-24 h-full grid grid-cols-2 gap-4 cursor-pointer'>
                 <div className={`w-full h-full col-span-2 grid place-items-center text-center text-base font-bold rounded-md border-2 
-                  ${ carrier.state === 'maintenance' ? 'text-slate-200 bg-red-500 border-white' : 'text-black bg-emerald-400 border-emerald-600' } shadow-black/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
+                  ${ carrier.state === 'maintenance' ? 'text-slate-200 bg-indigo-500 border-white' : 'text-black bg-emerald-400 border-emerald-600' } shadow-black/30 shadow-lg`}>
                   <div>{carrier.mode}</div>
                 </div>
                 <div onClick={() => {
-                    setSelectBtnType('DRYRUN');
+                    setSelectBtnType('MANAGEMENT');
                     setOpenDataDialog(true);
                   }} className={`w-full h-full grid place-items-center text-base font-bold rounded-md
-                  ${ carrier.state === 'dry-run' ? 'text-slate-200 bg-red-500 border-white' : 'text-slate-200 border-slate-200 bg-black/60' } shadow-black/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
-                  <div>DRY RUN</div>
+                  ${ carrier.state === 'xxxxx' ? 'text-slate-200 bg-indigo-500 border-white' : 'text-slate-200 border-slate-200 bg-black/60' } shadow-black/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
+                  <div>Management</div>
                 </div>
                 <div onClick={() => {                  
-                    setSelectBtnType(carrier.state === 'maintenance' ? 'MANUAL QUEUING' : 'AUTO QUEUING');
+                    setSelectBtnType('SETTING');
                     setOpenDataDialog(true);
                   }} className={`w-full h-full grid place-items-center text-base font-bold rounded-md text-slate-200 border-slate-200 bg-black/60 shadow-black/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
-                  <div>{ carrier.state === 'maintenance' ? 'MANUAL' : 'AUTO' }</div>
+                  <div>Setting</div>
                 </div>
               </div>
             </div>
@@ -401,9 +413,16 @@ const CarrierManagement = () => {
                 : 'border-slate-300 bg-slate-100'
             }`}
           >
-            <div className="div flex items-center justify-around h-full">
+            <div className="div flex flex-col items-center justify-around h-full">
               <div className={`text-3xl font-bold mb-2 ${true ? 'text-slate-700' : 'text-slate-900'}`}>
-                คิวที่ถัดไป
+                รายการคิว
+              </div>
+              <div className='w-full flex items-center gap-2 cursor-pointer'>
+                <div onClick={() => {
+                  setSelectedMode(!statusMode ? 'Online Mode' : 'Offline Mode');
+                  setOpenModeDialog(true)
+                }} className={`w-full py-1.5 text-sm text-center font-bold rounded-md  ${ !statusMode ? 'text-slate-200 bg-red-500 border-white' : 'text-black bg-emerald-400 border-emerald-600' } shadow-black/30 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>{statusMode ? 'Online' : 'Offline'} Mode</div>
+                <div onClick={() => setOpenQueueDialog(true)} className='w-full py-1.5 text-sm text-center font-bold rounded-md text-slate-200 border-slate-200 bg-black/50 shadow-black/30 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>Cancel Queue</div>
               </div>
             </div>
           </div>
@@ -440,14 +459,23 @@ const CarrierManagement = () => {
           >
             <div className="flex flex-col items-center justify-between h-full p-2">
               <div className='w-full text-2xl text-center font-bold text-slate-600'>Bay Usage: {bayData.reduce((acc, cur) => { return acc += cur.usage }, 0)}</div>
-              <div className='w-full flex items-center gap-1'>
-                <div className='w-full py-1 text-sm text-center font-bold text-slate-500 rounded bg-slate-300 border border-dashed border-slate-600'>D</div>
-                <div className='w-full py-1 text-sm text-center font-bold text-slate-500 rounded bg-slate-300 border border-dashed border-slate-600'>M</div>
-                <div className='w-full py-1 text-sm text-center font-bold text-slate-500 rounded bg-slate-300 border border-dashed border-slate-600'>Y</div>
+              <div className='w-full flex items-center gap-3 cursor-pointer'>
+                <div className='w-full py-1 text-sm text-center font-bold rounded-md text-slate-200 border-slate-200 bg-black/50 shadow-black/30 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>D</div>
+                <div className='w-full py-1 text-sm text-center font-bold rounded-md text-slate-200 border-slate-200 bg-black/50 shadow-black/30 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>M</div>
+                <div className='w-full py-1 text-sm text-center font-bold rounded-md text-slate-200 border-slate-200 bg-black/50 shadow-black/30 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>Y</div>
               </div>
             </div>
           </div>
         </div>
+        <QueueListDialog open={openQueueDialog} mode={'cancle'} onClose={() => {setOpenQueueDialog(false)}}></QueueListDialog>
+        <ManageDialog opens={openModeDialog} selectedAction={selectedMode} count={0} onSave={(st) => {
+          console.log('dialog result: '+st);
+          setOpenModeDialog(false);
+          setSelectedMode('');
+          if(st){
+            setStatusMode(!statusMode);
+          }
+        }}></ManageDialog>
       </div>
     </div>
   );

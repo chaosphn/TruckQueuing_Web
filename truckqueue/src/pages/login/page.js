@@ -26,7 +26,7 @@ const LoginPage = () => {
   }, []);
 
   const handleNavigatePage = () => {
-    navigate(`/`);
+    navigate(`/overview`);
   }
 
   const formatTime = (date) => {

@@ -38,7 +38,7 @@ const CarrierDashboard = () => {
       // setBayData(randomCarriers);
       //setBayData(carriers.slice(0, 4)); 
     }, 10000);
-    setBayData(getRandomCarriers()); 
+    setBayData(carriers.slice(0, 4)); 
     return () => clearInterval(timer);
   }, []);
 
@@ -93,6 +93,35 @@ const CarrierDashboard = () => {
       rearlicense: '67-6252',
       queuenumber: 2,
     },
+    // {
+    //   id: 'C',
+    //   status: 'ว่าง',
+    //   weight: 0,
+    //   loading: null,
+    //   maxLoading: 17221, 
+    //   timeLoading: '',
+    //   state: 'free',
+    //   carrier: '',
+    //   verified: false,
+    //   frontlicense: '67-9607',
+    //   rearlicense: '53-1217',
+    //   queuenumber: 0
+
+    // },
+    // {
+    //   id: 'D',
+    //   status: 'เรียกคิว',
+    //   weight: 0,
+    //   loading: 1000,
+    //   maxLoading: 17221, 
+    //   timeLoading: '',
+    //   state: 'pending',
+    //   verified: false,
+    //   frontlicense: '67-9607',
+    //   rearlicense: '53-1217',
+    //   queuenumber: 16,
+    //   carrier: 'CARRIER-TEST1'
+    // },
     {
       id: 'C',
       status: 'อยู่ระหว่างซ่อมบำรุง',
@@ -105,7 +134,7 @@ const CarrierDashboard = () => {
       verified: true,
       frontlicense: '403 83-1985',
       rearlicense: '5002 83-4329',
-      queuenumber: 3,
+      queuenumber: 13,
     },
     {
       id: 'D',
@@ -133,7 +162,7 @@ const CarrierDashboard = () => {
       verified: false,
       frontlicense: '67-9607',
       rearlicense: '53-1217',
-      queuenumber: 0
+      queuenumber: 10
 
     },
     {
@@ -159,23 +188,30 @@ const CarrierDashboard = () => {
     { id: 7, available: false }
   ];
 
-  
+  const formatDate = (date) => {
+    return date.toLocaleDateString('th-TH', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   return (
     <div>
       {
-        screenratio > 2 ?
+        screenratio >= 2 ?
         <div className="max-w-screen mx-auto w-full min-h-screen h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 flex flex-col justify-around ">
           {/* Header */}
           <div className="">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4" onClick={() => navigatePage('/')}>
+              <div className="flex items-center gap-4" onClick={() => navigatePage('/overview')}>
                 <div className="bg-white p-3 rounded-xl shadow-lg">
                   <Truck className="w-8 h-8 text-blue-600" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-800">Carrier Dashboard</h1>
-                  <p className="text-xl text-slate-600">รายการสถานะรถขนส่ง</p>
+                  <h1 className="text-3xl font-bold text-slate-800">Queue Dashboard</h1>
+                  <p className="text-xl text-slate-600">รายการสถานะคิว</p>
                 </div>
               </div>
               <div className="text-right">
@@ -183,7 +219,7 @@ const CarrierDashboard = () => {
                   {currentTime.toLocaleTimeString('th-TH')}
                 </div>
                 <div className="text-xl text-slate-600">
-                  วันพุธที่ 28 พฤษภาคม 2568
+                 {formatDate(currentTime)}
                 </div>
               </div>
             </div>
@@ -194,12 +230,13 @@ const CarrierDashboard = () => {
             {bayData.map((carrier) => (
               <div
                 key={carrier.id}
-                className={`bg-${ 
-                  carrier.state === 'finished' ? 'emerald' : 
-                    carrier.state === 'loading' ? 'amber' : 
-                      carrier.state === 'maintenance' ? 'red' : 
-                        carrier.state === 'dry-run' ? 'blue' : 'slate'
-                }-50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/50 `}
+                className={`${ 
+                  carrier.state === 'finished' ? 'bg-emerald-50' : 
+                    carrier.state === 'loading' ? 'bg-amber-50' : 
+                      carrier.state === 'maintenance' ? 'bg-indigo-100' : 
+                        carrier.state === 'dry-run' ? 'bg-blue-50' : 
+                         carrier.state === 'pending' ? 'bg-red-200 animate-blink' : 'bg-slate-50'
+                } rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/50 `}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3" onClick={() => downLoadBayData(carrier.id)}>
@@ -208,13 +245,14 @@ const CarrierDashboard = () => {
                       className={`w-16 h-16 bg-gradient-to-r ${ 
                         carrier.state === 'finished' ? 'from-emerald-400 to-emerald-600' : 
                           carrier.state === 'loading' ? 'from-amber-400 to-orange-500' : 
-                            carrier.state === 'maintenance' ? 'from-red-400 to-red-600' : 
-                              carrier.state === 'dry-run' ? 'from-blue-400 to-blue-600' : 'from-slate-400 to-slate-600'
-                        } rounded-xl flex items-center justify-center text-white font-bold text-3xl shadow-lg`}>
+                            carrier.state === 'maintenance' ? 'from-indigo-400 to-indigo-600' : 
+                              carrier.state === 'dry-run' ? 'from-blue-400 to-blue-600' :
+                                carrier.state === 'pending' ? 'from-red-400 to-red-600' : 'from-slate-400 to-slate-600'
+                        } rounded-xl flex items-center justify-center text-white font-bold text-3xl shadow-lg `}>
                       {carrier.id}
                     </div>
                   </div>
-                  <div className='w-2/5 h-full flex flex-col item-center justify-between'>
+                  <div className='w-2/5 h-full flex flex-col item-center justify-between '>
                     {
                       carrier.loading !== null && carrier.maxLoading !== null && carrier.verified ? 
                       <div>
@@ -280,18 +318,19 @@ const CarrierDashboard = () => {
                       <div className={`text-2xl font-semibold ${ 
                         carrier.state === 'finished' ? 'text-emerald-800' : 
                           carrier.state === 'loading' ? 'text-amber-800' : 
-                            carrier.state === 'maintenance' ? 'text-red-800' : 
-                              carrier.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
+                            carrier.state === 'maintenance' ? 'text-indigo-800 -translate-x-7' : 
+                              carrier.state === 'dry-run' ? 'text-blue-800 ' :
+                                carrier.state === 'pending' ? 'text-red-800' : 'text-slate-800 -translate-x-7'
                       }`}>สถานะ: {carrier.status}</div>
                       <div className={`text-2xl font-semibold ${ 
                         carrier.state === 'finished' ? 'text-emerald-800' : 
                           carrier.state === 'loading' ? 'text-amber-800' : 
-                            carrier.state === 'maintenance' ? 'text-red-800' : 
+                            carrier.state === 'maintenance' ? 'text-indigo-800' : 
                               carrier.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
                       }`}> { carrier.timeLoading } </div>
                     </div>
                   </div>
-                  <div className='w-1/3 min-h-24 h-full relative'>
+                  <div className='w-1/4 min-h-24 h-full relative '>
                   {/* { carrier.state === 'maintenance' ? 
                     null : carrier.state === 'free' ? null : 
                     <div className='absolute top-1/2 left-1/3 -translate-y-1/2 flex flex-col items-center justify-center h-auto gap-2'>
@@ -320,7 +359,11 @@ const CarrierDashboard = () => {
                         <div className="animate-truck-enter">
                           <TruckModel key={carrier.id} />
                         </div>
-                      ) : null}
+                      ) : 
+                        <div className="animate-truck-enter invisible">
+                          <TruckModel key={carrier.id} />
+                        </div>
+                      }
                       <div className="bg-white/80 rounded-lg shadow-md px-4 border border-slate-300 font-semibold">
                         {carrier.carrier}
                       </div>
@@ -329,16 +372,28 @@ const CarrierDashboard = () => {
                   </div>
                   {
                     carrier.state === 'maintenance' ?
-                    <div className="bg-white/80 rounded-lg p-4 shadow-md">
-                        <Settings className="w-12 h-12 text-red-500 animate-spin" style={{animationDuration: '4s'}} />
-                    </div> : carrier.state === 'free' ?  
-                    <div className="bg-white/80 rounded-lg p-4 shadow-md">
-                        <Loader className="w-12 h-12 text-slate-500" style={{animationDuration: '4s'}} />
-                    </div>  :
-                    <div className="text-right h-full box-border">
-                      <div className="text-3xl font-bold text-slate-700 pb-2">คิวที่ {carrier.id === 'A' ? '1' : carrier.id === 'B' ? '2' : carrier.id === 'D' ? '3' : ''}</div>
-                      <div className="text-lg font-semibold text-slate-500">ทะเบียนหน้า 67-6255</div>
-                      <div className="text-lg font-semibold text-slate-500">ทะเบียนหลัง 67-6520</div>
+                    <div className='flex'>
+                      <div className='w-44'></div>
+                      <div className="bg-white/80 rounded-lg p-4 shadow-md">
+                        <Settings className="w-12 h-12 text-indigo-500" style={{animationDuration: '4s'}} />
+                    </div> 
+                    </div>
+                    : carrier.state === 'free' ?  
+                      <div className='flex'>
+                        <div className='w-44'></div>
+                        <div className="bg-white/80 rounded-lg p-4 shadow-md">
+                            <Loader className="w-12 h-12 text-slate-500" style={{animationDuration: '4s'}} />
+                        </div> 
+                      </div>
+                   :
+                    <div className="flex items-center gap-4 h-full box-border scale-90 ">
+                      <div className="text-4xl font-bold text-slate-700 bg-white px-4 py-4 rounded-lg shadow-md h-24 flex flex-col justify-center items-center">
+                        <div>คิวที่ {carrier.id === 'A' ? '1' : carrier.id === 'B' ? '6' : carrier.id === 'D' ? '13' : ''}</div>
+                      </div>
+                      <div className='text-right '>
+                        <div className="text-3xl font-semibold text-slate-600 bg-white px-2 py-1 rounded-md shadow-md">หน้า 67-6255</div>
+                        <div className="text-3xl font-semibold text-slate-600 mt-2 bg-white px-2 py-1 rounded-md shadow-md">หลัง 67-6520</div>
+                      </div>
                     </div>
                   }
                 </div>
@@ -403,8 +458,8 @@ const CarrierDashboard = () => {
                   <Truck className="w-8 h-8 text-blue-600" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-800">Carrier Dashboard</h1>
-                  <p className="text-xl text-slate-600">รายการสถานะรถขนส่ง</p>
+                  <h1 className="text-3xl font-bold text-slate-800">Queue Dashboard</h1>
+                  <p className="text-xl text-slate-600">รายการสถานะคิว</p>
                 </div>
               </div>
               <div className="text-right">
@@ -412,7 +467,7 @@ const CarrierDashboard = () => {
                   {currentTime.toLocaleTimeString('th-TH')}
                 </div>
                 <div className="text-xl text-slate-600">
-                  วันพุธที่ 28 พฤษภาคม 2568
+                  {formatDate(currentTime)}
                 </div>
               </div>
             </div>
@@ -422,27 +477,30 @@ const CarrierDashboard = () => {
             {bayData.map((carrier) => (
               <div
                 key={carrier.id}
-                className={`bg-${ 
-                  carrier.state === 'finished' ? 'emerald' : 
-                    carrier.state === 'loading' ? 'amber' : 
-                      carrier.state === 'maintenance' ? 'red' : 
-                        carrier.state === 'dry-run' ? 'blue' : 'slate'
-                }-50 rounded-2xl px-6 py-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/50 `}
+                className={`${ 
+                  carrier.state === 'finished' ? 'bg-emerald-50' : 
+                    carrier.state === 'loading' ? 'bg-amber-50' : 
+                      carrier.state === 'maintenance' ? 'bg-indigo-100' : 
+                        carrier.state === 'dry-run' ? 'bg-blue-50' : 
+                         carrier.state === 'pending' ? 'bg-red-200 animate-blink' : 'bg-slate-50'
+                } rounded-2xl px-6 py-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/50`}
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between ">
                   <div className="flex items-center gap-3" onClick={() => downLoadBayData(carrier.id)}>
                     <div
                       key={carrier.id} 
+                      
                       className={`w-16 h-16 bg-gradient-to-r ${ 
                         carrier.state === 'finished' ? 'from-emerald-400 to-emerald-600' : 
                           carrier.state === 'loading' ? 'from-amber-400 to-orange-500' : 
-                            carrier.state === 'maintenance' ? 'from-red-400 to-red-600' : 
-                              carrier.state === 'dry-run' ? 'from-blue-400 to-blue-600' : 'from-slate-400 to-slate-600'
+                            carrier.state === 'maintenance' ? 'from-indigo-400 to-indigo-600' : 
+                              carrier.state === 'dry-run' ? 'from-blue-400 to-blue-600' :
+                                carrier.state === 'pending' ? 'from-red-400 to-red-600' : 'from-slate-400 to-slate-600'
                         } rounded-xl flex items-center justify-center text-white font-bold text-3xl shadow-lg`}>
                       {carrier.id}
                     </div>
                   </div>
-                  <div className='w-2/5 h-full flex flex-col item-center justify-between scale-90'>
+                  <div className='w-2/5 h-full flex flex-col item-center justify-between scale-75'>
                     {
                       carrier.loading !== null && carrier.maxLoading !== null && carrier.verified ? 
                       <div>
@@ -508,13 +566,14 @@ const CarrierDashboard = () => {
                       <div className={`text-2xl font-semibold ${ 
                         carrier.state === 'finished' ? 'text-emerald-800' : 
                           carrier.state === 'loading' ? 'text-amber-800' : 
-                            carrier.state === 'maintenance' ? 'text-red-800' : 
-                              carrier.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
+                            carrier.state === 'maintenance' ? 'text-indigo-800 -translate-x-7' : 
+                              carrier.state === 'dry-run' ? 'text-blue-800 ' :
+                                carrier.state === 'pending' ? 'text-red-800' : 'text-slate-800 -translate-x-7'
                       }`}>สถานะ: {carrier.status}</div>
                       <div className={`text-2xl font-semibold ${ 
                         carrier.state === 'finished' ? 'text-emerald-800' : 
                           carrier.state === 'loading' ? 'text-amber-800' : 
-                            carrier.state === 'maintenance' ? 'text-red-800' : 
+                            carrier.state === 'maintenance' ? 'text-indigo-800' : 
                               carrier.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
                       }`}> { carrier.timeLoading } </div>
                     </div>
@@ -548,7 +607,11 @@ const CarrierDashboard = () => {
                         <div className="animate-truck-enter">
                           <TruckModel key={carrier.id} />
                         </div>
-                      ) : null}
+                      ) : 
+                        <div className="animate-truck-enter invisible">
+                          <TruckModel key={carrier.id} />
+                        </div>
+                      }
                       <div className="bg-white/80 rounded-lg shadow-md px-4 border border-slate-300 font-semibold">
                         {carrier.carrier}
                       </div>
@@ -557,16 +620,33 @@ const CarrierDashboard = () => {
                   </div>
                   {
                     carrier.state === 'maintenance' ?
-                    <div className="bg-white/80 rounded-lg p-4 shadow-md">
-                        <Settings className="w-12 h-12 text-red-500 animate-spin" style={{animationDuration: '4s'}} />
-                    </div> : carrier.state === 'free' ?  
-                    <div className="bg-white/80 rounded-lg p-4 shadow-md">
-                        <Loader className="w-12 h-12 text-slate-500" style={{animationDuration: '4s'}} />
-                    </div>  :
-                    <div className="text-right h-full box-border scale-90">
-                      <div className="text-3xl font-bold text-slate-700 pb-2">คิวที่ {carrier.id === 'A' ? '1' : carrier.id === 'B' ? '2' : carrier.id === 'D' ? '3' : ''}</div>
-                      <div className="text-lg font-semibold text-slate-500">ทะเบียนหน้า 67-6255</div>
-                      <div className="text-lg font-semibold text-slate-500">ทะเบียนหลัง 67-6520</div>
+                    <div className='flex'>
+                      <div className='w-44'></div>
+                      <div className="bg-white/80 rounded-lg p-4 shadow-md">
+                        <Settings className="w-12 h-12 text-indigo-500" style={{animationDuration: '4s'}} />
+                    </div> 
+                    </div>
+                    : carrier.state === 'free' ?  
+                      <div className='flex'>
+                        <div className='w-44'></div>
+                        <div className="bg-white/80 rounded-lg p-4 shadow-md">
+                            <Loader className="w-12 h-12 text-slate-500" style={{animationDuration: '4s'}} />
+                        </div> 
+                      </div>
+                   :
+                    // <div className="text-right h-full box-border scale-90">
+                    //   <div className="text-3xl font-bold text-slate-700 pb-2">คิวที่ {carrier.id === 'A' ? '1' : carrier.id === 'B' ? '6' : carrier.id === 'D' ? '13' : ''}</div>
+                    //   <div className="text-lg font-semibold text-slate-500">ทะเบียนหน้า 67-6255</div>
+                    //   <div className="text-lg font-semibold text-slate-500">ทะเบียนหลัง 67-6520</div>
+                    // </div>
+                    <div className="flex items-center gap-4 h-full box-border scale-90 ">
+                      <div className="text-4xl font-bold text-slate-700 bg-white px-4 py-4 rounded-lg shadow-md h-24 flex flex-col justify-center items-center w-60">
+                        <div>คิวที่ {carrier.id === 'A' ? '1' : carrier.id === 'B' ? '6' : carrier.id === 'D' ? '13' : ''}</div>
+                      </div>
+                      <div className='text-right w-full '>
+                        <div className="text-3xl font-semibold text-slate-600 bg-white px-2 py-1 rounded-md shadow-md">หน้า 67-6255</div>
+                        <div className="text-3xl font-semibold text-slate-600 mt-2 bg-white px-2 py-1 rounded-md shadow-md">หลัง 67-6520</div>
+                      </div>
                     </div>
                   }
                 </div>

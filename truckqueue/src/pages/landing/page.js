@@ -67,7 +67,7 @@ const LandingPage = () => {
       id: 'register',
       title: 'TAS Register',
       subtitle: 'ลงทะเบียนรถบรรทุก',
-      page: 'register',
+      page: '',
       icon: User,
       color: 'from-blue-500 to-blue-600',
       hoverColor: 'from-blue-600 to-blue-700'

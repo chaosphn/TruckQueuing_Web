@@ -1,24 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getDatabyOrder, getDatabyPlateNumber } from '../../services/http-service';
 import bayImg from '../../assets/bay.png';
 import TruckModel from '../truck/truck-model';
 import Slider from '@mui/material/Slider';
-import { Settings } from 'lucide-react';
+import { Search, Settings } from 'lucide-react';
 import ManageDialog from '../confirm-dialog/dialog';
+import { InputAdornment, TextField } from '@mui/material';
+import QueueListDialog from '../queuelist-dialog/dialog';
 
 const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [operatingMode, setOperatingMode] = useState('OPERATING MODE');
   const [autoQueuing, setAutoQueuing] = useState(true);
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
+  const [ openQueueDialog, setOpenQueueDialog ] = useState(false);
+  const [selectedAction2, setSelectedAction2] = useState('');
   const [selectedAction, setSelectedAction] = useState('');
-  const [selectedMode, setSelectedMode] = useState('');
+  const [selectedMode, setSelectedMode] = useState(false);
   const [countAction, setcountAction] = useState(0);
+  const [delayTime, setDelayTime] = useState(0);
+  const [startWeigth, setStartWeigth] = useState(0.0);
+  const [existWeigth, setExistWeigth] = useState(0.0);
+
+  useEffect(() => {
+    
+  }, []);
+
 
   const openDialog = () => setIsOpen(true);
   const closeDialog = () => setIsOpen(false);
+  const handleClose = () => {
+    setSelectedAction('');
+    setSelectedAction2('');
+    setSelectedMode(false);
+    setOpenDataDialog(false);
+    setOpenQueueDialog(false);
+    onClose();
+  }
   const handleSave = async (cfmStatus) => {
     setOpenDataDialog(false);
+    setOpenQueueDialog(false);
+    if(selectedAction == 'Cancle Queuing'){
+      handleClose();
+    }
     if(cfmStatus){
 
     } else {
@@ -42,11 +66,12 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
               data.state === 'maintenance' ? 'from-red-400 to-red-600' : 
                 data.state === 'dry-run' ? 'from-blue-400 to-blue-600' : 'from-slate-400 to-slate-600'
           } text-white text-2xl font-bold px-6 py-4 rounded-t-xl`}>
-          Queue management At BAY { data.id }
+          Queue { type.toLowerCase() } At BAY { data.id }
         </div>
         {/* Content */}
         <div className="p-8">
           <div className='w-full h-full grid grid-cols-12 gap-4'>
+            {/* Left Content */}
             <div className='w-full col-span-7 row-span-7'>
               <div className="w-full h-full flex flex-col items-center bg-gray-100 rounded-md px-4 py-4">
                 <h4 className="w-full text-left text-lg font-bold text-gray-700 mb-3">Queuing Infomation at BAY {data.id}</h4>
@@ -173,120 +198,181 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                 </div>
               </div>
             </div>
+            {/* Rigth Top Content */}
             <div className='w-full col-span-5 row-span-3 '>
               <div className="bg-gray-100 rounded-md px-4 py-4">
-                <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing Management Status</h4>
+                <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing Status</h4>
                 <div className="space-y-4">
                   <button className={`w-full ${ data.state === 'maintenance' ? 'bg-red-500' : 'bg-green-500' } text-white py-2 px-4 rounded-md text-lg font-medium`}>
                     { data.state === 'maintenance' ? 'MAINTENANCE MODE' : 'OPERATING MODE' }
-                  <div className="text-xs opacity-80">Signal From DCS</div>
+                    <div className="text-xs opacity-80">Signal From DCS</div>
                   </button>
-                  <div className="flex space-x-4">
-                    <button className={`flex-1 ${ data.state === 'maintenance' ? 'bg-red-500 text-white' : data.state != 'dry-run' ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700' } py-3 px-3 rounded-lg text-sm font-bold`}>
-                      { type === 'DRYRUN' ? 'AUTO QUEUING' : type }
-                    </button>
-                    <button className={`flex-1 ${ data.state === 'dry-run' ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700' } py-3 px-3 rounded-lg text-sm font-bold`}>
-                      DRY RUN
-                    </button>
+                  {
+                    type == 'SETTING' ? null : 
+                    <div className="flex space-x-4">
+                      <button 
+                        className={`flex-1 py-2 px-3 rounded-lg text-sm font-semibold ${
+                          selectedAction2 === 'Auto Queuing' 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-white text-gray-700 border'
+                        }`}
+                        onClick={() => {
+                          setOpenDataDialog(true); 
+                          setcountAction(0);
+                          setSelectedAction('Auto Queuing');
+                          setSelectedAction2('Auto Queuing')}
+                        }
+                      >
+                        Auto Queuing
+                      </button>
+                      <button 
+                        className={`flex-1 py-2 px-3 rounded-lg text-sm font-semibold ${
+                          selectedAction2 === 'Manual Queuing' 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-white text-gray-700 border'
+                        }`}
+                        onClick={() => {
+                          setOpenDataDialog(true); 
+                          setcountAction(0);
+                          setSelectedAction('Manual Queuing')
+                          setSelectedAction2('Manual Queuing')}
+                        }
+                      >
+                        Manual Queuing
+                      </button>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+            {/* Rigth Bottom Content */}
+            {
+              type == 'SETTING' ? 
+              <div className='w-full col-span-5 row-span-4'>
+                <div className="bg-gray-100 rounded-lg px-4 py-4 h-full">
+                  <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing {type == 'SETTING' ? 'Setting' : 'Management' }</h4>
+                  <div className="grid grid-cols-1 gap-4 mb-3">
+                    <TextField label="Auto Assign Delay (S)" size="small" type='number' value={delayTime} onChange={(e) => setDelayTime(e.target.value)} />
+                    <TextField label="Starting Weight (T)" size="small" type='number' value={startWeigth} onChange={(e) => setStartWeigth(e.target.value)} />
+                    <TextField label ="Exit Weight (T)" size="small" type='number' value={existWeigth} onChange={(e) => setExistWeigth(e.target.value)} />
                   </div>
                 </div>
               </div>
-            </div>
-            <div className='w-full col-span-5 row-span-4 '>
-              <div className="bg-gray-100 rounded-lg px-4 py-4">
-                <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing Management</h4>
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  <button 
-                    className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                      selectedAction === 'Auto Queuing' 
-                        ? 'bg-blue-500 text-white' 
-                        : 'bg-white text-gray-700 border'
-                    }`}
+              : 
+              <div className='w-full col-span-5 row-span-4 '>
+                <div className="bg-gray-100 rounded-lg px-4 py-4">
+                  <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing {type == 'SETTING' ? 'Setting' : 'Management' }</h4>
+                  <button className={`w-full ${
+                        selectedMode  
+                          ? 'bg-blue-500 text-white border' 
+                          : 'bg-white text-gray-700 border'
+                    } py-2 px-4 rounded-lg text-sm font-medium mb-3`}
                     onClick={() => {
+                      setSelectedMode(!selectedMode)
                       setOpenDataDialog(true); 
                       setcountAction(0)
-                      setSelectedAction('Auto Queuing')}
+                      setSelectedAction('DryRun Mode')}
                     }
                   >
-                    Auto Queuing
+                    DryRun Mode
                   </button>
-                  <button 
-                    className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                      selectedAction === 'Finish Dry Run' 
-                        ? 'bg-blue-500 text-white' 
-                        : 'bg-white text-gray-700 border'
-                    }`}
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {/* <button 
+                      className={`py-2 px-3 rounded-lg text-sm font-semibold ${
+                        selectedAction === 'DryRun Mode' 
+                          ? 'bg-blue-500 text-white' 
+                          : 'bg-white text-gray-700 border'
+                      }`}
+                      onClick={() => {
+                        setOpenDataDialog(true); 
+                        setcountAction(0)
+                        setSelectedAction('DryRun Mode')}
+                      }
+                    >
+                      DryRun Mode
+                    </button>
+                    <button 
+                      className={`py-2 px-3 rounded-lg text-sm font-semibold ${
+                        selectedAction === 'Finish Dry Run' 
+                          ? 'bg-blue-500 text-white' 
+                          : 'bg-white text-gray-700 border'
+                      }`}
+                      onClick={() => {
+                        setOpenDataDialog(true); 
+                        setcountAction(0)
+                        setSelectedAction('Finish Dry Run')}
+                      }
+                    >
+                      Finish Dry Run
+                    </button> */}
+                    <button 
+                      className={`py-2 px-3 rounded-lg text-sm font-semibold ${
+                        selectedAction === 'Finish Queuing' 
+                          ? 'bg-blue-500 text-white' 
+                          : 'bg-white text-gray-700 border'
+                      }`}
+                      onClick={() => {
+                        setOpenDataDialog(true); 
+                        setcountAction(0)
+                        setSelectedAction('Finish Queuing')}
+                      }
+                    >
+                      Finish Queuing
+                    </button>
+                    <button 
+                      className={`py-2 px-3 rounded-lg text-sm font-semibold ${
+                        selectedAction === 'Assign Queue' 
+                          ? 'bg-blue-500 text-white' 
+                          : 'bg-white text-gray-700 border'
+                      }`}
+                      onClick={() => {
+                        setOpenQueueDialog(true); 
+                        setcountAction(0)
+                        setSelectedAction('Assign Queue')}
+                      }
+                    >
+                      Assign Queue
+                    </button>
+                  </div>
+                  
+                  <button className={`w-full ${
+                        selectedAction === 'Cancle Queuing' 
+                          ? 'bg-red-500 text-white' 
+                          : 'bg-white text-gray-700 border'
+                    } py-2 px-4 rounded-lg text-sm font-medium`}
                     onClick={() => {
                       setOpenDataDialog(true); 
-                      setcountAction(0)
-                      setSelectedAction('Finish Dry Run')}
+                      setcountAction(10)
+                      setSelectedAction('Cancle Queuing')}
                     }
                   >
-                    Finish Dry Run
-                  </button>
-                  <button 
-                    className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                      selectedAction === 'Manual Queuing' 
-                        ? 'bg-blue-500 text-white' 
-                        : 'bg-white text-gray-700 border'
-                    }`}
-                    onClick={() => {
-                      setOpenDataDialog(true); 
-                      setcountAction(0)
-                      setSelectedAction('Manual Queuing')}
-                    }
-                  >
-                    Manual Queuing
-                  </button>
-                  <button 
-                    className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                      selectedAction === 'Assign' 
-                        ? 'bg-blue-500 text-white' 
-                        : 'bg-white text-gray-700 border'
-                    }`}
-                    onClick={() => {
-                      setOpenDataDialog(true); 
-                      setcountAction(0)
-                      setSelectedAction('Assign')}
-                    }
-                  >
-                    Assign
+                    Cancel Queuing
                   </button>
                 </div>
-                
-                <button className={`w-full ${
-                      selectedAction === 'Cancle Queuing' 
-                        ? 'bg-red-500 text-white' 
-                        : 'bg-white text-gray-700 border'
-                  } py-2 px-4 rounded-lg text-sm font-medium`}
-                  onClick={() => {
-                    setOpenDataDialog(true); 
-                    setcountAction(10)
-                    setSelectedAction('Cancle Queuing')}
-                  }
-                >
-                  Cancel Queuing
-                </button>
               </div>
-            </div>
+            }
           </div>
         </div>
         {/* Footer */}
         <div className="p-6 bg-gray-100 rounded-b-xl flex justify-between space-x-4">
-          <button onClick={onClose} className="px-8 py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center space-x-2">
+          <button onClick={handleClose} className="px-8 py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center space-x-2">
             <span>⏮</span>
             <span>ย้อนกลับ</span>
           </button>
-          <button onClick={() => { setOpenDataDialog(true);  }} className="px-8 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center space-x-2">
+          {
+            type != 'SETTING' ? null : 
+            <button onClick={handleClose} className="px-8 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center space-x-2">
             <span>✓</span>
             <span>ยืนยัน</span>
           </button>
+          }
         </div>
          <ManageDialog opens={openDataDialog} selectedAction={selectedAction} count={countAction} onSave={(st) => {
           console.log('dialog result: '+st);
           setcountAction(0);
           handleSave(st);
          }}></ManageDialog>
+         <QueueListDialog open={openQueueDialog} mode={'assign'} bay={data.id} onClose={handleClose}></QueueListDialog>
       </div>
     </div>
   );

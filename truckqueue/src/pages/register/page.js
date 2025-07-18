@@ -109,7 +109,7 @@ const RegisterPage = () => {
         <div className="mx-auto px-16 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3" onClick={() => navigatePage('/')}>
+              <div className="flex items-center space-x-3" onClick={() => navigatePage('/overview')}>
                 {/* <div className="w-20 h-20 flex items-center justify-center shadow-lg">
                   <img src={logoImg} width={150} height={100} />
                 </div> */}

@@ -12,9 +12,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/overview" element={<LandingPage />} />
         <Route path="/dashboard" element={<CarrierDashboard />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         {/* Protected Route */}
         <Route 
