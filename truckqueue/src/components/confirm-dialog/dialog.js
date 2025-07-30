@@ -1,21 +1,22 @@
 import { useState, useEffect } from 'react';
-import { 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions, 
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   Button,
   Box,
   CircularProgress,
   Typography
 } from '@mui/material';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
-function ManageDialog({ opens, selectedAction, onSave, count = 0 }) {
+function ManageDialog({ opens, selectedAction, onSave, count = 0, chaeckbox = false }) {
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(null);
   const [countdown, setCountdown] = useState(0);
 
-  // ล้างข้อมูลเมื่อ dialog ปิด
   useEffect(() => {
     if (!opens) {
       setLoading(false);
@@ -27,7 +28,6 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0 }) {
     }
   }, [opens, timer]);
 
-  // ล้าง timer เมื่อ component unmount
   useEffect(() => {
     return () => {
       if (timer) {
@@ -40,7 +40,7 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0 }) {
     if (count > 0) {
       setLoading(true);
       setCountdown(count);
-      
+
       // สร้าง countdown timer
       const countdownInterval = setInterval(() => {
         setCountdown(prev => {
@@ -78,7 +78,6 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0 }) {
 
   const handleClose = () => {
     if (loading) {
-      // ถ้ากำลัง loading อยู่ให้ทำการยกเลิกก่อน
       handleCancel();
     } else {
       onSave(false);
@@ -86,8 +85,8 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0 }) {
   };
 
   return (
-    <Dialog 
-      open={opens} 
+    <Dialog
+      open={opens}
       onClose={handleClose}
       maxWidth="sm"
       fullWidth
@@ -96,17 +95,27 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0 }) {
       <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold' }}>
         ยืนยันการดำเนินการ
       </DialogTitle>
-      
+
       <DialogContent>
         <Box sx={{ textAlign: 'center', py: 2 }}>
           <Typography variant="body1" sx={{ mb: 2 }}>
             กรุณากดตกลง เพื่อยืนยันการ {selectedAction}
           </Typography>
-          
+
+          {chaeckbox && (
+            <Box>
+              <FormControlLabel
+                control={<Checkbox />}
+                label="Loading Bay Abnormal"
+                sx={{ fontWeight: 'bold', mb: 1, backgroundColor: 'grey.100', paddingX: 2, borderRadius: 1 }}
+              />
+            </Box>
+          )}
+
           {loading && (
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               gap: 2,
               mt: 3,
@@ -118,8 +127,8 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0 }) {
               <Typography variant="body2" color="text.secondary">
                 กำลังดำเนินการ... ({countdown} วินาที)
               </Typography>
-              <Button 
-                onClick={handleCancel} 
+              <Button
+                onClick={handleCancel}
                 color="error"
                 variant="outlined"
                 size="small"
@@ -131,10 +140,10 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0 }) {
           )}
         </Box>
       </DialogContent>
-      
+
       <DialogActions sx={{ justifyContent: 'center', gap: 2, pb: 2 }}>
-        <Button 
-          onClick={handleClose} 
+        <Button
+          onClick={handleClose}
           color="inherit"
           variant="outlined"
           disabled={loading}
@@ -142,8 +151,8 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0 }) {
         >
           ปิด
         </Button>
-        <Button 
-          onClick={handleConfirm} 
+        <Button
+          onClick={handleConfirm}
           color="primary"
           variant="contained"
           disabled={loading}

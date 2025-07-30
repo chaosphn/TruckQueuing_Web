@@ -3,12 +3,13 @@ import { getDatabyOrder, getDatabyPlateNumber } from '../../services/http-servic
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Search, RefreshCcw } from 'lucide-react';
+import { Search, RefreshCcw, Trash, MousePointer2 } from 'lucide-react';
 import Paper from '@mui/material/Paper';
 import { DataGrid } from '@mui/x-data-grid';
 import { dateFormatParser } from '../../services/date-service';
 import Typography from '@mui/material/Typography';
 import DataDetailDialog from '../detail-dialog/dialog';
+import { Button } from '@mui/material';
 
 const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,6 +27,10 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
     if(data){
       setQueueData(data);
     }
+    if(mode === 'order' && data && data.length > 0){
+      setSelectionRow(data[0]);
+      setOpenDataDialog(true);
+    } 
   }, [data]);
 
   const openDialog = () => setIsOpen(true);
@@ -41,16 +46,11 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
   };
 
   const handleRowSelect = (selection) => {
-    if (selection?.ids) {
-      const selectedIds = Array.from(selection.ids); // Convert Set to array
-      const selectedId = selectedIds[0]; // Only one row since single selection
-
-      const selectedRows= queueData.find(row => row.ID === selectedId);
-      if (selectedRows) {
-        setSelectionRow(selectedRows);
-        setOpenDataDialog(true);
-        console.log('🚀 Selected Row:', selectedRows);
-      }
+    const selectedRows= queueData.find(row => row.ID === selection.ID);
+    if (selectedRows) {
+      setSelectionRow(selection);
+      setOpenDataDialog(true);
+      console.log('🚀 Selected Row:', selectedRows);
     }
   };
 
@@ -96,10 +96,15 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
       )
     },
     { field: 'Carrier', headerName: 'บริษัท', flex: 0.4, resizable: true },
-    { field: 'FontLicense', headerName: 'ทะเบียนหัว', flex: 0.3, resizable: true },
-    { field: 'RearLicense', headerName: 'ทะเบียนหาง', flex: 0.3, resizable: true },
-    { field: 'Driver1', headerName: 'ชื่อคนขับ', flex: 0.5, resizable: true },
-    { field: 'DestinationName', headerName: 'ปลายทาง', flex: 0.8, resizable: true },
+    // { field: 'FontLicense', headerName: 'ทะเบียนหัว', flex: 0.3, resizable: true },
+    // { field: 'RearLicense', headerName: 'ทะเบียนหาง', flex: 0.3, resizable: true },
+    // { field: 'Driver1', headerName: 'ชื่อคนขับ', flex: 0.5, resizable: true },
+    { field: 'DestinationName', headerName: 'ปลายทาง', flex: 1, resizable: true },
+    { field: 'dawda', headerName: 'Action', flex: 0.2, resizable: true,
+      renderCell: (params) => (
+        <Button startIcon={ <MousePointer2 /> } variant='contained' size='small' color="info" onClick={() => handleRowSelect(params.row)}>เลือก</Button>
+      )
+    },
   ];
 
   if (!open) {
@@ -110,54 +115,21 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-7xl w-full mx-auto flex flex-col justify-center gap-8 p-8  scale-110">
+      <div className="bg-white rounded-xl shadow-2xl max-w-7xl w-full mx-auto flex flex-col justify-center gap-4 p-8  scale-110">
         {/* SEARCH SECTION*/}
-        {/* <div className='w-full flex justify-between items-center'>
+        <div className='w-full flex justify-between items-center'>
+          <Typography sx={{ mb: 0, fontSize: '1.5rem', fontWeight: 'bold', textDecoration: 'underline' }}>
+            กรุณาเลือกออเดอร์
+          </Typography>
           <div className='flex items-center gap-4'>
-            <TextField
-              placeholder="ค้นหาทะเบียนหัว"
-              size="small"
-              value={plateHeadNumber}
-              onChange={(e) => setPlateHeadNumber(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                )
-              }}
-              sx={{ width: '250px' }}
-            />
-            <TextField
-              placeholder="ค้นหาทะเบียนหาง"
-              size="small"
-              value={plateTailNumber}
-              onChange={(e) => setPlateTailNumber(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ width: '250px' }}
-            />
+            <Typography sx={{ mb: 0, fontSize: '1.25rem', fontWeight: 'bold' }}>
+              ทะเบียนหัว : { queueData[0]?.FontLicense || plateHeadNumber }
+            </Typography>
+            <Typography sx={{ mb: 0, fontSize: '1.25rem', fontWeight: 'bold' }}>
+              ทะเบียนหาง : { queueData[0]?.RearLicense || plateTailNumber }
+            </Typography>
           </div>
-          <TextField
-            placeholder="ค้นหาด้วยเลย Order"
-            size="small"
-            value={orderNumber}
-            onChange={(e) => setOrderNumber(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ width: '250px' }}
-          />
-        </div>   */}
+        </div>  
         {/* TABLE SECTION*/}
         <div className='min-h-72'>
           <div className="border-box w-full h-full">   
@@ -172,11 +144,6 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
                     }
                   columns={columns}
                   initialState={{ pagination: { paginationModel } }}
-                  checkboxSelection
-                  disableMultipleRowSelection={true}
-                  disableRowSelectionOnClick={false}
-                  selectionModel={selectionModel}
-                  onRowSelectionModelChange={handleRowSelect}
                   pageSizeOptions={[5, 10, 25, 50, 100]}
                   getRowHeight={() => 40}
                 />

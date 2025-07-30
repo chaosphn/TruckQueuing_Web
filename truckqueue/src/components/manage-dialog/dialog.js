@@ -12,8 +12,8 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [operatingMode, setOperatingMode] = useState('OPERATING MODE');
   const [autoQueuing, setAutoQueuing] = useState(true);
-  const [ openDataDialog, setOpenDataDialog ] = useState(false);
-  const [ openQueueDialog, setOpenQueueDialog ] = useState(false);
+  const [openDataDialog, setOpenDataDialog] = useState(false);
+  const [openQueueDialog, setOpenQueueDialog] = useState(false);
   const [selectedAction2, setSelectedAction2] = useState('');
   const [selectedAction, setSelectedAction] = useState('');
   const [selectedMode, setSelectedMode] = useState(false);
@@ -23,7 +23,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const [existWeigth, setExistWeigth] = useState(0.0);
 
   useEffect(() => {
-    
+
   }, []);
 
 
@@ -40,13 +40,11 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const handleSave = async (cfmStatus) => {
     setOpenDataDialog(false);
     setOpenQueueDialog(false);
-    if(selectedAction == 'Cancle Queuing'){
+    if (cfmStatus) {
       handleClose();
-    }
-    if(cfmStatus){
-
     } else {
       setSelectedAction('');
+      //handleClose();
     }
   };
 
@@ -60,13 +58,12 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-screen-lg mx-auto">
         {/* Header */}
-        <div className={`bg-gradient-to-l ${ 
-          data.state === 'finished' ? 'from-emerald-400 to-emerald-600' : 
-            data.state === 'loading' ? 'from-amber-400 to-orange-500' : 
-              data.state === 'maintenance' ? 'from-red-400 to-red-600' : 
+        <div className={`bg-gradient-to-l ${data.state === 'finished' ? 'from-emerald-400 to-emerald-600' :
+            data.state === 'loading' ? 'from-amber-400 to-orange-500' :
+              data.state === 'maintenance' ? 'from-red-400 to-red-600' :
                 data.state === 'dry-run' ? 'from-blue-400 to-blue-600' : 'from-slate-400 to-slate-600'
           } text-white text-2xl font-bold px-6 py-4 rounded-t-xl`}>
-          Queue { type.toLowerCase() } At BAY { data.id }
+          Queue {type.toLowerCase()} at BAY {data.id}
         </div>
         {/* Content */}
         <div className="p-8">
@@ -78,122 +75,118 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                 <div className="w-full h-full grid grid-cols-1 content-end">
                   {
                     data.state == 'free' || data.state == 'maintenance' ? null :
-                    <div className="w-full grid grid-cols-12 gap-x-4 mb-10 text-center box-border">
-                      <div className="col-span-6 row-span-6 text-3xl font-bold text-slate-700 flex items-center justify-center">
-                        <div>คิวที่ {data.queuenumber}</div>
+                      <div className="w-full grid grid-cols-12 gap-x-4 mb-10 text-center box-border">
+                        <div className="col-span-6 row-span-6 text-3xl font-bold text-slate-700 flex items-center justify-center">
+                          <div>คิวที่ {data.queuenumber}</div>
+                        </div>
+                        <div className="col-span-6 row-span-3 text-lg text-left font-semibold text-slate-500">ทะเบียนหน้า 67-6255</div>
+                        <div className="col-span-6 row-span-3 text-lg text-left font-semibold text-slate-500">ทะเบียนหลัง 67-6520</div>
                       </div>
-                      <div className="col-span-6 row-span-3 text-lg text-left font-semibold text-slate-500">ทะเบียนหน้า 67-6255</div>
-                      <div className="col-span-6 row-span-3 text-lg text-left font-semibold text-slate-500">ทะเบียนหลัง 67-6520</div>
-                    </div>
                   }
                   <div className={`w-full flex flex-col item-center justify-between mb-6 px-20`}>
                     {
                       data.state == 'free' || data.state == 'maintenance' || data.state == 'dry-run' ? null :
-                      data.loading !== null && data.maxLoading !== null && data.verified ? 
-                      <div className=''>
-                        <Slider
-                          sx={{
-                            height: 24,
-                            color: 'transparent',
-                            '& .MuiSlider-track': {
-                              height: 24,
-                              borderRadius: 4,
-                              backgroundImage: `linear-gradient(to right, ${
-                                data.state === 'finished' ? '#34d399' : 
-                                  data.state === 'loading' ? '#fbbf24' : '#e0e0e0'}, ${
-                                        data.state === 'finished' ? '#059669' : 
-                                          data.state === 'loading' ? '#f97316' : '#e0e0e0'
-                              })`,
-                            },
-                            '& .MuiSlider-rail': {
-                              height: 24,
-                              borderRadius: 4,
-                              backgroundColor: 'rgba(0,0,0,0.2)',
-                            },
-                            '& .MuiSlider-thumb': {
-                              height: 32,
-                              width: 32,
-                              backgroundColor: '#fff',
-                              border: `4px solid ${
-                                data.state === 'finished' ? '#059669' : 
-                                data.state === 'loading' ? '#f97316' : '#e0e0e0'
-                              }`,
-                              boxShadow: '0px 2px 2px rgba(0,0,0,0.2)',
-                            },
-                            '& .MuiSlider-valueLabel': {
-                              backgroundColor: `${
-                                data.state === 'finished' ? '#059669' : 
-                                data.state === 'loading' ? '#f97316' : '#e0e0e0'
-                              }`,
-                              color: '#fff',
-                              borderRadius: '8px',
-                              fontWeight: 'bold',
-                              fontSize: 16,
-                              padding: '4px 8px',
-                              top: -18,
-                              // '&:before': {
-                              //   display: 'none', // เอาลูกศรออก
-                              // },
-                              transform: 'translateY(-50%) scale(1) !important', 
-                            },
-                          }}
-                          aria-label="Always visible"
-                          defaultValue={0}
-                          value={data.loading}
-                          min={0}
-                          max={data.maxLoading+(data.maxLoading*0.05)}
-                          getAriaValueText={(value) => `${data.loading} / ${data.maxLoading} kg.`}
-                          valueLabelFormat={(value) => `${data.loading} / ${data.maxLoading} kg.`}
-                          step={10}
-                          valueLabelDisplay="on"
-                        />
-                      </div> : null
+                        data.loading !== null && data.maxLoading !== null && data.verified ?
+                          <div className=''>
+                            <Slider
+                              sx={{
+                                height: 24,
+                                color: 'transparent',
+                                '& .MuiSlider-track': {
+                                  height: 24,
+                                  borderRadius: 4,
+                                  backgroundImage: `linear-gradient(to right, ${data.state === 'finished' ? '#34d399' :
+                                      data.state === 'loading' ? '#fbbf24' : '#e0e0e0'}, ${data.state === 'finished' ? '#059669' :
+                                      data.state === 'loading' ? '#f97316' : '#e0e0e0'
+                                    })`,
+                                },
+                                '& .MuiSlider-rail': {
+                                  height: 24,
+                                  borderRadius: 4,
+                                  backgroundColor: 'rgba(0,0,0,0.2)',
+                                },
+                                '& .MuiSlider-thumb': {
+                                  height: 32,
+                                  width: 32,
+                                  backgroundColor: '#fff',
+                                  border: `4px solid ${data.state === 'finished' ? '#059669' :
+                                      data.state === 'loading' ? '#f97316' : '#e0e0e0'
+                                    }`,
+                                  boxShadow: '0px 2px 2px rgba(0,0,0,0.2)',
+                                },
+                                '& .MuiSlider-valueLabel': {
+                                  backgroundColor: `${data.state === 'finished' ? '#059669' :
+                                      data.state === 'loading' ? '#f97316' : '#e0e0e0'
+                                    }`,
+                                  color: '#fff',
+                                  borderRadius: '8px',
+                                  fontWeight: 'bold',
+                                  fontSize: 16,
+                                  padding: '4px 8px',
+                                  top: -18,
+                                  // '&:before': {
+                                  //   display: 'none', // เอาลูกศรออก
+                                  // },
+                                  transform: 'translateY(-50%) scale(1) !important',
+                                },
+                              }}
+                              aria-label="Always visible"
+                              defaultValue={0}
+                              value={data.loading}
+                              min={0}
+                              max={data.maxLoading + (data.maxLoading * 0.05)}
+                              getAriaValueText={(value) => `${data.loading} / ${data.maxLoading} kg.`}
+                              valueLabelFormat={(value) => `${data.loading} / ${data.maxLoading} kg.`}
+                              step={10}
+                              valueLabelDisplay="on"
+                            />
+                          </div> : null
                     }
                     {
                       data.state === 'maintenance' ?
-                      <div className='w-full flex justify-center mb-5'>
-                        <div className="bg-white/80 rounded-lg p-4 shadow-md mx-10">
-                          <Settings className="w-14 h-14 text-red-500 animate-spin" style={{animationDuration: '4s'}} />
-                        </div>
-                      </div> : null
+                        <div className='w-full flex justify-center mb-5'>
+                          <div className="bg-white/80 rounded-lg p-4 shadow-md mx-10">
+                            <svg className='w-40 h-40' width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M19.5 77.5L15 94L0 95V124L15 125.5L19.5 143.5L7.5 152.5L21.5 177L36 171L49 184L43 198L67 211.5L77 200.5L94.5 205L95.5 219.5H124.5L126 205L143 200L153.5 212.5L165 205L135.5 176C122.487 181.129 114.731 181.778 100.5 181C87.4298 176.939 80.2716 173.869 68 166.5C58.7644 159.257 54.2153 154.441 47.5 144C40.3204 129.649 38.7715 120.96 40 104.5C41.9083 88.1972 44.7655 79.7368 54.5 66.5C66.5317 51.4697 76.0931 45.7928 97.5 40C123.014 37.9766 134.599 41.5314 152 53.5C168.484 67.1568 174.175 76.5059 179.5 95.5C181.155 112.083 180.077 120.728 175 135.5L205 164L212.5 154L200.5 143L204.5 126L219.5 124.5L219 95.5L204.5 94.5L200 76.5L212.5 66.5L198 42.5L183.5 49.5L170.5 35L177 22L153.5 7.5L143 20.5L125 14L124.5 0H95.5L95 14L76 19L66.5 7L42.5 22L48.5 35L35 48.5L22 42.5L7 67.5L19.5 77.5Z" fill="#FF0000" />
+                              <path d="M103.999 121.999L74.4994 92.4987C70.6324 105.408 70.4094 112.633 72.9994 125.499C78.5881 134.907 82.7779 138.775 91.4994 143.999C104.483 147.285 111.522 147.948 123.499 146.499L190.999 212.499C208.943 212.784 215.544 209.642 212 189.5L211.999 189.499L146.999 124.499C148.577 111.915 148.582 104.623 143.999 92.4987C137.681 81.3072 132.836 76.397 119.999 71.9987C108.695 71.1535 102.701 71.8839 92.4994 74.9987L122.499 103.499V113.999L113.999 122.499L103.999 121.999Z" fill="#FF0000" />
+                            </svg>
+                          </div>
+                        </div> : null
                     }
                     {
-                      data.state == 'free' || data.state == 'maintenance' || data.state == 'dry-run' || data.state == 'pending' ? 
-                      <div className="w-full bg-white/60 backdrop-blur-sm rounded-xl px-4 py-4 shadow-md border border-white/30">
-                        <div className='flex items-center justify-center'>
-                          <div className={`text-2xl font-bold ${ 
-                            data.state === 'finished' ? 'text-emerald-800' : 
-                              data.state === 'loading' ? 'text-amber-800' : 
-                                data.state === 'maintenance' ? 'text-red-800' : 
-                                  data.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
-                          }`}>สถานะ: {data.status}</div>
+                      data.state == 'free' || data.state == 'maintenance' || data.state == 'dry-run' || data.state == 'pending' ?
+                        <div className="w-full bg-white/60 backdrop-blur-sm rounded-xl px-4 py-4 shadow-md border border-white/30">
+                          <div className='flex items-center justify-center'>
+                            <div className={`text-2xl font-bold ${data.state === 'finished' ? 'text-emerald-800' :
+                                data.state === 'loading' ? 'text-amber-800' :
+                                  data.state === 'maintenance' ? 'text-red-800' :
+                                    data.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
+                              }`}>สถานะ: {data.status}</div>
+                          </div>
+                        </div> :
+                        <div className="">
+                          <div className='flex items-center justify-between'>
+                            <div className={`text-lg font-semibold ${data.state === 'finished' ? 'text-emerald-800' :
+                                data.state === 'loading' ? 'text-amber-800' :
+                                  data.state === 'maintenance' ? 'text-red-800' :
+                                    data.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
+                              }`}>สถานะ: {data.status}</div>
+                            <div className={`text-lg font-semibold ${data.state === 'finished' ? 'text-emerald-800' :
+                                data.state === 'loading' ? 'text-amber-800' :
+                                  data.state === 'maintenance' ? 'text-red-800' :
+                                    data.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
+                              }`}>{data.timeLoading}</div>
+                          </div>
                         </div>
-                      </div> :
-                      <div className="">
-                        <div className='flex items-center justify-between'>
-                          <div className={`text-lg font-semibold ${ 
-                            data.state === 'finished' ? 'text-emerald-800' : 
-                              data.state === 'loading' ? 'text-amber-800' : 
-                                data.state === 'maintenance' ? 'text-red-800' : 
-                                  data.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
-                          }`}>สถานะ: {data.status}</div>
-                          <div className={`text-lg font-semibold ${ 
-                            data.state === 'finished' ? 'text-emerald-800' : 
-                              data.state === 'loading' ? 'text-amber-800' : 
-                                data.state === 'maintenance' ? 'text-red-800' : 
-                                  data.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
-                          }`}>{data.timeLoading}</div>
-                        </div>
-                      </div>
                     }
                   </div>
-                  <div className={`w-full flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden ${ data.state == 'free' || data.state == 'maintenance' ? 'invisible' : 'visible' } `}>
+                  <div className={`w-full flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden ${data.state == 'free' || data.state == 'maintenance' ? 'hidden' : 'visible'} `}>
                     <div className="animate-truck-enter">
                       <TruckModel />
                     </div>
                   </div>
                   <div className='w-full h-7'>
-                     <img alt='logo' src={bayImg} className='w-full'/>
+                    <img alt='logo' src={bayImg} className='w-full' />
                   </div>
                 </div>
               </div>
@@ -203,153 +196,131 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
               <div className="bg-gray-100 rounded-md px-4 py-4">
                 <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing Status</h4>
                 <div className="space-y-4">
-                  <button className={`w-full ${ data.state === 'maintenance' ? 'bg-red-500' : 'bg-green-500' } text-white py-2 px-4 rounded-md text-lg font-medium`}>
-                    { data.state === 'maintenance' ? 'MAINTENANCE MODE' : 'OPERATING MODE' }
+                  <button className={`w-full ${data.state === 'maintenance' ? 'bg-red-500' : 'bg-green-500'} text-white py-2 px-4 rounded-md text-lg font-medium`}>
+                    {data.state === 'maintenance' ? 'MAINTENANCE MODE' : 'OPERATING MODE'}
                     <div className="text-xs opacity-80">Signal From DCS</div>
                   </button>
                   {
-                    type == 'SETTING' ? null : 
-                    <div className="flex space-x-4">
-                      <button 
-                        className={`flex-1 py-2 px-3 rounded-lg text-sm font-semibold ${
-                          selectedAction2 === 'Auto Queuing' 
-                            ? 'bg-blue-500 text-white' 
-                            : 'bg-white text-gray-700 border'
-                        }`}
-                        onClick={() => {
-                          setOpenDataDialog(true); 
-                          setcountAction(0);
-                          setSelectedAction('Auto Queuing');
-                          setSelectedAction2('Auto Queuing')}
-                        }
-                      >
-                        Auto Queuing
-                      </button>
-                      <button 
-                        className={`flex-1 py-2 px-3 rounded-lg text-sm font-semibold ${
-                          selectedAction2 === 'Manual Queuing' 
-                            ? 'bg-blue-500 text-white' 
-                            : 'bg-white text-gray-700 border'
-                        }`}
-                        onClick={() => {
-                          setOpenDataDialog(true); 
-                          setcountAction(0);
-                          setSelectedAction('Manual Queuing')
-                          setSelectedAction2('Manual Queuing')}
-                        }
-                      >
-                        Manual Queuing
-                      </button>
-                    </div>
+                    type == 'SETTING' ? null :
+                      <div className="flex space-x-4">
+                        <button
+                          disabled={data.state === 'maintenance' ? true : false}
+                          className={`flex-1 py-2 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b ${
+                            selectedAction2 === 'Auto Queuing' || data.type == 'auto' ? 'from-blue-400 to-blue-800 text-white' : 'from-gray-100 to-gray-400 text-gray-800'
+                          }`}
+                          onClick={() => {
+                            setOpenDataDialog(true);
+                            setcountAction(0);
+                            setSelectedAction('Auto Queuing');
+                            setSelectedAction2('Auto Queuing');
+                          }}
+                        >
+                          Auto Queuing
+                        </button>
+                        <button
+                          disabled={data.state === 'maintenance' ? true : false}
+                          className={`flex-1 py-2 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b ${
+                            selectedAction2 === 'Manual Queuing' || data.type == 'manual' ? 'from-blue-400 to-blue-800 text-white' : 'from-gray-100 to-gray-400 text-gray-800'
+                          }`}
+                          onClick={() => {
+                            setOpenDataDialog(true);
+                            setcountAction(0);
+                            setSelectedAction('Manual Queuing')
+                            setSelectedAction2('Manual Queuing')
+                          }
+                          }
+                        >
+                          Manual Queuing
+                        </button>
+                      </div>
                   }
                 </div>
               </div>
             </div>
             {/* Rigth Bottom Content */}
             {
-              type == 'SETTING' ? 
-              <div className='w-full col-span-5 row-span-4'>
-                <div className="bg-gray-100 rounded-lg px-4 py-4 h-full">
-                  <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing {type == 'SETTING' ? 'Setting' : 'Management' }</h4>
-                  <div className="grid grid-cols-1 gap-4 mb-3">
-                    <TextField label="Auto Assign Delay (S)" size="small" type='number' value={delayTime} onChange={(e) => setDelayTime(e.target.value)} />
-                    <TextField label="Starting Weight (T)" size="small" type='number' value={startWeigth} onChange={(e) => setStartWeigth(e.target.value)} />
-                    <TextField label ="Exit Weight (T)" size="small" type='number' value={existWeigth} onChange={(e) => setExistWeigth(e.target.value)} />
+              type == 'SETTING' ?
+                <div className='w-full col-span-5 row-span-4'>
+                  <div className="bg-gray-100 rounded-lg px-4 py-4 h-full">
+                    <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing {type == 'SETTING' ? 'Setting' : 'Management'}</h4>
+                    <div className="grid grid-cols-1 gap-4 mb-3">
+                      <TextField disabled={data.state === 'maintenance' ? true : false} label="Auto Assign Delay (S)" size="small" type='number' value={delayTime} onChange={(e) => setDelayTime(e.target.value)} />
+                      <TextField disabled={data.state === 'maintenance' ? true : false} label="Starting Weight (T)" size="small" type='number' value={startWeigth} onChange={(e) => setStartWeigth(e.target.value)} />
+                      <TextField disabled={data.state === 'maintenance' ? true : false} label="Exit Weight (T)" size="small" type='number' value={existWeigth} onChange={(e) => setExistWeigth(e.target.value)} />
+                    </div>
                   </div>
                 </div>
-              </div>
-              : 
-              <div className='w-full col-span-5 row-span-4 '>
-                <div className="bg-gray-100 rounded-lg px-4 py-4">
-                  <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing {type == 'SETTING' ? 'Setting' : 'Management' }</h4>
-                  <button className={`w-full ${
-                        selectedMode  
-                          ? 'bg-blue-500 text-white border' 
-                          : 'bg-white text-gray-700 border'
-                    } py-2 px-4 rounded-lg text-sm font-medium mb-3`}
-                    onClick={() => {
-                      setSelectedMode(!selectedMode)
-                      setOpenDataDialog(true); 
-                      setcountAction(0)
-                      setSelectedAction('DryRun Mode')}
-                    }
-                  >
-                    DryRun Mode
-                  </button>
-                  <div className="grid grid-cols-2 gap-2 mb-3">
-                    {/* <button 
-                      className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                        selectedAction === 'DryRun Mode' 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-white text-gray-700 border'
-                      }`}
+                :
+                <div className='w-full col-span-5 row-span-4 '>
+                  <div className="bg-gray-100 rounded-lg px-4 py-4">
+                    <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing {type == 'SETTING' ? 'Setting' : 'Management'}</h4>
+                    <button 
+                      disabled={data.state === 'maintenance' ? true : false}
+                      className={`w-full mb-3 flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b ${ data.state === 'dry-run' ? 'from-blue-400 to-blue-800 text-white' : 'from-gray-100 to-gray-400 text-gray-800' }`}
                       onClick={() => {
-                        setOpenDataDialog(true); 
+                        setSelectedMode(!selectedMode)
+                        setOpenDataDialog(true);
                         setcountAction(0)
-                        setSelectedAction('DryRun Mode')}
+                        setSelectedAction('DryRun Mode')
+                      }
                       }
                     >
                       DryRun Mode
                     </button>
-                    <button 
-                      className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                        selectedAction === 'Finish Dry Run' 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-white text-gray-700 border'
-                      }`}
-                      onClick={() => {
-                        setOpenDataDialog(true); 
-                        setcountAction(0)
-                        setSelectedAction('Finish Dry Run')}
-                      }
-                    >
-                      Finish Dry Run
-                    </button> */}
-                    <button 
-                      className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                        selectedAction === 'Finish Queuing' 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-white text-gray-700 border'
-                      }`}
-                      onClick={() => {
-                        setOpenDataDialog(true); 
-                        setcountAction(0)
-                        setSelectedAction('Finish Queuing')}
-                      }
-                    >
-                      Finish Queuing
-                    </button>
-                    <button 
-                      className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                        selectedAction === 'Assign Queue' 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-white text-gray-700 border'
-                      }`}
-                      onClick={() => {
-                        setOpenQueueDialog(true); 
-                        setcountAction(0)
-                        setSelectedAction('Assign Queue')}
-                      }
-                    >
-                      Assign Queue
-                    </button>
+                    <div className="grid grid-cols-2 gap-6 mb-3">
+                      <button
+                        disabled={data.state === 'maintenance' ? true : false}
+                        className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800`}
+                        onClick={() => {
+                          setOpenDataDialog(true);
+                          setcountAction(0)
+                          setSelectedAction('Finish DryRun')
+                        }
+                        }
+                      >
+                        {data.state === 'dry-run' ? 'Finish DryRun' : 'Finish Queue'}
+                      </button>
+                      <button
+                        disabled={data.state === 'maintenance' ? true : false}
+                        className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800`}
+                        onClick={() => {
+                          setOpenQueueDialog(true);
+                          setcountAction(0)
+                          setSelectedAction('Assign Queue')
+                        }
+                        }
+                      >
+                        Assign Queue
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-6 mb-3">
+                        <button 
+                          disabled={data.state === 'maintenance' ? true : false}
+                          className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800`}
+                          onClick={() => {
+                            setOpenDataDialog(true);
+                            setcountAction(10)
+                            setSelectedAction('Cancle Queuing')
+                          }
+                          }
+                        >
+                          Cancel to Queuing
+                        </button>
+                        <button 
+                          disabled={data.state === 'maintenance' ? true : false}
+                          className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800`}
+                          onClick={() => {
+                            setOpenDataDialog(true);
+                            setcountAction(10)
+                            setSelectedAction('Remove Queuing')
+                          }
+                          }
+                        >
+                          Cancel to Register
+                        </button>
+                    </div>
                   </div>
-                  
-                  <button className={`w-full ${
-                        selectedAction === 'Cancle Queuing' 
-                          ? 'bg-red-500 text-white' 
-                          : 'bg-white text-gray-700 border'
-                    } py-2 px-4 rounded-lg text-sm font-medium`}
-                    onClick={() => {
-                      setOpenDataDialog(true); 
-                      setcountAction(10)
-                      setSelectedAction('Cancle Queuing')}
-                    }
-                  >
-                    Cancel Queuing
-                  </button>
                 </div>
-              </div>
             }
           </div>
         </div>
@@ -360,19 +331,18 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
             <span>ย้อนกลับ</span>
           </button>
           {
-            type != 'SETTING' ? null : 
-            <button onClick={handleClose} className="px-8 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center space-x-2">
-            <span>✓</span>
-            <span>ยืนยัน</span>
-          </button>
+            type != 'SETTING' ? null :
+              <button onClick={handleClose} className="px-8 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center space-x-2">
+                <span>✓</span>
+                <span>ยืนยัน</span>
+              </button>
           }
         </div>
-         <ManageDialog opens={openDataDialog} selectedAction={selectedAction} count={countAction} onSave={(st) => {
-          console.log('dialog result: '+st);
+        <ManageDialog opens={openDataDialog} selectedAction={selectedAction} count={countAction} onSave={(st) => {
           setcountAction(0);
           handleSave(st);
-         }}></ManageDialog>
-         <QueueListDialog open={openQueueDialog} mode={'assign'} bay={data.id} onClose={handleClose}></QueueListDialog>
+        }}></ManageDialog>
+        <QueueListDialog open={openQueueDialog} mode={'assign'} bay={data.id} onClose={handleClose}></QueueListDialog>
       </div>
     </div>
   );

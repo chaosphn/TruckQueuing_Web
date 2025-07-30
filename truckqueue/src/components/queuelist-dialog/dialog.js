@@ -3,7 +3,7 @@ import { getDatabyOrder, getDatabyPlateNumber } from '../../services/http-servic
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Search, RefreshCcw, Trash } from 'lucide-react';
+import { Search, RefreshCcw, Trash, MousePointer2 } from 'lucide-react';
 import Paper from '@mui/material/Paper';
 import { DataGrid } from '@mui/x-data-grid';
 import { dateFormatParser } from '../../services/date-service';
@@ -53,7 +53,7 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
       if (selectedRows) {
         setSelectionRow(selectedRows);
         if(mode === 'cancle'){
-          setSelectedAction('Cancle Queue : '+Math.abs(parseInt(selectedRows.ID)-34797));
+          setSelectedAction('Remove Queue : '+Math.abs(parseInt(selectedRows.ID)-34797));
         } else {
           setSelectedAction('Assign Queue : '+Math.abs(parseInt(selectedRows.ID)-34797));
         }
@@ -75,7 +75,7 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
 
   const paginationModel = { page: 0, pageSize: 5 };
   const columns = [
-    { field: 'ID', headerName: 'คิวที่', flex: 0.3, resizable: true,
+    { field: 'ID', headerName: 'คิวที่', flex: 0.1, resizable: true,
       renderCell: (params) => (
         <Typography variant="body2" style={{ color: 'var(--textSecondary)', fontSize: 14, paddingTop: 8 }}>
           {Math.abs(parseInt(params.value)-34797)}
@@ -90,14 +90,19 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
     //     </Typography>  
     //   )
     // },
-    { field: 'Carrier', headerName: 'บริษัท', flex: 0.4, resizable: true },
+    { field: 'Carrier', headerName: 'บริษัท', flex: 0.5, resizable: true },
     { field: 'FontLicense', headerName: 'ทะเบียนหัว', flex: 0.3, resizable: true },
     { field: 'RearLicense', headerName: 'ทะเบียนหาง', flex: 0.3, resizable: true },
-    { field: 'Driver1', headerName: 'ชื่อคนขับ', flex: 0.5, resizable: true },
+    // { field: 'Driver1', headerName: 'ชื่อคนขับ', flex: 0.5, resizable: true },
     { field: 'DestinationName', headerName: 'ปลายทาง', flex: 0.8, resizable: true },
+    { field: 'dawda', headerName: 'Action', flex: 0.2, resizable: true,
+      renderCell: (params) => (
+        <Button startIcon={ <MousePointer2/> } variant='contained' size='small' color='info' >เลือก</Button>
+      )
+    },
   ];
   const columns2 = [
-    { field: 'ID', headerName: 'คิวที่', flex: 0.3, resizable: true,
+    { field: 'ID', headerName: 'คิวที่', flex: 0.1, resizable: true,
       renderCell: (params) => (
         <Typography variant="body2" style={{ color: 'var(--textSecondary)', fontSize: 14, paddingTop: 8, textAlign: 'center' }}>
           {Math.abs(parseInt(params.value)-34797)}
@@ -112,14 +117,14 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
     //     </Typography>  
     //   )
     // },
-    { field: 'Carrier', headerName: 'บริษัท', flex: 0.4, resizable: true },
+    { field: 'Carrier', headerName: 'บริษัท', flex: 0.5, resizable: true },
     { field: 'FontLicense', headerName: 'ทะเบียนหัว', flex: 0.3, resizable: true },
     { field: 'RearLicense', headerName: 'ทะเบียนหาง', flex: 0.3, resizable: true },
-    { field: 'Driver1', headerName: 'ชื่อคนขับ', flex: 0.5, resizable: true },
+    // { field: 'Driver1', headerName: 'ชื่อคนขับ', flex: 0.5, resizable: true },
     { field: 'DestinationName', headerName: 'ปลายทาง', flex: 0.8, resizable: true },
-     { field: 'dawda', headerName: 'Action', flex: 0.4, resizable: true,
+     { field: 'dawda', headerName: 'Action', flex: 0.2, resizable: true,
       renderCell: (params) => (
-        <Button startIcon={ <Trash/> } variant='contained' size='small' color='error' >ยกเลิกคิว</Button>
+        <Button startIcon={ <Trash/> } variant='contained' size='small' color='error' >ลบคิว</Button>
       )
     },
   ];
@@ -136,22 +141,8 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
         {/* SEARCH SECTION*/}
         <div className='w-full flex justify-between items-center'>
           <div className='flex items-center gap-4 font-semibold text-xl'>
-            { mode === 'cancle' ? 'Cancel Queues' : 'Queues Assign at Bay '+bay }
+            { mode === 'cancle' ? 'Remove Queues' : 'Queues Assign at Bay '+bay }
           </div>
-          {/* <TextField
-            placeholder="ค้นหาด้วยเลย Order"
-            size="small"
-            value={orderNumber}
-            onChange={(e) => setOrderNumber(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ width: '250px' }}
-          /> */}
         </div>  
         {/* TABLE SECTION*/}
         <div className='min-h-72'>
@@ -163,7 +154,7 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
                   rows={queueData}
                   columns={ mode === 'cancle' ? columns2 : columns}
                   initialState={{ pagination: { paginationModel } }}
-                  checkboxSelection={mode === 'cancle' ? false : true}
+                  checkboxSelection={mode === 'cancle' ? false : false}
                   disableMultipleRowSelection={true}
                   disableRowSelectionOnClick={false}
                   selectionModel={selectionModel}
@@ -201,7 +192,7 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
           setOpenDataDialog(false);
         }}
       ></DataDetailDialog> */}
-      <ManageDialog opens={openDataDialog} selectedAction={selectedAction} count={0} onSave={(st) => {
+      <ManageDialog opens={openDataDialog} selectedAction={selectedAction} chaeckbox={ mode !== 'cancle' ? true : false } count={mode == 'cancle' ? 10 : 0} onSave={(st) => {
         console.log('dialog result: '+st);
         setOpenDataDialog(false);
         if(st && mode == 'cancle'){

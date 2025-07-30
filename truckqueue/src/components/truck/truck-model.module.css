@@ -12,6 +12,28 @@
   /* border: 2px solid lime; */
 }
 
+.label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  width: auto;
+  height: auto;
+  padding: 0.15rem 0.75rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  font-size: 1.25rem;
+  background-image: linear-gradient(135deg, rgba(0, 176, 233, 1) 30%, rgba(25, 22, 97, 1) 100%);
+  color: white;
+  border: 2px solid rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
 .wheel1 {
   height: 25px;
   position: absolute;

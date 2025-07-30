@@ -94,7 +94,7 @@ export const selectLoadingQueue = async (data) => {
             return {
                 success: true,
                 baynumber: 'A',
-                queuenumber: '2',
+                queuenumber: parseInt(result * 10),
                 waitingtime: 0,
                 queuebefore: 0,
                 message: 'Loading queue selected successfully.'
@@ -103,7 +103,7 @@ export const selectLoadingQueue = async (data) => {
             return {
                 success: false,
                 baynumber: '',
-                queuenumber: '6',
+                queuenumber: parseInt(result * 10),
                 waitingtime: 60,
                 queuebefore: 2,
                 message: 'No free bay available.'
