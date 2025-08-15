@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getDatabyOrder, getDatabyPlateNumber } from '../../services/http-service';
+import { getDatabyOrder, getDatabyPlateNumber, getQueueDataByLicense } from '../../services/http-service';
 import NotFoundDialog from '../notfound-dialog/dialog';
 
 const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryRun }) => {
@@ -25,10 +25,10 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
       tailnumber: plateTailNumber
     };
     if(plateHeadNumber.length > 0 && plateTailNumber.length > 0){
-      const result = await getDatabyPlateNumber(data.headnumber, data.tailnumber);
+      const result = await getQueueDataByLicense(data.headnumber.trim(), data.tailnumber.trim());
       if(result && result.length > 0){
-        console.log(result);
-        onSave({ mode: 'plate', data: result, type: mode });
+        const filteredData = result.filter(x => new Date(x.DATEARRIVE).getTime() < getTomorrowMidnight())
+        onSave({ mode: 'plate', data: filteredData, type: mode });
       } else {
         //alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั ้ง');
         setOpenAlert(true);
@@ -37,6 +37,14 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
       alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
     }
   };
+
+  function getTomorrowMidnight() {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1); 
+    tomorrow.setHours(0, 0, 0, 0); 
+    return tomorrow.getTime();
+  }
 
   if (!open) {
     return (

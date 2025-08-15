@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Monitor, List, User, Bell, Settings } from 'lucide-react';
 import backgroundImg from '../../assets/background.png';
 import logoImg from '../../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
 import TruckModel from '../../components/truck/truck-model';
+import { QueueContext } from '../../utils/AppContext';
 
 const LandingPage = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -16,7 +17,7 @@ const LandingPage = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
+  const { queue, updateQueueData } = useContext(QueueContext);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const toggleFullscreen = () => {
@@ -61,6 +62,14 @@ const LandingPage = () => {
       day: 'numeric'
     });
   };
+
+  function getTomorrowMidnight() {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1); 
+    tomorrow.setHours(0, 0, 0, 0); 
+    return tomorrow.getTime();
+  }
 
   const menuItems = [
     {
@@ -193,8 +202,8 @@ const LandingPage = () => {
               <div className="text-white/80 text-2xl mt-4 drop-shadow">กำลังโหลด</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-yellow-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>8</div>
-              <div className="text-white/80 text-2xl mt-4 drop-shadow">รอการตรวจสอบ</div>
+              <div className="text-5xl font-bold text-yellow-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>{queue.filter(x => new Date(x.DATEARRIVE).getTime() < getTomorrowMidnight()).length??0}</div>
+              <div className="text-white/80 text-2xl mt-4 drop-shadow">รอการลงทะเบียน</div>
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold text-purple-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>24</div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getDatabyOrder, getDatabyPlateNumber } from '../../services/http-service';
+import { getDatabyOrder, getDatabyPlateNumber, getQueueDataByOrder } from '../../services/http-service';
 import NotFoundDialog from '../notfound-dialog/dialog';
 
 const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
@@ -24,7 +24,7 @@ const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
       ordernumber: orderNumber
     };
     if(orderNumber.length > 0){
-      const result = await getDatabyOrder(data.ordernumber);
+      const result = await getQueueDataByOrder(data.ordernumber.trim());
       if(result && result.length > 0){
         console.log(result);
         onSave({ mode: 'order', data: result, type: mode });

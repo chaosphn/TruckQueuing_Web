@@ -75,6 +75,7 @@ const RegisterPage = () => {
     {
       id: '1',
       title: '10 Wheel',
+      value: '10-Wheel',
       subtitle: 'ลงทะเบียนรถบรรทุก',
       icon: User,
       color: 'from-blue-500 to-blue-600',
@@ -83,6 +84,7 @@ const RegisterPage = () => {
     {
       id: '2',
       title: 'Semi Trailer',
+      value: 'Semi-Trailer',
       subtitle: 'ติดตามสถานะการโหลด',
       icon: Monitor,
       color: 'from-purple-500 to-purple-600',
@@ -91,6 +93,7 @@ const RegisterPage = () => {
     {
       id: '3',
       title: 'ISO Tank',
+      value: 'ISO-Tank',
       subtitle: 'ติดตามสถานะการโหลด',
       icon: Monitor,
       color: 'from-green-500 to-green-600',
@@ -283,7 +286,7 @@ const RegisterPage = () => {
                 key={item.id}
                 className="group relative w-[400px]"
                 style={{ animationDelay: `${index * 0.1}s` }}
-                onClick={() => {handleSelectTruck(item.id)}}
+                onClick={() => {handleSelectTruck(item.value)}}
               >
                 <div className={`absolute inset-0 bg-gradient-to-r ${item.color} rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-300`}></div>         
                 <button className={`relative w-full bg-gradient-to-r ${item.color} hover:bg-gradient-to-r hover:${item.hoverColor} rounded-2xl p-16 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl border border-white/10`}>
@@ -456,7 +459,7 @@ const RegisterPage = () => {
             <OrderDialog open={openDryRunDialog} mode={'single'} title={dialogTitle} onClose={handleCloseQueueDialog} onSave={handleSaveDialog}></OrderDialog>
             {/* <TruckQueueDialog open={openQueueDialog} mode={'multiple'} onClose={handleCloseQueueDialog} onSave={handleSaveDialog}></TruckQueueDialog>  */}
             {/* <TruckQueueDialog open={openDryRunDialog} mode={'single'} onClose={handleCloseQueueDialog} onSave={handleSaveDialog}></TruckQueueDialog>  */}
-            <TruckDataDialog open={openDataDialog} data={queueData} mode={pageState} type={queueDataType} onClose={handleCloseQueueDialog}></TruckDataDialog>
+            <TruckDataDialog open={openDataDialog} data={queueData} mode={pageState} type={queueDataType} truck_type={seletedTruck} onClose={handleCloseQueueDialog}></TruckDataDialog>
         </main>
       }
 

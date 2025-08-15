@@ -1,5 +1,5 @@
 // App.js
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PrivateRoute from './services/routing-guard'; 
 import LandingPage from './pages/landing/page';
@@ -7,8 +7,25 @@ import CarrierDashboard from './pages/dashboard/page';
 import CarrierManagement from './pages/management/page';
 import RegisterPage from './pages/register/page';
 import LoginPage from './pages/login/page';
+import { BayContext, QueueContext } from './utils/AppContext';
 
 function App() {
+
+  const { queue, updateQueueData, bayData, waitingQueue, updateBayData } = useContext(QueueContext);
+
+  useEffect(() => {
+    updateQueueData();
+    updateBayData();
+    console.log(bayData)
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      updateBayData();
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>

@@ -41,7 +41,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
     setOpenDataDialog(false);
     setOpenQueueDialog(false);
     if (cfmStatus) {
-      handleClose();
+      //handleClose();
     } else {
       setSelectedAction('');
       //handleClose();
@@ -247,6 +247,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                       <TextField disabled={data.state === 'maintenance' ? true : false} label="Auto Assign Delay (S)" size="small" type='number' value={delayTime} onChange={(e) => setDelayTime(e.target.value)} />
                       <TextField disabled={data.state === 'maintenance' ? true : false} label="Starting Weight (T)" size="small" type='number' value={startWeigth} onChange={(e) => setStartWeigth(e.target.value)} />
                       <TextField disabled={data.state === 'maintenance' ? true : false} label="Exit Weight (T)" size="small" type='number' value={existWeigth} onChange={(e) => setExistWeigth(e.target.value)} />
+                      <span className='font-semibold'>Last Update: 2025-05-14T14:00:00</span>
                     </div>
                   </div>
                 </div>
@@ -274,7 +275,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                         onClick={() => {
                           setOpenDataDialog(true);
                           setcountAction(0)
-                          setSelectedAction('Finish DryRun')
+                          setSelectedAction(data.state === 'dry-run' ? 'Finish DryRun' : 'Finish Queue')
                         }
                         }
                       >
@@ -300,7 +301,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                           onClick={() => {
                             setOpenDataDialog(true);
                             setcountAction(10)
-                            setSelectedAction('Cancle Queuing')
+                            setSelectedAction('Cancel to Queuing')
                           }
                           }
                         >
@@ -312,7 +313,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                           onClick={() => {
                             setOpenDataDialog(true);
                             setcountAction(10)
-                            setSelectedAction('Remove Queuing')
+                            setSelectedAction('Cancel to Register')
                           }
                           }
                         >

@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import DataDetailDialog from '../detail-dialog/dialog';
 import { Button } from '@mui/material';
 
-const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
+const TruckDataDialog = ({ open, data, mode, type, truck_type, onSave, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('ค้นหาเลขทะเบียน');
   const [plateHeadNumber, setPlateHeadNumber] = useState('');
@@ -27,7 +27,7 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
     if(data){
       setQueueData(data);
     }
-    if(mode === 'order' && data && data.length > 0){
+    if( data && data.length == 1 ){
       setSelectionRow(data[0]);
       setOpenDataDialog(true);
     } 
@@ -87,19 +87,19 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
 
   const paginationModel = { page: 0, pageSize: 5 };
   const columns = [
-    { field: 'Code', headerName: 'เลขออเดอร์', flex: 0.3, resizable: true },
-    { field: 'DateArrival', headerName: 'วันที่', flex: 0.4, resizable: true,
+    { field: 'ORDER_CODE', headerName: 'เลขออเดอร์', flex: 0.3, resizable: true },
+    { field: 'DATEARRIVE', headerName: 'วันที่', flex: 0.4, resizable: true,
       renderCell: (params) => (
         <Typography variant="body2" style={{ color: 'var(--textSecondary)', fontSize: 14, paddingTop: 8 }}>
           {dateFormatParser(new Date(params.value), 'dd-MM-yyyy HH:mm')}
         </Typography>  
       )
     },
-    { field: 'Carrier', headerName: 'บริษัท', flex: 0.4, resizable: true },
+    { field: 'CARRIER', headerName: 'บริษัท', flex: 0.4, resizable: true },
     // { field: 'FontLicense', headerName: 'ทะเบียนหัว', flex: 0.3, resizable: true },
     // { field: 'RearLicense', headerName: 'ทะเบียนหาง', flex: 0.3, resizable: true },
     // { field: 'Driver1', headerName: 'ชื่อคนขับ', flex: 0.5, resizable: true },
-    { field: 'DestinationName', headerName: 'ปลายทาง', flex: 1, resizable: true },
+    { field: 'DESTINATION_NAME', headerName: 'ปลายทาง', flex: 1, resizable: true },
     { field: 'dawda', headerName: 'Action', flex: 0.2, resizable: true,
       renderCell: (params) => (
         <Button startIcon={ <MousePointer2 /> } variant='contained' size='small' color="info" onClick={() => handleRowSelect(params.row)}>เลือก</Button>
@@ -123,10 +123,10 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
           </Typography>
           <div className='flex items-center gap-4'>
             <Typography sx={{ mb: 0, fontSize: '1.25rem', fontWeight: 'bold' }}>
-              ทะเบียนหัว : { queueData[0]?.FontLicense || plateHeadNumber }
+              ทะเบียนหัว : { queueData[0]?.FRONT_LICENSE || plateHeadNumber }
             </Typography>
             <Typography sx={{ mb: 0, fontSize: '1.25rem', fontWeight: 'bold' }}>
-              ทะเบียนหาง : { queueData[0]?.RearLicense || plateTailNumber }
+              ทะเบียนหาง : { queueData[0]?.REAR_LICENSE || plateTailNumber }
             </Typography>
           </div>
         </div>  
@@ -136,11 +136,11 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
               <Paper sx={{ width: '100%', maxWidth: '100%' }}>
                 <DataGrid
                   sx={{ minHeight: 300 }}
-                  getRowId={(row) => row.ID}
+                  getRowId={(row) => row.ORDER_CODE}
                   rows={  
-                    queueData.filter(x => x.FontLicense.includes(plateHeadNumber))
-                      .filter(x => x.RearLicense.includes(plateTailNumber))
-                        .filter(x => x.Code.includes(orderNumber))
+                    queueData.filter(x => x.FRONT_LICENSE.includes(plateHeadNumber))
+                      .filter(x => x.REAR_LICENSE.includes(plateTailNumber))
+                        .filter(x => x.ORDER_CODE.includes(orderNumber))
                     }
                   columns={columns}
                   initialState={{ pagination: { paginationModel } }}
@@ -168,10 +168,11 @@ const TruckDataDialog = ({ open, data, mode, type, onSave, onClose }) => {
           </button>
         </div>       
       </div>
-      <DataDetailDialog open={openDataDialog} data={selectionRow} mode={mode} type={type} 
+      <DataDetailDialog open={openDataDialog} data={selectionRow} mode={mode} type={type} truck={truck_type}
         onClose={() => {
           setOpenDataDialog(false);
           setSelectionRow(null);
+          //onClose();
         }} 
         onSave={() => {
           setOpenDataDialog(false);

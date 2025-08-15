@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Truck, Settings, Clock, MapPin, Gauge, Fuel, Verified, Loader2, Loader } from 'lucide-react';
 import { useRouting } from '../../hooks/routing-hook';
 import TruckModel from '../../components/truck/truck-model';
@@ -15,10 +15,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { TextField } from '@mui/material';
+import { QueueContext } from '../../utils/AppContext';
 
 const CarrierManagement = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [ bayData, setBayData ] = useState([]);
+  const [ bayDatas, setBayData ] = useState([]);
+  const [ queueData, setQueueData ] = useState([]);
   const [ selectBayData, setSelectBayData ] = useState(null);
   const [ selectBtnType, setSelectBtnType ] = useState('');
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
@@ -33,36 +35,106 @@ const CarrierManagement = () => {
   const { navigatePage } = useRouting();
   const [ datePickerMoedl, setDatePickerModel ] = useState('period');
   const [ summaryMode, setSummaryMode ] = useState('load');
-
+  const { queue, updateQueueData, bayData, waitingQueue, updateBayData } = useContext(QueueContext);
+  
+  
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-      //console.log('Updating bay data every second');
-      setBayData(prevData => prevData.map(c => 
-        c.id === c.id && c.counter === 20 && c.state === 'finished' && c.weight < 1000 ? 
-          { ...c, state: 'free', status: 'ว่าง', timeLoading: '',weight: 0, loading: null, counter: 0, verified: false } : 
-            c.state === 'finished' && c.weight < 1000 ?  
-            { ...c, counter: c.counter ? c.counter + 1 : 1 } : c
-      ));
-    }, 1000);
+    }, 3000);
     return () => clearInterval(timer);
   }, []);
-  
 
   useEffect(() => {
-    const getRandomCarriers = () => {
-      const shuffled = [...carriers].sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, 4);
-    };
+    console.log('Updating bay data');
+    const bayList = carriers.slice(0, 4);
+    const data = bayList.map((item) => {
+      const findBayData = bayData.find(x => x.METER_NAME == item.id);
+      if(findBayData){
+        return {
+          id: item.id,
+          status: 
+            findBayData.STATUS == 'CALLING' && findBayData.MAINTENANCE == 'n' ? 'เรียกคิว' : 
+            findBayData.STATUS == 'READY'&& findBayData.MAINTENANCE == 'n' ? 'เรียกคิว' : 
+            findBayData.STATUS == 'DRYRUN'&& findBayData.MAINTENANCE == 'n' && findBayData.DRYRUN == 'y' ? 'Dry Run' : 
+            findBayData.STATUS == 'LOADING'&& findBayData.MAINTENANCE == 'n' ? 'กำลังโหลด' : 
+            findBayData.STATUS == 'LOADED'&& findBayData.MAINTENANCE == 'n' ? 'โหลดเสร็จสิ้น' : 
+            findBayData.STATUS == 'EMPTY'&& findBayData.MAINTENANCE == 'n' ? 'ว่าง' : 'อยู่ระหว่างซ่อมบำรุง',
+          weight: findBayData.CURRENT_QNTY,
+          loading: findBayData.CURRENT_QNTY,
+          maxLoading: findBayData.FINISH_QNTY, 
+          timeLoading: findBayData?.CURRENT_TIME ? `${findBayData.CURRENT_TIME}/${findBayData.FINISH_TIME} นาที` : '',
+          state: 
+            findBayData.STATUS == 'CALLING' && findBayData.MAINTENANCE == 'n' ? 'pending' : 
+            findBayData.STATUS == 'READY' && findBayData.MAINTENANCE == 'n' ? 'pending' : 
+            findBayData.STATUS == 'DRYRUN' && findBayData.MAINTENANCE == 'n' && findBayData.DRYRUN == 'y' ? 'dry-run' : 
+            findBayData.STATUS == 'LOADING' && findBayData.MAINTENANCE == 'n' ? 'loading' : 
+            findBayData.STATUS == 'LOADED' && findBayData.MAINTENANCE == 'n' ? 'finished' : 
+            findBayData.STATUS == 'EMPTY' && findBayData.MAINTENANCE == 'n' ? 'free' : 'maintenance',
+          carrier: findBayData.CARRIER,
+          verified: findBayData.STATUS === 'LOADING',
+          frontlicense: findBayData.FRONT_LICENSE,
+          rearlicense: findBayData.REAR_LICENSE,
+          queuenumber: findBayData.Q_NO,
+          product: findBayData.PRODUCT,
+          abnormal: false,
+          maintenance: findBayData.MAINTENANCE === 'y',
+          isdryrun: findBayData.DRYRUN === 'y',
+          isauto: findBayData.QUEUE_AUTO === 'y',
+          memo: findBayData.MEMO,
+          cnt: findBayData.CNT,
+          startweight: findBayData.SET_START_WEIGHT,
+          autodelay: findBayData.SET_AUTO_DELAY,
+          flowrate: findBayData.SET_FLOW_RATE,
+          sq_tare: findBayData.SQ_TARE,
+          sq_start: findBayData.SQ_START,
+          q_date: findBayData.Q_DATE,
+          order: findBayData.ORDER_CODE,
+          usage: findBayData.CNT,
+          mode: findBayData.MAINTENANCE === 'y' ? 'MAINTENANCE MODE' : 'OPERATING MODE',
+          type: findBayData.QUEUE_AUTO === 'y' ? 'auto' : 'manual',
+        }
+      } else {
+        return {
+          id: item.id,
+          status: 'ว่าง',
+          weight: 0,
+          loading: 0,
+          maxLoading: 0, 
+          timeLoading: '',
+          state: 'free',
+          carrier: '',
+          verified: false,
+          frontlicense: '',
+          rearlicense: '',
+          queuenumber: 0,
+          product: '',
+          abnormal: false,
+          maintenance: false,
+          isdryrun: false,
+          isauto: false,
+          memo: null,
+          cnt: 0,
+          startweight: 0,
+          autodelay: 0,
+          flowrate: 0,
+          sq_tare: 0,
+          sq_start: '',
+          q_date: '',
+          order: '',
+          usage: 0,
+          mode: 'OPERATING MODE',
+          type: 'auto'
+        }
+      };
+    }); 
+    setBayData(data);
+  }, [bayData]);
 
-    const timer = setInterval(() => {
-      // const randomCarriers = getRandomCarriers();
-      // setBayData(randomCarriers);
-      //setBayData(carriers.slice(0, 4)); 
-    }, 10000);
-    setBayData(carriers.slice(0, 4)); 
-    return () => clearInterval(timer);
-  }, []);
+  useEffect(() => {
+    //console.log(bayData, waitingQueue)
+    setQueueData(waitingQueue);
+  }, [waitingQueue]);
 
   const downLoadBayData = (id) => {
     const selectedCarrier = carriers.find(carrier => carrier.id === id);
@@ -179,7 +251,7 @@ const CarrierManagement = () => {
       queuenumber: 3,
       usage: 0,
       mode: 'MAINTENANCE MODE',
-      type: 'auto',
+      type: '',
       product: 'LNG',
       abnormal: false,
     },
@@ -255,7 +327,7 @@ const CarrierManagement = () => {
 
       {/* Active Carriers */}
       <div className="grid grid-cols-1 md:grid-cols-1 gap-3">
-        {bayData.map((carrier) => (
+        {bayDatas.map((carrier) => (
           <div
             onClick={() => setSelectBayData(carrier)}
             key={carrier.id}
@@ -264,7 +336,7 @@ const CarrierManagement = () => {
                     carrier.state === 'loading' ? 'amber-50' : 
                       carrier.state === 'maintenance' ? 'red-100' : 
                         carrier.state === 'dry-run' ? 'blue-50' : 
-                         carrier.state === 'pending' ? 'indigo-100' : 'slate-50'
+                         carrier.state === 'pending' ? 'indigo-200' : 'slate-50'
             } rounded-2xl px-6 py-4 shadow-lg border border-white/50`}
           >
             <div className="flex items-center justify-between">
@@ -297,14 +369,14 @@ const CarrierManagement = () => {
                     <Loader className="w-20 h-20 text-slate-500" style={{animationDuration: '4s'}} />
                 </div>  :
                 <div className="text-center box-border">
-                  <div className="text-3xl font-bold text-slate-700 pb-2">คิวที่ {carrier.id === 'A' ? '1' : carrier.id === 'B' ? '2' : carrier.id === 'D' ? '3' : ''}</div>
-                  <div className="text-lg font-semibold text-slate-500">ทะเบียนหน้า 67-6255</div>
-                  <div className="text-lg font-semibold text-slate-500">ทะเบียนหลัง 67-6520</div>
+                  <div className="text-3xl font-bold text-slate-700 pb-2">คิวที่ { carrier.id }</div>
+                  <div className="text-lg font-semibold text-slate-500">ทะเบียนหน้า { carrier.frontlicense }</div>
+                  <div className="text-lg font-semibold text-slate-500">ทะเบียนหลัง { carrier.rearlicense }</div>
                 </div>
               }
               <div className={`w-1/5 h-full flex flex-col item-center justify-between bg-white/60 backdrop-blur-sm rounded-xl px-4 py-4 shadow-md border border-white/30`}>
                 {
-                  carrier.loading !== null && carrier.maxLoading !== null && carrier.verified &&  carrier.state != 'maintenance' &&  carrier.state != 'dry-run' ? 
+                  carrier.loading > 0 && carrier.maxLoading > 0 && carrier.verified &&  carrier.state != 'maintenance' &&  carrier.state != 'dry-run' ? 
                   <div className=''>
                     <Slider
                       sx={{
@@ -468,9 +540,9 @@ const CarrierManagement = () => {
               </div>
             </div>
           </div>
-          {upcomingSlots.map((slot) => (
+          {queueData.map((slot) => (
             <div
-              key={slot.id}
+              key={slot.Q_ID}
               className={`p-2 rounded-xl border-2 transition-all duration-300 ${
                 slot.available 
                   ? 'border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300' 
@@ -478,15 +550,15 @@ const CarrierManagement = () => {
               }`}
             >
               <div className="div flex items-center justify-around h-full">
-                <div className={`text-2xl font-bold mb-2 ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
-                  คิวที่ {slot.id}
+                <div className={`text-3xl font-bold mb-2 ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
+                  คิวที่ {slot.Q_NO}
                 </div>
                 
                 <div className="space-y-2">
-                  <div className="text-slate-600 text-base font-semibold">ทะเบียนหน้า 67-6255</div>
-                  <div className="text-slate-600 text-base font-semibold">ทะเบียนหลัง 67-6520</div>
+                  <div className="text-slate-600 text-base font-semibold">ทะเบียนหน้า {slot.FRONT_LICENSE}</div>
+                  <div className="text-slate-600 text-base font-semibold">ทะเบียนหลัง {slot.REAR_LICENSE}</div>
                   <div className="border-t border-slate-200 pt-3 mt-3">
-                    <div className="text-slate-500 text-base font-semibold">รอประมาณ 30 นาที</div>
+                    <div className="text-slate-500 text-base font-semibold">รอประมาณ {slot.WAIT_TM} นาที</div>
                   </div>
                 </div>
               </div>
@@ -500,7 +572,7 @@ const CarrierManagement = () => {
             }`}
           >
             <div className="flex flex-col items-center gap-2.5 justify-between h-full">
-              <div className='w-full text-2xl text-center font-bold text-slate-600'>Bay Usage: {bayData.reduce((acc, cur) => { return acc += cur.usage }, 0)}</div>
+              <div className='w-full text-2xl text-center font-bold text-slate-600'>Bay Usage: {bayDatas.reduce((acc, cur) => { return acc += cur.usage }, 0)}</div>
               <div className='w-full flex flex-col gap-3 cursor-pointer'>
                 <div className='gap-2 flex'>
                   {

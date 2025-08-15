@@ -1,9 +1,12 @@
 import axios from "axios";
 import { bay_Status_Data, order_Data } from "../mockup/orderData";
+import config from "../../src/assets/config.json";
 
 let token = '';
 
-const api = axios.create();
+const api = axios.create({
+    baseURL: config.APIURL
+});
 api.interceptors.request.use(config => {
     if (token) {
         config.headers['Authorization'] = token;
@@ -60,6 +63,72 @@ export const login = async (username, password) => {
     }
 };
 
+export const getBaysData = async () => {
+    try {
+        const result = await api.post('/dashboard/get');
+        //console.log(result.data)
+        if(result && result.data ){
+            return result.data;
+        } else {
+            return {
+                MeterDashboard: [],
+                WaitQueue: []
+            };
+        }
+    } catch (error) {
+        return {
+            MeterDashboard: [],
+            WaitQueue: []
+        };
+    }
+}
+
+export const getAllQueueData = async () => {
+    try {
+        const result = await api.post('/queue/all');
+        if(result && result.data && result.data.length > 0){
+            return result.data;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        return [];
+    }
+}
+
+export const getQueueDataByLicense = async (front, rear) => {
+    try {
+        const body = {
+            FrontLicense: front,
+            RearLicense : rear
+        }
+        const result = await api.post('/queue/search', body);
+        if(result && result.data && result.data.length > 0){
+            return result.data;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        return [];
+    }
+}
+
+export const getQueueDataByOrder = async (order) => {
+    try {
+        const body = {
+            OrderCode: order
+        }
+        const result = await api.post('/queue/search', body);
+        if(result && result.data && result.data.length > 0){
+            return result.data;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        return [];
+    }
+}
+
 export const getDatabyOrder = async (orderNumber) => {
     try {
         const result = order_Data.filter(x => x.Code === orderNumber);//await api.post('', body);
@@ -86,28 +155,35 @@ export const getDatabyPlateNumber = async (headNumer, tailNumber) => {
     }
 };
 
-export const selectLoadingQueue = async (data) => {
+export const selectLoadingQueue = async (code, truck) => {
     try {
-        const result = Math.random();//order_Data.filter(x => x.FontLicense === headNumer && x.RearLicense === tailNumber);//await api.post('', body);
-        console.log(result);
-        if(result > 0.5){
-            return {
-                success: true,
-                baynumber: 'A',
-                queuenumber: parseInt(result * 10),
-                waitingtime: 0,
-                queuebefore: 0,
-                message: 'Loading queue selected successfully.'
-            };
+         const body = {
+            OrderCode: code,
+            Trucktype : truck
+        }
+        const result = await api.post('/queue/register', body);
+        if( result && result.data ){
+            if(result?.data?.BayName){
+                    return {
+                        success: true,
+                        baynumber: result?.data?.BayName,
+                        queuenumber: result?.data?.QueueNo,
+                        waitingtime: result?.data?.WaitTime,
+                        queuebefore: result?.data?.PreviousQueue,
+                        message: result?.data?.Message??''
+                    };
+            } else {
+                return {
+                    success: false,
+                    baynumber: result?.data?.BayName,
+                    queuenumber: result?.data?.QueueNo,
+                    waitingtime: result?.data?.WaitTime,
+                    queuebefore: result?.data?.PreviousQueue,
+                    message: result?.data?.Message??''
+                };
+            }
         } else {
-            return {
-                success: false,
-                baynumber: '',
-                queuenumber: parseInt(result * 10),
-                waitingtime: 60,
-                queuebefore: 2,
-                message: 'No free bay available.'
-            };
+            return null;
         }
     } catch (error) {
         return error;
