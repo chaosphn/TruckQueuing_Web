@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getDatabyOrder, getDatabyPlateNumber } from '../../services/http-service';
+import { assignQueueDataToBay, getAllRegisteredQueueData, getDatabyOrder, getDatabyPlateNumber } from '../../services/http-service';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -19,18 +19,29 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
   const [plateHeadNumber, setPlateHeadNumber] = useState('');
   const [plateTailNumber, setPlateTailNumber] = useState('');
   const [orderNumber, setOrderNumber] = useState('');
-  const [ queueData, setQueueData ] = useState(order_Data);
+  const [ queueData, setQueueData ] = useState([]);
   const [selectionModel, setSelectionModel] = useState([]);
   const [selectionRow, setSelectionRow] = useState(null);
   const [selectedAction, setSelectedAction] = useState('');
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
 
   useEffect(() => {
-    console.log(mode, type, data);
-    if(data){
-      setQueueData(data);
+    console.log(mode, bay, data);
+    handleGetQueueData();
+  }, [open]);
+
+  const handleGetQueueData = async () => {
+    const result = await getAllRegisteredQueueData();
+    if(result && result.length > 0){
+      if(data?.isdryrun){
+        setQueueData(result);
+      } else {
+        setQueueData(result);
+      }
+    } else {
+      setQueueData([]);
     }
-  }, [data]);
+  };
 
   const openDialog = () => setIsOpen(true);
   const closeDialog = () => setIsOpen(false);
@@ -49,13 +60,13 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
       const selectedIds = Array.from(selection.ids); 
       const selectedId = selectedIds[0];
 
-      const selectedRows= queueData.find(row => row.ID === selectedId);
+      const selectedRows= queueData.find(row => row.Q_ID === selectedId);
       if (selectedRows) {
         setSelectionRow(selectedRows);
         if(mode === 'cancle'){
-          setSelectedAction('Remove Queue : '+Math.abs(parseInt(selectedRows.ID)-34797));
+          setSelectedAction('Remove Queue : '+selectedRows.Q_NO);
         } else {
-          setSelectedAction('Assign Queue : '+Math.abs(parseInt(selectedRows.ID)-34797));
+          setSelectedAction('Assign Queue : '+selectedRows.Q_NO);
         }
         setOpenDataDialog(true);
         console.log('🚀 Selected Row:', selectedRows);
@@ -63,26 +74,31 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
     }
   };
 
-  const handleSelectedRowAction = (row) => {
-    // Your action with selected row
-    console.log('🔥 Do something with:', row);
+  const handleAssignQueue = async () => {
+    const result = await assignQueueDataToBay(selectionRow.Q_ID, bay);
+    if(result && result.Message){
+      alert(result.Message);
+    }
   };
 
-  const handleReloadData = async () => {
-    console.log(data, mode, type);
-    onClose();
+  const handleCancelQueue = async () => {
+    setQueueData(queueData.filter(x => x.Q_ID != selectionRow.Q_ID ))
+    // const result = await assignQueueDataToBay(selectionRow.Q_ID, bay);
+    // if(result && result.Message){
+    //   alert(result.Message);
+    // }
   };
 
   const paginationModel = { page: 0, pageSize: 5 };
   const columns = [
-    { field: 'ID', headerName: 'คิวที่', flex: 0.1, resizable: true,
+    { field: 'Q_NO', headerName: 'คิวที่', flex: 0.1, resizable: true,
       renderCell: (params) => (
         <Typography variant="body2" style={{ color: 'var(--textSecondary)', fontSize: 14, paddingTop: 8 }}>
-          {Math.abs(parseInt(params.value)-34797)}
+          {params.value}
         </Typography>  
       ) 
     },
-    { field: 'Code', headerName: 'เลขออเดอร์', flex: 0.3, resizable: true },
+    { field: 'ORDER_CODE', headerName: 'เลขออเดอร์', flex: 0.3, resizable: true },
     // { field: 'DateArrival', headerName: 'วันที่', flex: 0.4, resizable: true,
     //   renderCell: (params) => (
     //     <Typography variant="body2" style={{ color: 'var(--textSecondary)', fontSize: 14, paddingTop: 8 }}>
@@ -90,11 +106,11 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
     //     </Typography>  
     //   )
     // },
-    { field: 'Carrier', headerName: 'บริษัท', flex: 0.5, resizable: true },
-    { field: 'FontLicense', headerName: 'ทะเบียนหัว', flex: 0.3, resizable: true },
-    { field: 'RearLicense', headerName: 'ทะเบียนหาง', flex: 0.3, resizable: true },
+    { field: 'CARRIER', headerName: 'บริษัท', flex: 0.5, resizable: true },
+    { field: 'FRONT_LICENSE', headerName: 'ทะเบียนหัว', flex: 0.3, resizable: true },
+    { field: 'REAR_LICENSE', headerName: 'ทะเบียนหาง', flex: 0.3, resizable: true },
     // { field: 'Driver1', headerName: 'ชื่อคนขับ', flex: 0.5, resizable: true },
-    { field: 'DestinationName', headerName: 'ปลายทาง', flex: 0.8, resizable: true },
+    { field: 'DESTINATION_NAME', headerName: 'ปลายทาง', flex: 0.8, resizable: true },
     { field: 'dawda', headerName: 'Action', flex: 0.2, resizable: true,
       renderCell: (params) => (
         <Button startIcon={ <MousePointer2/> } variant='contained' size='small' color='info' >เลือก</Button>
@@ -102,14 +118,14 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
     },
   ];
   const columns2 = [
-    { field: 'ID', headerName: 'คิวที่', flex: 0.1, resizable: true,
+    { field: 'Q_NO', headerName: 'คิวที่', flex: 0.1, resizable: true,
       renderCell: (params) => (
         <Typography variant="body2" style={{ color: 'var(--textSecondary)', fontSize: 14, paddingTop: 8, textAlign: 'center' }}>
-          {Math.abs(parseInt(params.value)-34797)}
+          {params.value}
         </Typography>  
       ) 
     },
-    { field: 'Code', headerName: 'เลขออเดอร์', flex: 0.3, resizable: true },
+    { field: 'ORDER_CODE', headerName: 'เลขออเดอร์', flex: 0.3, resizable: true },
     // { field: 'DateArrival', headerName: 'วันที่', flex: 0.4, resizable: true,
     //   renderCell: (params) => (
     //     <Typography variant="body2" style={{ color: 'var(--textSecondary)', fontSize: 14, paddingTop: 8 }}>
@@ -117,11 +133,11 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
     //     </Typography>  
     //   )
     // },
-    { field: 'Carrier', headerName: 'บริษัท', flex: 0.5, resizable: true },
-    { field: 'FontLicense', headerName: 'ทะเบียนหัว', flex: 0.3, resizable: true },
-    { field: 'RearLicense', headerName: 'ทะเบียนหาง', flex: 0.3, resizable: true },
+    { field: 'CARRIER', headerName: 'บริษัท', flex: 0.5, resizable: true },
+    { field: 'FRONT_LICENSE', headerName: 'ทะเบียนหัว', flex: 0.3, resizable: true },
+    { field: 'REAR_LICENSE', headerName: 'ทะเบียนหาง', flex: 0.3, resizable: true },
     // { field: 'Driver1', headerName: 'ชื่อคนขับ', flex: 0.5, resizable: true },
-    { field: 'DestinationName', headerName: 'ปลายทาง', flex: 0.8, resizable: true },
+    { field: 'DESTINATION_NAME', headerName: 'ปลายทาง', flex: 0.8, resizable: true },
      { field: 'dawda', headerName: 'Action', flex: 0.2, resizable: true,
       renderCell: (params) => (
         <Button startIcon={ <Trash/> } variant='contained' size='small' color='error' >ลบคิว</Button>
@@ -150,7 +166,7 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
               <Paper sx={{ width: '100%', maxWidth: '100%' }}>
                 <DataGrid
                   sx={{ minHeight: 400 }}
-                  getRowId={(row) => row.ID}
+                  getRowId={(row) => row.Q_ID}
                   rows={queueData}
                   columns={ mode === 'cancle' ? columns2 : columns}
                   initialState={{ pagination: { paginationModel } }}
@@ -196,7 +212,9 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
         console.log('dialog result: '+st);
         setOpenDataDialog(false);
         if(st && mode == 'cancle'){
-          setQueueData(queueData.filter(x => x.Code != selectionRow.Code ))
+          handleCancelQueue();
+        }else if(st && mode == 'assign'){
+          handleAssignQueue();
         } else {
           onClose();
         }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getDatabyOrder, getDatabyPlateNumber } from '../../services/http-service';
+import { cancleQueueAtBay, cancleQueueToRegister, finishQueueDataAtBay, getDatabyOrder, getDatabyPlateNumber } from '../../services/http-service';
 import bayImg from '../../assets/bay.png';
 import TruckModel from '../truck/truck-model';
 import Slider from '@mui/material/Slider';
@@ -19,16 +19,20 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const [selectedMode, setSelectedMode] = useState(false);
   const [countAction, setcountAction] = useState(0);
   const [delayTime, setDelayTime] = useState(0);
-  const [startWeigth, setStartWeigth] = useState(0.0);
-  const [existWeigth, setExistWeigth] = useState(0.0);
+  const [startWeigth, setStartWeigth] = useState(0);
+  const [existWeigth, setExistWeigth] = useState(0);
+  const [bayData, setBayData] = useState(null);
 
   useEffect(() => {
+    //console.log(data)
+  }, [open]);
 
-  }, []);
+  useEffect(() => {
+    setDelayTime(data?.autodelay??0);
+    setStartWeigth(data?.startweight??0);
+    setExistWeigth(data?.maxLoading??0);
+  }, [data]);
 
-
-  const openDialog = () => setIsOpen(true);
-  const closeDialog = () => setIsOpen(false);
   const handleClose = () => {
     setSelectedAction('');
     setSelectedAction2('');
@@ -37,16 +41,72 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
     setOpenQueueDialog(false);
     onClose();
   }
+
   const handleSave = async (cfmStatus) => {
     setOpenDataDialog(false);
     setOpenQueueDialog(false);
-    if (cfmStatus) {
-      //handleClose();
-    } else {
-      setSelectedAction('');
-      //handleClose();
+
+    switch (selectedAction) {
+      case 'DryRun Mode':
+        if (cfmStatus) {
+          handleDryRunMode();
+        }
+        break;
+      case 'Finish DryRun':
+      case 'Finish Queue':
+        if (cfmStatus) {
+          handleFinishQueue();
+        }
+        break;
+      case 'Cancel to Queuing':
+        if (cfmStatus) {
+          handleCancleToQueue();
+        }
+        break;
+      case 'Cancel to Register':
+        if (cfmStatus) {
+          handleCancleToRegister();
+        }
+        break;
+      case 'Auto Queuing':
+        break;
+      case 'Manual Queuing':
+        break;
+      default:
+        break;
+    }
+
+    setSelectedAction('');
+  };
+
+  const handleFinishQueue = async () => {
+    const result = await finishQueueDataAtBay(data.id);
+    if(result && result.Message){
+      alert(result.Message);
     }
   };
+
+  const handleCancleToQueue = async () => {
+    const result = await cancleQueueAtBay(data.id);
+    if(result && result.Message){
+      alert(result.Message);
+    }
+  };
+
+  const handleCancleToRegister = async () => {
+    const result = await cancleQueueToRegister(data.id);
+    if(result && result.Message){
+      alert(result.Message);
+    }
+  };
+
+  const handleDryRunMode = async () => {
+    // const result = await finishQueueDataAtBay(data.id);
+    // if(result && result.Message){
+    //   alert(result.Message);
+    // }
+  };
+  
 
   if (!open) {
     return (
@@ -247,7 +307,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                       <TextField disabled={data.state === 'maintenance' ? true : false} label="Auto Assign Delay (S)" size="small" type='number' value={delayTime} onChange={(e) => setDelayTime(e.target.value)} />
                       <TextField disabled={data.state === 'maintenance' ? true : false} label="Starting Weight (T)" size="small" type='number' value={startWeigth} onChange={(e) => setStartWeigth(e.target.value)} />
                       <TextField disabled={data.state === 'maintenance' ? true : false} label="Exit Weight (T)" size="small" type='number' value={existWeigth} onChange={(e) => setExistWeigth(e.target.value)} />
-                      <span className='font-semibold'>Last Update: 2025-05-14T14:00:00</span>
+                      <span className='font-semibold'>Last Update: {data?.sq_start??'---'}</span>
                     </div>
                   </div>
                 </div>
@@ -282,7 +342,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                         {data.state === 'dry-run' ? 'Finish DryRun' : 'Finish Queue'}
                       </button>
                       <button
-                        disabled={data.state === 'maintenance' ? true : false}
+                        disabled={data.state === 'maintenance' || data.isauto ? true : false}
                         className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800`}
                         onClick={() => {
                           setOpenQueueDialog(true);

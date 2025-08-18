@@ -96,6 +96,20 @@ export const getAllQueueData = async () => {
     }
 }
 
+export const getAllRegisteredQueueData = async () => {
+    try {
+        const result = await api.post('/queue/get');
+        if(result && result.data && result.data.length > 0){
+            return result.data;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        return [];
+    }
+}
+
+
 export const getQueueDataByLicense = async (front, rear) => {
     try {
         const body = {
@@ -126,6 +140,109 @@ export const getQueueDataByOrder = async (order) => {
         }
     } catch (error) {
         return [];
+    }
+}
+
+export const getTotalQueueData = async () => {
+    try {
+        const body = {
+            StartDate: null,
+            EndDate: null,
+            Dryrun: "n"
+        }
+        const result = await api.post('/queue/usage', body);
+        if(result && result.data && result.data){
+            return result.data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        return null;
+    }
+}
+
+export const getPeriodQueueData = async (start, end, mode) => {
+    try {
+        const body = {
+            StartDate: start,
+            EndDate: end,
+            Dryrun: mode
+        }
+        const result = await api.post('/queue/usage', body);
+        if(result && result.data && result.data){
+            return result.data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        return null;
+    }
+}
+
+export const assignQueueDataToBay = async (id, bay) => {
+    try {
+        const body = {
+            Q_ID: id,
+            METER_NAME: bay
+        }
+        const result = await api.post('/queue/assign', body);
+        if(result && result.data && result.data){
+            return result.data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        return null;
+    }
+}
+
+export const finishQueueDataAtBay = async (bay) => {
+    try {
+        const body = {
+            METER_NAME: bay
+        }
+        const result = await api.post('/queue/finish', body);
+        if(result && result.data && result.data){
+            return result.data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        return null;
+    }
+}
+
+export const cancleQueueAtBay = async (bay) => {
+    try {
+        const body = {
+            METER_NAME: bay,
+            CancelToRegister: "n"
+        }
+        const result = await api.post('/queue/cancel', body);
+        if(result && result.data && result.data){
+            return result.data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        return null;
+    }
+}
+
+export const cancleQueueToRegister = async (bay) => {
+    try {
+        const body = {
+            METER_NAME: bay,
+            CancelToRegister: "y"
+        }
+        const result = await api.post('/queue/cancel', body);
+        if(result && result.data && result.data){
+            return result.data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        return null;
     }
 }
 
@@ -190,28 +307,36 @@ export const selectLoadingQueue = async (code, truck) => {
     }
 };
 
-export const selectDryRunQueue = async (data) => {
+export const selectDryRunQueue = async (front, rear, truck) => {
     try {
-        const result = Math.random();//order_Data.filter(x => x.FontLicense === headNumer && x.RearLicense === tailNumber);//await api.post('', body);
-        console.log(result);
-        if(result > 0.5){
-            return {
-                success: true,
-                baynumber: 'A',
-                queuenumber: '2',
-                waitingtime: 0,
-                queuebefore: 0,
-                message: 'Loading queue selected successfully.'
-            };
+         const body = {
+            frontLicense: front,
+            rearLicense: rear,
+            Trucktype : truck
+        }
+        const result = await api.post('/queue/registerdryrun', body);
+        if( result && result.data ){
+            if(result?.data?.BayName){
+                    return {
+                        success: true,
+                        baynumber: result?.data?.BayName,
+                        queuenumber: result?.data?.QueueNo,
+                        waitingtime: result?.data?.WaitTime,
+                        queuebefore: result?.data?.PreviousQueue,
+                        message: result?.data?.Message??''
+                    };
+            } else {
+                return {
+                    success: false,
+                    baynumber: result?.data?.BayName,
+                    queuenumber: result?.data?.QueueNo,
+                    waitingtime: result?.data?.WaitTime,
+                    queuebefore: result?.data?.PreviousQueue,
+                    message: result?.data?.Message??''
+                };
+            }
         } else {
-            return {
-                success: false,
-                baynumber: '',
-                queuenumber: '6',
-                waitingtime: 60,
-                queuebefore: 2,
-                message: 'No free bay available.'
-            };
+            return null;
         }
     } catch (error) {
         return error;

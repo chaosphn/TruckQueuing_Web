@@ -8,6 +8,7 @@ import CarrierManagement from './pages/management/page';
 import RegisterPage from './pages/register/page';
 import LoginPage from './pages/login/page';
 import { BayContext, QueueContext } from './utils/AppContext';
+import config from "../src/assets/config.json";
 
 function App() {
 
@@ -22,7 +23,7 @@ function App() {
   useEffect(() => {
     const timer = setInterval(() => {
       updateBayData();
-    }, 2000);
+    }, config.INTERVAL??5000);
     return () => clearInterval(timer);
   }, []);
 

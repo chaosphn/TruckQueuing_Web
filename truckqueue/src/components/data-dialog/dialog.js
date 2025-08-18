@@ -168,7 +168,7 @@ const TruckDataDialog = ({ open, data, mode, type, truck_type, onSave, onClose }
           </button>
         </div>       
       </div>
-      <DataDetailDialog open={openDataDialog} data={selectionRow} mode={mode} type={type} truck={truck_type}
+      <DataDetailDialog open={openDataDialog} data={selectionRow} mode={mode} type={type} truck={truck_type} resultData={null}
         onClose={() => {
           setOpenDataDialog(false);
           setSelectionRow(null);

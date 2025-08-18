@@ -1,40 +1,57 @@
-import React, { useState } from 'react';
-import { getDatabyOrder, getDatabyPlateNumber, getQueueDataByLicense } from '../../services/http-service';
+import React, { useEffect, useState } from 'react';
+import { getDatabyOrder, getDatabyPlateNumber, getQueueDataByLicense, selectDryRunQueue } from '../../services/http-service';
 import NotFoundDialog from '../notfound-dialog/dialog';
+import DataDetailDialog from '../detail-dialog/dialog';
 
-const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryRun }) => {
+const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryRun, truck_type }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('ค้นหาเลขทะเบียน');
   const [plateHeadNumber, setPlateHeadNumber] = useState('');
   const [plateTailNumber, setPlateTailNumber] = useState('');
   const [orderNumber, setOrderNumber] = useState('');
   const [openAlert, setOpenAlert] = useState(false);
+  const [ openDataDialog, setOpenDataDialog ] = useState(false);
+  const [queuingData ,setQueuingData] = useState(null);
 
-  const openDialog = () => setIsOpen(true);
-  const closeDialog = () => setIsOpen(false);
-
-  const handleConfirm = () => {
-    //console.log('Confirmed:', { activeTab, plateNumber, orderNumber });
-    closeDialog();
-  };
+  useEffect(() => {
+    console.log(isDryRun, mode, ishead)
+  }, [open]);
 
   const handleSave = async () => {
-    const data = {
-      type: activeTab,
-      headnumber: plateHeadNumber,
-      tailnumber: plateTailNumber
-    };
-    if(plateHeadNumber.length > 0 && plateTailNumber.length > 0){
-      const result = await getQueueDataByLicense(data.headnumber.trim(), data.tailnumber.trim());
-      if(result && result.length > 0){
-        const filteredData = result.filter(x => new Date(x.DATEARRIVE).getTime() < getTomorrowMidnight())
-        onSave({ mode: 'plate', data: filteredData, type: mode });
+    if(isDryRun){
+      if( !ishead && plateHeadNumber.length > 0 && plateTailNumber.length > 0){
+        const result = await selectDryRunQueue(plateHeadNumber.trim(), plateTailNumber.trim(), truck_type);
+        if(result){
+          setQueuingData(result);
+          setOpenDataDialog(true);
+        }
+      } else if( ishead && plateHeadNumber.length > 0 ){
+        const result = await selectDryRunQueue(plateHeadNumber.trim(), null, truck_type);
+        if(result){
+          setQueuingData(result);
+          setOpenDataDialog(true);
+        }
       } else {
-        //alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั ้ง');
-        setOpenAlert(true);
+        alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
       }
     } else {
-      alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+      const data = {
+        type: activeTab,
+        headnumber: plateHeadNumber,
+        tailnumber: plateTailNumber
+      };
+      if(plateHeadNumber.length > 0 && plateTailNumber.length > 0){
+        const result = await getQueueDataByLicense(data.headnumber.trim(), data.tailnumber.trim());
+        if(result && result.length > 0){
+          const filteredData = result.filter(x => new Date(x.DATEARRIVE).getTime() < getTomorrowMidnight())
+          onSave({ mode: 'plate', data: filteredData, type: mode });
+        } else {
+          //alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั ้ง');
+          setOpenAlert(true);
+        }
+      } else {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+      }
     }
   };
 
@@ -119,6 +136,18 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
         </div>
       </div>
       <NotFoundDialog opens={openAlert && !isDryRun} onSave={() => setOpenAlert(false)}></NotFoundDialog>
+      <DataDetailDialog open={openDataDialog} data={null} mode={null} type={null} truck={truck_type} resultData={queuingData}
+        onClose={() => {
+          setOpenDataDialog(false);
+          setQueuingData(null);
+          onClose();
+        }} 
+        onSave={() => {
+          setOpenDataDialog(false);
+          setQueuingData(null);
+          onClose();
+        }}
+      ></DataDetailDialog>
     </div>
   );
 };

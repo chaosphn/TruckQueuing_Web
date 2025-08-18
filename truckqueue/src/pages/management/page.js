@@ -16,6 +16,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { TextField } from '@mui/material';
 import { QueueContext } from '../../utils/AppContext';
+import { getPeriodQueueData, getTotalQueueData } from '../../services/http-service';
+import { dateFormatParser } from '../../services/date-service';
 
 const CarrierManagement = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -35,13 +37,15 @@ const CarrierManagement = () => {
   const { navigatePage } = useRouting();
   const [ datePickerMoedl, setDatePickerModel ] = useState('period');
   const [ summaryMode, setSummaryMode ] = useState('load');
+  const [ totalQueue, setTotalQueue ] = useState(0);
+  const [ totalBay, setTotalbay ] = useState(0);
   const { queue, updateQueueData, bayData, waitingQueue, updateBayData } = useContext(QueueContext);
   
   
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 3000);
+    }, 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -300,6 +304,62 @@ const CarrierManagement = () => {
     });
   };
 
+  useEffect(() => {
+    handleGetTotaQueue();
+    const timer = setInterval(() => {
+      handleGetTotaQueue();
+    }, 360000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleGetTotaQueue = async () => {
+    const result = await getTotalQueueData();
+    if(result && result?.QueueUsage >= 0){
+      setTotalQueue(result.QueueUsage);
+    }
+  };
+
+  useEffect(() => {
+    handleGetTotaBays();
+  }, [startDate, endDate, summaryMode, datePickerMoedl]);
+
+  const handleGetTotaBays = async () => {
+    if(datePickerMoedl === 'period'){
+      const st = startDate.toDate().getTime();
+      const en = endDate.toDate().getTime();
+      const diff = st - en;
+      if(diff <= 0){
+        const start = startDate.format('DD-MMM-YYYY');
+        const end = endDate.format('DD-MMM-YYYY');
+        const mode = summaryMode == "load" ? "n" : "y";
+        const result = await getPeriodQueueData(start, end, mode);
+        if(result && result?.QueueUsage >= 0){
+          setTotalbay(result.QueueUsage);
+        }
+      } else {
+        alert('XXXXXXXXXXXXXXXXX');
+      }
+    } else {
+      const date = startDate.toDate();
+      const st = date.setFullYear(date.getFullYear(), 0, 1);
+      const en = date.setFullYear(date.getFullYear()+1, 0, 1);
+      const start = dateFormatParser(new Date(st), 'dd-MMM-yyyy');
+      const end = dateFormatParser(new Date(en), 'dd-MMM-yyyy');
+      const mode = summaryMode == "load" ? "n" : "y";
+      const result = await getPeriodQueueData(start, end, mode);
+      if(result && result?.QueueUsage >= 0){
+        setTotalbay(result.QueueUsage);
+      }
+    }
+  };
+
+  const handleUpdateAllData = async () => {
+    await handleGetTotaBays();
+    await handleGetTotaQueue();
+    await updateBayData();
+  };
+  
+
   return (
     <div className="max-w-screen mx-auto w-full min-h-screen h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 py-4 flex flex-col justify-between">
       {/* Header */}
@@ -369,14 +429,14 @@ const CarrierManagement = () => {
                     <Loader className="w-20 h-20 text-slate-500" style={{animationDuration: '4s'}} />
                 </div>  :
                 <div className="text-center box-border">
-                  <div className="text-3xl font-bold text-slate-700 pb-2">คิวที่ { carrier.id }</div>
+                  <div className="text-3xl font-bold text-slate-700 pb-2">คิวที่ { carrier.queuenumber }</div>
                   <div className="text-lg font-semibold text-slate-500">ทะเบียนหน้า { carrier.frontlicense }</div>
                   <div className="text-lg font-semibold text-slate-500">ทะเบียนหลัง { carrier.rearlicense }</div>
                 </div>
               }
               <div className={`w-1/5 h-full flex flex-col item-center justify-between bg-white/60 backdrop-blur-sm rounded-xl px-4 py-4 shadow-md border border-white/30`}>
                 {
-                  carrier.loading > 0 && carrier.maxLoading > 0 && carrier.verified &&  carrier.state != 'maintenance' &&  carrier.state != 'dry-run' ? 
+                  carrier.loading >= 0 && carrier.maxLoading >= 0 && carrier.verified &&  carrier.state != 'maintenance' &&  carrier.state != 'dry-run' &&  carrier.state != 'free' &&  carrier.state != 'pending' ? 
                   <div className=''>
                     <Slider
                       sx={{
@@ -451,7 +511,7 @@ const CarrierManagement = () => {
                             carrier.state === 'maintenance' ? 'text-red-800' : 
                               carrier.state === 'dry-run' ? 'text-blue-800 ' :
                                 carrier.state === 'pending' ? 'text-indigo-800' : 'text-slate-800'
-                    }`}>{carrier.timeLoading}</div>
+                    }`}>{carrier.state === 'loading' || carrier.state === 'finished' ? carrier.timeLoading : ''}</div>
                   </div>
                 </div>
               </div>
@@ -472,16 +532,16 @@ const CarrierManagement = () => {
                     </div>
                   </div> : 
                   <div className='w-full absolute top-1/2 left-0 -translate-y-1/2 flex flex-col items-center justify-center h-auto gap-1 overflow-x-hidden bg-white/60 backdrop-blur-sm rounded-xl px-4 py-1 shadow-md border border-white/30'>
-                    {carrier.state != 'pending' ? (
-                      <div className="animate-truck-enter">
+                    {carrier.state != 'pending' && carrier.loading >= carrier.startweight ? (
+                      <div className={`animate-truck-enter`}>
                         <TruckModel key={carrier.id} product={carrier.product}/>
                       </div>
-                    ) : carrier.loading >= 2000 ? (
-                      <div className="animate-truck-enter">
+                    ) : carrier.loading >= carrier.startweight ? (
+                      <div className={`animate-truck-enter`}>
                         <TruckModel key={carrier.id} product={carrier.product}/>
                       </div>
                     ) : null}
-                    <div className="font-semibold text-slate-900">
+                    <div className={`font-semibold text-slate-900`}>
                       {carrier.carrier}
                     </div>
                   </div>
@@ -514,12 +574,13 @@ const CarrierManagement = () => {
         <QueueManageDialog open={openDataDialog} data={selectBayData} type={selectBtnType} onClose={() => {
           setOpenDataDialog(false);
           setSelectBtnType('');
+          handleUpdateAllData();
         }}></QueueManageDialog>
       </div>
 
       {/* Upcoming Slots */}
-      <div className="bg-white rounded-2xl shadow-xl p-4">
-        <div className="grid grid-cols-6 gap-4">
+      <div className="bg-white flex justify-between gap-3 rounded-2xl shadow-xl p-4">
+        <div className="grid grid-cols-6 gap-3 w-[90%]">
           <div
             className={`p-2 rounded-xl border-2 transition-all duration-300 ${
               false 
@@ -550,8 +611,9 @@ const CarrierManagement = () => {
               }`}
             >
               <div className="div flex items-center justify-around h-full">
-                <div className={`text-3xl font-bold mb-2 ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
-                  คิวที่ {slot.Q_NO}
+                <div className={`text-3xl font-bold mb-2 flex flex-col items-center ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
+                  <div>คิวที่</div>
+                  <div className='text-4xl'>{slot.Q_NO}</div>
                 </div>
                 
                 <div className="space-y-2">
@@ -572,16 +634,18 @@ const CarrierManagement = () => {
             }`}
           >
             <div className="flex flex-col items-center gap-2.5 justify-between h-full">
-              <div className='w-full text-2xl text-center font-bold text-slate-600'>Bay Usage: {bayDatas.reduce((acc, cur) => { return acc += cur.usage }, 0)}</div>
-              <div className='w-full flex flex-col gap-3 cursor-pointer'>
-                <div className='gap-2 flex'>
+              <div className='w-full text-2xl text-center font-bold text-slate-600'>Bay Usage: {totalBay??0}</div>
+              <div className='w-full flex flex-col cursor-pointer'>
+                <div className='gap-2 flex mb-2'>
                   {
                     datePickerMoedl === 'period' ? 
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         label="Start"
                         value={startDate}
-                        onChange={setStartDate}
+                        onChange={(d) => {
+                          setStartDate(d);
+                        }}
                         slotProps={{
                           textField: {
                             size: 'small',
@@ -601,7 +665,9 @@ const CarrierManagement = () => {
                       <DatePicker
                         label="End"
                         value={endDate}
-                        onChange={setEndDate}
+                        onChange={(d) => {
+                          setEndDate(d);
+                        }}
                         slotProps={{
                           textField: {
                             size: 'small',
@@ -668,7 +734,23 @@ const CarrierManagement = () => {
             </div>
           </div>
         </div>
-        <QueueListDialog open={openQueueDialog} mode={'cancle'} onClose={() => {setOpenQueueDialog(false)}}></QueueListDialog>
+        <div
+          className={`p-2 rounded-xl border-2 transition-all duration-300 w-[10%] ${
+            false 
+              ? 'border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300' 
+              : 'border-slate-300 bg-slate-100'
+          }`}
+        >
+          <div className="div flex flex-col items-center justify-around h-full">
+            <div className={`text-3xl font-bold ${true ? 'text-slate-700' : 'text-slate-900'}`}>
+              Total
+            </div>
+            <div className={`text-3xl font-bold mb-2 ${true ? 'text-slate-700' : 'text-slate-900'}`}>
+              {totalQueue??0}
+            </div>
+          </div>
+        </div>
+        <QueueListDialog open={openQueueDialog} data={selectBayData} mode={'cancle'} onClose={() => {setOpenQueueDialog(false)}}></QueueListDialog>
         <ManageDialog opens={openModeDialog}  selectedAction={selectedMode} count={0} onSave={(st) => {
           setOpenModeDialog(false);
           setSelectedMode('');

@@ -356,7 +356,7 @@ const CarrierDashboard = () => {
                   </div>
                   <div className='w-2/5 h-full flex flex-col item-center justify-between '>
                     {
-                      carrier.loading > 0 && carrier.maxLoading > 0 && carrier.verified &&  carrier.state != 'maintenance' &&  carrier.state != 'dry-run' ? 
+                      carrier.loading >= 0 && carrier.maxLoading >= 0 && carrier.verified &&  carrier.state != 'maintenance' &&  carrier.state != 'dry-run' &&  carrier.state != 'free' &&  carrier.state != 'pending' ? 
                       <div>
                         <Slider
                           sx={{
@@ -429,7 +429,7 @@ const CarrierDashboard = () => {
                           carrier.state === 'loading' ? 'text-amber-800' : 
                             carrier.state === 'maintenance' ? 'text-indigo-800' : 
                               carrier.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
-                      }`}> { carrier.timeLoading } </div>
+                      }`}> { carrier.state === 'loading' || carrier.state === 'finished' ? carrier.timeLoading : '' } </div>
                     </div>
                   </div>
                   <div className='w-1/4 min-h-24 h-full relative '>
@@ -457,11 +457,11 @@ const CarrierDashboard = () => {
                       </div> 
                     </div> : 
                     <div className='absolute top-1/2 left-1/3 -translate-y-1/2 flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden'>
-                      {carrier.state != 'pending' ? (
+                      {carrier.state != 'pending' && carrier.loading >= carrier.startweight ? (
                         <div className="animate-truck-enter">
                           <TruckModel key={carrier.id} product={carrier.product}/>
                         </div>
-                      ) : carrier.loading >= 2000 ? (
+                      ) : carrier.loading >= carrier.startweight ? (
                         <div className="animate-truck-enter">
                           <TruckModel key={carrier.id} product={carrier.product}/>
                         </div>
@@ -608,7 +608,7 @@ const CarrierDashboard = () => {
                   </div>
                   <div className='w-2/5 h-full flex flex-col item-center justify-between scale-75'>
                     {
-                      carrier.loading !== null && carrier.maxLoading !== null && carrier.verified &&  carrier.state != 'maintenance' &&  carrier.state != 'dry-run' ? 
+                      carrier.loading >= 0 && carrier.maxLoading >= 0 && carrier.verified &&  carrier.state != 'maintenance' &&  carrier.state != 'dry-run' &&  carrier.state != 'free' &&  carrier.state != 'pending' ? 
                       <div>
                         <Slider
                           sx={{
@@ -681,7 +681,7 @@ const CarrierDashboard = () => {
                           carrier.state === 'loading' ? 'text-amber-800' : 
                             carrier.state === 'maintenance' ? 'text-indigo-800' : 
                               carrier.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
-                      }`}> { carrier.timeLoading } </div>
+                      }`}> { carrier.state === 'loading' || carrier.state === 'finished' ? carrier.timeLoading : '' } </div>
                     </div>
                   </div>             
                   <div className='w-1/4 min-h-24 h-full relative scale-75'>
@@ -709,11 +709,11 @@ const CarrierDashboard = () => {
                       </div> 
                     </div> : 
                     <div className='absolute top-1/2 left-1/3 -translate-y-1/2 flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden'>
-                      {carrier.state != 'pending' ? (
+                      {carrier.state != 'pending' && carrier.loading >= carrier.startweight ? (
                         <div className="animate-truck-enter">
                           <TruckModel key={carrier.id} product={carrier.product}/>
                         </div>
-                      ) : carrier.loading >= 2000 ? (
+                      ) : carrier.loading >= carrier.startweight ? (
                         <div className="animate-truck-enter">
                           <TruckModel key={carrier.id} product={carrier.product}/>
                         </div>

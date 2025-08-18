@@ -4,7 +4,7 @@ import { dateFormatParser } from '../../services/date-service';
 import { selectDryRunQueue, selectLoadingQueue } from '../../services/http-service';
 import { set } from 'date-fns';
 
-const DataDetailDialog = ({ open, data, mode, type, truck, onSave, onClose }) => {
+const DataDetailDialog = ({ open, data, mode, type, truck, onSave, onClose, resultData }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('ค้นหาเลขทะเบียน');
   const [plateHeadNumber, setPlateHeadNumber] = useState('');
@@ -41,6 +41,10 @@ const DataDetailDialog = ({ open, data, mode, type, truck, onSave, onClose }) =>
       }
     }
   };
+
+  useEffect(() => {
+    setBookingData(resultData);
+  }, [resultData]);
 
   useEffect(() => {
     let timer;

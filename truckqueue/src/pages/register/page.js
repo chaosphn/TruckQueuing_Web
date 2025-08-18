@@ -455,7 +455,7 @@ const RegisterPage = () => {
           </div>
         </main> 
         : <main className="relative z-10 max-w-7xl mx-auto px-6 py-12">
-            <PlateDialog open={openQueueDialog} mode={pageState} title={dialogTitle} topic={dialogTopic} ishead={dialogIsHead} isDryRun={dryrunMode} onClose={handleCloseQueueDialog} onSave={handleSaveDialog}></PlateDialog>
+            <PlateDialog open={openQueueDialog} mode={pageState} title={dialogTitle} topic={dialogTopic} ishead={dialogIsHead} isDryRun={dryrunMode} truck_type={seletedTruck} onClose={handleCloseQueueDialog} onSave={handleSaveDialog}></PlateDialog>
             <OrderDialog open={openDryRunDialog} mode={'single'} title={dialogTitle} onClose={handleCloseQueueDialog} onSave={handleSaveDialog}></OrderDialog>
             {/* <TruckQueueDialog open={openQueueDialog} mode={'multiple'} onClose={handleCloseQueueDialog} onSave={handleSaveDialog}></TruckQueueDialog>  */}
             {/* <TruckQueueDialog open={openDryRunDialog} mode={'single'} onClose={handleCloseQueueDialog} onSave={handleSaveDialog}></TruckQueueDialog>  */}
