@@ -1,5 +1,5 @@
 // App.js
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PrivateRoute from './services/routing-guard'; 
 import LandingPage from './pages/landing/page';
@@ -9,23 +9,36 @@ import RegisterPage from './pages/register/page';
 import LoginPage from './pages/login/page';
 import { BayContext, QueueContext } from './utils/AppContext';
 import config from "../src/assets/config.json";
+import { loadConfig } from './services/http-service';
 
 function App() {
 
-  const { queue, updateQueueData, bayData, waitingQueue, updateBayData } = useContext(QueueContext);
+  const { queue, updateQueueData, bayData, waitingQueue, updateBayData, registerQueue, updateRegisterQueueData } = useContext(QueueContext);
+  const [config, setConfig] = useState(null);
 
   useEffect(() => {
     updateQueueData();
     updateBayData();
-    console.log(bayData)
+    updateRegisterQueueData();
+    handleGetConfig();
+    //console.log(bayData)
   }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
+      updateQueueData();
       updateBayData();
-    }, config.INTERVAL??5000);
+      updateRegisterQueueData();
+    }, config?.INTERVAL??5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [config]);
+
+  const handleGetConfig = async () => {
+    const res = await loadConfig();
+    if(res){
+      setConfig(res);
+    }
+  };
 
   return (
     <BrowserRouter>
