@@ -183,8 +183,8 @@ const RegisterPage = () => {
   }
 
   const handleSaveDialog = (item) => {
-    console.log(item.length);
-    console.log('ZZZZZZZZZZZZZZZZZZZZZZZZZ');
+    //console.log(item.length);
+    //console.log('ZZZZZZZZZZZZZZZZZZZZZZZZZ');
     if(item.data && item.data.length > 0){
       setQueueData(item.data);
       setQueueDataMode(item.mode);
@@ -196,7 +196,7 @@ const RegisterPage = () => {
   };
 
   const handleCloseQueueDialog = () => {
-    console.log('XXXXXXXXXXXXXXXXXXXXXXXX');
+    //console.log('XXXXXXXXXXXXXXXXXXXXXXXX');
     setPageState('truck');
     setDialogTitle('');
     setQueueData([]);

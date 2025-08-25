@@ -21,7 +21,7 @@ const LandingPage = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-  const { queue, updateQueueData, bayData, waitingQueue, updateBayData } = useContext(QueueContext);
+  const { queue, updateQueueData, bayData, waitingQueue, updateBayData, registerQueue, updateRegisterQueueData } = useContext(QueueContext);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const toggleFullscreen = () => {
@@ -33,6 +33,11 @@ const LandingPage = () => {
       document.exitFullscreen();
     }
   };
+
+  useEffect(() => {
+    const cntQ = registerQueue.filter(x => new Date(x.DATEARRIVE).getDate() == new Date().getDate()).length??0;
+    setDailyQueue(cntQ);
+  }, [queue]);
 
   useEffect(() => {
     const cntQ = queue.filter(x => new Date(x.DATEARRIVE).getDate() == new Date().getDate()).length??0;
@@ -219,7 +224,7 @@ const LandingPage = () => {
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold text-yellow-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>{dailyWaiting??'---'}</div>
-              <div className="text-white/80 text-2xl mt-4 drop-shadow">รอการลงทะเบียน</div>
+              <div className="text-white/80 text-2xl mt-4 drop-shadow">ออเดอร์วันนี้</div>
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold text-purple-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>{dailyFinish??'---'}</div>

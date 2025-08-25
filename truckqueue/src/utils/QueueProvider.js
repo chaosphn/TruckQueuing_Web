@@ -1,17 +1,26 @@
 import React, { useState } from "react";
-import { getAllQueueData, getBaysData } from "../services/http-service";
+import { getAllQueueData, getAllRegisteredQueueData, getBaysData } from "../services/http-service";
 import { QueueContext } from "./AppContext";
 
 export const QueueProvider = ({ children }) => {
   const [queue, setQueue] = useState([]);
   const [bayData, setBayData] = useState([]);
   const [waitingQueue, setWaitingQueue] = useState([]);
+  const [registerQueue, setRegisterQueue] = useState([]);
 
   const updateQueueData = async () => {
     const result = await getAllQueueData();
     //console.log(result)
     if(result && result.length > 0){
         setQueue(result);
+    }
+  };
+
+  const updateRegisterQueueData = async () => {
+    const result = await getAllRegisteredQueueData();
+    //console.log(result)
+    if(result && result.length > 0){
+        setRegisterQueue(result);
     }
   };
 
@@ -27,7 +36,7 @@ export const QueueProvider = ({ children }) => {
   };
 
   return (
-    <QueueContext.Provider value={{ queue, updateQueueData, bayData, waitingQueue, updateBayData }}>
+    <QueueContext.Provider value={{ queue, updateQueueData, bayData, waitingQueue, updateBayData, registerQueue, updateRegisterQueueData }}>
       {children}
     </QueueContext.Provider>
   );

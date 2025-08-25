@@ -1,31 +1,60 @@
 import axios from "axios";
 import { bay_Status_Data, order_Data } from "../mockup/orderData";
-import config from "../../src/assets/config.json";
+//import config from "../../public/assets/config.json";
+
+let config = null;
+
+export async function loadConfig() {
+  if (!config) {
+    const response = await fetch('/assets/config.json');
+    config = await response.json();
+  }
+  return config;
+}
 
 let token = '';
 
-const api = axios.create({
-    baseURL: config.APIURL
-});
-api.interceptors.request.use(config => {
+export async function createApi() {
+  const cfg = await loadConfig();
+
+  const api = axios.create({
+    baseURL: cfg.APIURL
+  });
+
+  api.interceptors.request.use(config => {
+    let token = localStorage.getItem('token');
     if (token) {
-        config.headers['Authorization'] = token;
-    } else {
-        const tokenData = localStorage.getItem('token');
-        if(tokenData){
-            config.headers['Authorization'] = tokenData;
-        };
-    };
-  return config;
-}, error => {
-  return Promise.reject(new Error(error));
-});
+      config.headers['Authorization'] = token;
+    }
+    return config;
+  }, error => Promise.reject(new Error(error)));
+
+  return api;
+}
+
+const api = await createApi();
+// axios.create({
+//     baseURL: config.APIURL
+// });
+// api.interceptors.request.use(config => {
+//     if (token) {
+//         config.headers['Authorization'] = token;
+//     } else {
+//         const tokenData = localStorage.getItem('token');
+//         if(tokenData){
+//             config.headers['Authorization'] = tokenData;
+//         };
+//     };
+//   return config;
+// }, error => {
+//   return Promise.reject(new Error(error));
+// });
 
 api.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
-    console.log(error.response.status)
+    //console.log(error.response.status)
     if (error.response.status === 403 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
@@ -50,13 +79,15 @@ export const login = async (username, password) => {
         if(!username || !password){
             return { error: 'username or password is null !' };
         } else {
-            const result =  { data: true };//await api.post('/authen', body);
-            if(result && result.data){
-                //localStorage.setItem('authToken', 'xxxxxxx');
-                return result.data;
-            } else {
-                return { error: 'username or password is invalid !' };
-            };
+            const cfg = await loadConfig();
+            if(cfg){
+                const result = cfg.USERS.findIndex(x => x.username == username && x.password == password);
+                if(result >= 0){
+                    return { token: 'dkjaklwdjlakwdjlkajwdlkawjdlwjdlaknd928y1dn18y3dh1de18ye81b'+'_'+new Date().toISOString() }
+                } else {
+                    return { error: 'username or password is invalid !' };
+                }
+            }
         };
     } catch (error) {
         return { error: error.message };
@@ -179,11 +210,12 @@ export const getPeriodQueueData = async (start, end, mode) => {
     }
 }
 
-export const assignQueueDataToBay = async (id, bay) => {
+export const assignQueueDataToBay = async (id, bay, status) => {
     try {
         const body = {
             Q_ID: id,
-            METER_NAME: bay
+            METER_NAME: bay,
+            ABNORMAL: status
         }
         const result = await api.post('/queue/assign', body);
         if(result && result.data && result.data){
@@ -246,31 +278,132 @@ export const cancleQueueToRegister = async (bay) => {
     }
 }
 
-export const getDatabyOrder = async (orderNumber) => {
+export const deleteQueueFromRegister = async (id) => {
     try {
-        const result = order_Data.filter(x => x.Code === orderNumber);//await api.post('', body);
-        if(result && result.length > 0){
-            return result;
+        // const body = {
+        //     METER_NAME: bay,
+        //     CancelToRegister: "y"
+        // }
+        const result = 'xxxx';//await api.post('/queue/cancel', body);
+        if(result && result.data && result.data){
+            return result.data;
         } else {
-            return [];
+            return null;
         }
     } catch (error) {
-        return error;
+        return null;
     }
-};
+}
 
-export const getDatabyPlateNumber = async (headNumer, tailNumber) => {
+export const setDryRunModeToBay = async (bay, status) => {
     try {
-        const result = order_Data.filter(x => x.FontLicense === headNumer && x.RearLicense === tailNumber);//await api.post('', body);
-        if(result && result.length > 0){
-            return result;
+        const body = {
+            METER_NAME : bay,
+            Dryrun: status ? "y" : "n",
+            AutoQueue: null,
+            StartWeight: null,
+            FinishWeight: null,
+            AutoDelay: null
+        }
+        const result = await api.post('/dashboard/setting', body);
+        if(result && result.data && result.data){
+            return result.data;
         } else {
-            return [];
+            return null;
         }
     } catch (error) {
-        return error;
+        return null;
     }
-};
+}
+
+export const setAutoModeToBay = async (bay) => {
+    try {
+        const body = {
+            METER_NAME : bay,
+            Dryrun: null,
+            AutoQueue: "y",
+            StartWeight: null,
+            FinishWeight: null,
+            AutoDelay: null
+        }
+        const result = await api.post('/dashboard/setting', body);
+        if(result && result.data && result.data){
+            return result.data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        return null;
+    }
+}
+
+export const setManualModeToBay = async (bay) => {
+    try {
+        const body = {
+            METER_NAME : bay,
+            Dryrun: null,
+            AutoQueue: "n",
+            StartWeight: null,
+            FinishWeight: null,
+            AutoDelay: null
+        }
+        const result = await api.post('/dashboard/setting', body);
+        if(result && result.data && result.data){
+            return result.data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        return null;
+    }
+}
+
+export const setBaySettingData = async (bay, delay, startW, existW) => {
+    try {
+        const body = {
+            METER_NAME : bay,
+            Dryrun: null,
+            AutoQueue: null,
+            StartWeight: startW,
+            FinishWeight: existW,
+            AutoDelay: delay
+        }
+        const result = await api.post('/dashboard/setting', body);
+        if(result && result.data && result.data){
+            return result.data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        return null;
+    }
+}
+
+// export const getDatabyOrder = async (orderNumber) => {
+//     try {
+//         const result = order_Data.filter(x => x.Code === orderNumber);//await api.post('', body);
+//         if(result && result.length > 0){
+//             return result;
+//         } else {
+//             return [];
+//         }
+//     } catch (error) {
+//         return error;
+//     }
+// };
+
+// export const getDatabyPlateNumber = async (headNumer, tailNumber) => {
+//     try {
+//         const result = order_Data.filter(x => x.FontLicense === headNumer && x.RearLicense === tailNumber);//await api.post('', body);
+//         if(result && result.length > 0){
+//             return result;
+//         } else {
+//             return [];
+//         }
+//     } catch (error) {
+//         return error;
+//     }
+// };
 
 export const selectLoadingQueue = async (code, truck) => {
     try {
@@ -343,28 +476,28 @@ export const selectDryRunQueue = async (front, rear, truck) => {
     }
 };
 
-export const getBayStatusData = async () => {
-    try {
-        const result = bay_Status_Data.slice(0,4);//await api.post('', body);
-        if(result && result.length > 0){
-            return result;
-        } else {
-            return [];
-        }
-    } catch (error) {
-        return error;
-    }
-};
+// export const getBayStatusData = async () => {
+//     try {
+//         const result = bay_Status_Data.slice(0,4);//await api.post('', body);
+//         if(result && result.length > 0){
+//             return result;
+//         } else {
+//             return [];
+//         }
+//     } catch (error) {
+//         return error;
+//     }
+// };
 
-export const getQueueData = async () => {
-    try {
-        const result = order_Data.slice(0,4);//await api.post('', body);
-        if(result && result.length > 0){
-            return result;
-        } else {
-            return [];
-        }
-    } catch (error) {
-        return error;
-    }
-}
+// export const getQueueData = async () => {
+//     try {
+//         const result = order_Data.slice(0,4);//await api.post('', body);
+//         if(result && result.length > 0){
+//             return result;
+//         } else {
+//             return [];
+//         }
+//     } catch (error) {
+//         return error;
+//     }
+// }

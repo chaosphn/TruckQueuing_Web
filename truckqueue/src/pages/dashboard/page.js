@@ -17,24 +17,16 @@ const CarrierDashboard = () => {
 
   useEffect(() => {
     const screen = window.innerWidth/window.innerHeight;
-    console.log(screen)
     updateQueueData();
     setScreenRatio(screen);
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-      // console.log('Updating bay data every second');
-      // setBayData(prevData => prevData.map(c => 
-      //   c.id === c.id && c.counter === 20 && c.state === 'finished' && c.weight < 1000 ? 
-      //     { ...c, state: 'free', status: 'ว่าง', timeLoading: '',weight: 0, loading: null, counter: 0, verified: false } : 
-      //       c.state === 'finished' && c.weight < 1000 ?  
-      //       { ...c, counter: c.counter ? c.counter + 1 : 1 } : c
-      // ));
     }, 3000);
     return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
-    console.log('Updating bay data');
+    //console.log('Updating bay data');
     const bayList = carriers.slice(0, 4);
     const data = bayList.map((item) => {
       const findBayData = bayData.find(x => x.METER_NAME == item.id);
@@ -43,15 +35,15 @@ const CarrierDashboard = () => {
           id: item.id,
           status: 
             findBayData.STATUS == 'CALLING' && findBayData.MAINTENANCE == 'n' ? 'เรียกคิว' : 
-            findBayData.STATUS == 'READY'&& findBayData.MAINTENANCE == 'n' ? 'เรียกคิว' : 
+            findBayData.STATUS == 'READY'&& findBayData.MAINTENANCE == 'n' ? 'เตรียมพร้อม' : 
             findBayData.STATUS == 'DRYRUN'&& findBayData.MAINTENANCE == 'n' && findBayData.DRYRUN == 'y' ? 'Dry Run' : 
             findBayData.STATUS == 'LOADING'&& findBayData.MAINTENANCE == 'n' ? 'กำลังโหลด' : 
             findBayData.STATUS == 'LOADED'&& findBayData.MAINTENANCE == 'n' ? 'โหลดเสร็จสิ้น' : 
             findBayData.STATUS == 'EMPTY'&& findBayData.MAINTENANCE == 'n' ? 'ว่าง' : 'อยู่ระหว่างซ่อมบำรุง',
-          weight: findBayData.CURRENT_QNTY,
+          weight: findBayData.CURRENT_WEIGHT,
           loading: findBayData.CURRENT_QNTY,
           maxLoading: findBayData.FINISH_QNTY, 
-          timeLoading: findBayData?.CURRENT_TIME ? `${findBayData.CURRENT_TIME}/${findBayData.FINISH_TIME} นาที` : '',
+          timeLoading: findBayData?.CURRENT_TIME !== null ? `${findBayData.CURRENT_TIME}/${findBayData.FINISH_TIME} นาที` : '',
           state: 
             findBayData.STATUS == 'CALLING' && findBayData.MAINTENANCE == 'n' ? 'pending' : 
             findBayData.STATUS == 'READY' && findBayData.MAINTENANCE == 'n' ? 'pending' : 
@@ -65,13 +57,15 @@ const CarrierDashboard = () => {
           rearlicense: findBayData.REAR_LICENSE,
           queuenumber: findBayData.Q_NO,
           product: findBayData.PRODUCT,
-          abnormal: false,
+          abnormal: findBayData.ABNORMAL && findBayData.ABNORMAL == 'y' ? true : false,
           maintenance: findBayData.MAINTENANCE === 'y',
           isdryrun: findBayData.DRYRUN === 'y',
           isauto: findBayData.QUEUE_AUTO === 'y',
           memo: findBayData.MEMO,
           cnt: findBayData.CNT,
+          lastchange: findBayData.LAST_CHANG2 ? findBayData.LAST_CHANG2 : findBayData.LAST_CHANGE1 ? findBayData.LAST_CHANGE1 : '---',
           startweight: findBayData.SET_START_WEIGHT,
+          existweight: findBayData.SET_FINISH_WEIGHT,
           autodelay: findBayData.SET_AUTO_DELAY,
           flowrate: findBayData.SET_FLOW_RATE,
           sq_tare: findBayData.SQ_TARE,
@@ -120,25 +114,7 @@ const CarrierDashboard = () => {
   }, [waitingQueue]);
 
   const downLoadBayData = (id) => {
-    const selectedCarrier = carriers.find(carrier => carrier.id === id);
-    //console.log('Selected Carrier:', selectedCarrier);
-    if (selectedCarrier) {
-      setBayData(prevData =>
-        prevData.map(carrier => 
-          carrier.id === id && carrier.state === 'finished' ? 
-            { ...carrier, weight: 500, counter: 0 } 
-          : carrier.id === id && carrier.state === 'loading' ? 
-            { ...carrier, loading: carrier.maxLoading, counter: 0, state: 'finished', status: 'โหลดเสร็จสิ้น', timeLoading: '10/10 นาที' } 
-          : carrier.id === id && carrier.state === 'free' ?
-            { ...carrier, state: 'pending', status: 'เรียกคิว', loading: 5000, counter: 0, carrier: 'CARRIER-TEST1', weight: 340, timeLoading: '' }
-          : carrier.id === id && carrier.state === 'pending' ?
-            { ...carrier, weight: 2001, counter: 0, state: 'loading', status: 'กำลังโหลด', loading: 2001, timeLoading: '5/10 นาที', verified: true, carrier: 'THAI SPECIAL GAS CO., LTD' }
-          :  carrier.id === id && carrier.state === 'dry-run' ? 
-            { ...carrier, state: 'free', status: 'ว่าง', timeLoading: '',weight: 0, loading: null, counter: 0, verified: false, carrier: 'DRY RUN' } 
-          : carrier
-        )
-      );
-    }
+
   };
 
   const carriers = [
@@ -187,70 +163,6 @@ const CarrierDashboard = () => {
       frontlicense: '67-9607',
       rearlicense: '53-1217',
       queuenumber: 0,
-      product: 'LNG',
-      abnormal: false,
-    },
-    {
-      id: 'D',
-      status: 'เรียกคิว',
-      weight: 0,
-      loading: 1000,
-      maxLoading: 17221, 
-      timeLoading: '',
-      state: 'pending',
-      verified: false,
-      frontlicense: '67-9607',
-      rearlicense: '53-1217',
-      queuenumber: 16,
-      carrier: 'CARRIER-TEST1',
-      product: 'LNG',
-      abnormal: false,
-    },
-    {
-      id: 'C',
-      status: 'อยู่ระหว่างซ่อมบำรุง',
-      weight: 0,
-      loading: null,
-      maxLoading: 17221, 
-      timeLoading: '',
-      state: 'maintenance',
-      carrier: '',
-      verified: true,
-      frontlicense: '403 83-1985',
-      rearlicense: '5002 83-4329',
-      queuenumber: 13,
-      product: 'LNG',
-      abnormal: false,
-    },
-    // {
-    //   id: 'D',
-    //   status: 'Dry Run',
-    //   weight: 0,
-    //   loading: 0,
-    //   maxLoading: 17221, 
-    //   timeLoading: '',
-    //   state: 'dry-run',
-    //   carrier: 'DRY RUN',
-    //   verified: true,
-    //   frontlicense: '67-9607',
-    //   rearlicense: '53-1217',
-    //   queuenumber: 4,
-    //   product: 'LNG',
-    //   abnormal: false,
-    // },
-    {
-      id: 'C',
-      status: 'ว่าง',
-      weight: 0,
-      loading: null,
-      maxLoading: 17221, 
-      timeLoading: '',
-      state: 'free',
-      carrier: '',
-      verified: false,
-      frontlicense: '67-9607',
-      rearlicense: '53-1217',
-      queuenumber: 10,
       product: 'LNG',
       abnormal: false,
     },
@@ -336,7 +248,7 @@ const CarrierDashboard = () => {
                   carrier.state === 'finished' ? 'bg-emerald-50' : 
                     carrier.state === 'loading' ? 'bg-amber-50' : 
                       carrier.state === 'maintenance' ? 'bg-red-100' : 
-                        carrier.state === 'dry-run' ? 'bg-blue-50' : 
+                        carrier.state === 'dry-run' ? 'bg-blue-100' : 
                          carrier.state === 'pending' ? 'bg-indigo-200 animate-blink' : 'bg-slate-50'
                 } rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${ carrier.abnormal ? 'border-4 border-solid border-red-500' : 'border border-white/50' } `}
               >
@@ -432,10 +344,10 @@ const CarrierDashboard = () => {
                       }`}> { carrier.state === 'loading' || carrier.state === 'finished' ? carrier.timeLoading : '' } </div>
                     </div>
                   </div>
-                  <div className='w-1/4 min-h-24 h-full relative '>
+                  <div className='w-1/4 min-h-24 h-full relative'>
                     { carrier.abnormal &&(
                       <div>
-                        <div className="">
+                        <div className={` ${ carrier.state == 'free' ? '-translate-x-14' : '' } `}>
                             <img src={alertImg} alt='truck' className='h-24' />
                         </div> 
                       </div>
@@ -457,11 +369,11 @@ const CarrierDashboard = () => {
                       </div> 
                     </div> : 
                     <div className='absolute top-1/2 left-1/3 -translate-y-1/2 flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden'>
-                      {carrier.state != 'pending' && carrier.loading >= carrier.startweight ? (
+                      {carrier.state != 'pending' && carrier.weight >= carrier.startweight ? (
                         <div className="animate-truck-enter">
                           <TruckModel key={carrier.id} product={carrier.product}/>
                         </div>
-                      ) : carrier.loading >= carrier.startweight ? (
+                      ) : carrier.weight >= carrier.startweight ? (
                         <div className="animate-truck-enter">
                           <TruckModel key={carrier.id} product={carrier.product}/>
                         </div>
@@ -471,7 +383,7 @@ const CarrierDashboard = () => {
                         </div>
                       }
                       <div className="bg-white/80 rounded-lg shadow-md px-4 border border-slate-300 font-semibold">
-                        {carrier.carrier}
+                         { carrier.isdryrun ? 'Dry Run' : carrier.carrier }
                       </div>
                     </div>
                   }
@@ -497,8 +409,8 @@ const CarrierDashboard = () => {
                         <div >คิวที่ {carrier.queuenumber}</div>
                       </div>
                       <div className='text-right '>
-                        <div className="text-3xl font-semibold text-slate-600 bg-white px-2 py-1 rounded-md shadow-md">หน้า { carrier.frontlicense }</div>
-                        <div className="text-3xl font-semibold text-slate-600 mt-2 bg-white px-2 py-1 rounded-md shadow-md">หลัง { carrier.rearlicense}</div>
+                        <div className="text-3xl text-left font-semibold text-slate-600 bg-white px-2 py-1 rounded-md shadow-md">หน้า { carrier.frontlicense }</div>
+                        <div className="text-3xl text-left font-semibold text-slate-600 mt-2 bg-white px-2 py-1 rounded-md shadow-md">หลัง { carrier.rearlicense ? carrier.rearlicense : '---' }</div>
                       </div>
                     </div>
                   }
@@ -588,7 +500,7 @@ const CarrierDashboard = () => {
                   carrier.state === 'finished' ? 'bg-emerald-50' : 
                     carrier.state === 'loading' ? 'bg-amber-50' : 
                       carrier.state === 'maintenance' ? 'bg-red-100' : 
-                        carrier.state === 'dry-run' ? 'bg-blue-50' : 
+                        carrier.state === 'dry-run' ? 'bg-blue-100' : 
                          carrier.state === 'pending' ? 'bg-indigo-200 animate-blink' : 'bg-slate-50'
                 } rounded-2xl pl-4 py-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${ carrier.abnormal ? 'border-4 border-solid border-red-500' : 'border border-white/50' }`}
               >
@@ -687,7 +599,7 @@ const CarrierDashboard = () => {
                   <div className='w-1/4 min-h-24 h-full relative scale-75'>
                     { carrier.abnormal &&(
                       <div>
-                        <div className="">
+                        <div className={` ${ carrier.state == 'free' ? '-translate-x-20' : '' } `}>
                             <img src={alertImg} alt='truck' className='h-24' />
                         </div> 
                       </div>
@@ -709,11 +621,11 @@ const CarrierDashboard = () => {
                       </div> 
                     </div> : 
                     <div className='absolute top-1/2 left-1/3 -translate-y-1/2 flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden'>
-                      {carrier.state != 'pending' && carrier.loading >= carrier.startweight ? (
+                      {carrier.state != 'pending' && carrier.weight >= carrier.startweight ? (
                         <div className="animate-truck-enter">
                           <TruckModel key={carrier.id} product={carrier.product}/>
                         </div>
-                      ) : carrier.loading >= carrier.startweight ? (
+                      ) : carrier.weight >= carrier.startweight ? (
                         <div className="animate-truck-enter">
                           <TruckModel key={carrier.id} product={carrier.product}/>
                         </div>

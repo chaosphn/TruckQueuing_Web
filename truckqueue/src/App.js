@@ -26,11 +26,17 @@ function App() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      updateQueueData();
       updateBayData();
-      updateRegisterQueueData();
     }, config?.INTERVAL??5000);
     return () => clearInterval(timer);
+  }, [config]);
+
+  useEffect(() => {
+    const timer1 = setInterval(() => {
+      updateQueueData();
+      updateRegisterQueueData();
+    }, 300000);
+    return () => clearInterval(timer1);
   }, [config]);
 
   const handleGetConfig = async () => {

@@ -26,7 +26,7 @@ const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
     if(orderNumber.length > 0){
       const result = await getQueueDataByOrder(data.ordernumber.trim());
       if(result && result.length > 0){
-        console.log(result);
+        //console.log(result);
         onSave({ mode: 'order', data: result, type: mode });
       } else {
         //alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั ้ง');

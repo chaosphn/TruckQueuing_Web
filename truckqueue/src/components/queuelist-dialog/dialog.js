@@ -15,6 +15,7 @@ import { Button } from '@mui/material';
 
 const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAbnormal, setIsAbnormal] = useState(false);
   const [activeTab, setActiveTab] = useState('ค้นหาเลขทะเบียน');
   const [plateHeadNumber, setPlateHeadNumber] = useState('');
   const [plateTailNumber, setPlateTailNumber] = useState('');
@@ -26,15 +27,19 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
 
   useEffect(() => {
-    console.log(mode, bay, data);
+    //console.log(mode, bay, data);
     handleGetQueueData();
   }, [open]);
 
   const handleGetQueueData = async () => {
     const result = await getAllRegisteredQueueData();
     if(result && result.length > 0){
-      if(data?.isdryrun){
-        setQueueData(result);
+      if(mode !== 'cancle'){
+        if(data?.isdryrun){
+          setQueueData(result.filter(x => x.DRYRUN === 'y'));
+        } else {
+          setQueueData(result.filter(x => x.DRYRUN === 'n'));
+        }
       } else {
         setQueueData(result);
       }
@@ -69,13 +74,14 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
           setSelectedAction('Assign Queue : '+selectedRows.Q_NO);
         }
         setOpenDataDialog(true);
-        console.log('🚀 Selected Row:', selectedRows);
+        //console.log('🚀 Selected Row:', selectedRows);
       }
     }
   };
 
-  const handleAssignQueue = async () => {
-    const result = await assignQueueDataToBay(selectionRow.Q_ID, bay);
+  const handleAssignQueue = async (check) => {
+    const status = check ? 'y' : 'n';
+    const result = await assignQueueDataToBay(selectionRow.Q_ID, bay, status);
     if(result && result.Message){
       alert(result.Message);
     }
@@ -208,17 +214,21 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
           setOpenDataDialog(false);
         }}
       ></DataDetailDialog> */}
-      <ManageDialog opens={openDataDialog} selectedAction={selectedAction} chaeckbox={ mode !== 'cancle' ? true : false } count={mode == 'cancle' ? 10 : 0} onSave={(st) => {
-        console.log('dialog result: '+st);
-        setOpenDataDialog(false);
-        if(st && mode == 'cancle'){
-          handleCancelQueue();
-        }else if(st && mode == 'assign'){
-          handleAssignQueue();
-        } else {
-          onClose();
-        }
-      }}></ManageDialog>
+      <ManageDialog opens={openDataDialog} selectedAction={selectedAction} chaeckbox={ mode !== 'cancle' ? true : false } count={mode == 'cancle' ? 10 : 0} 
+        onSave2={(d) => setIsAbnormal(d) }
+        onSave={(st, check) => {
+          //console.log('dialog result: '+st);
+          setOpenDataDialog(false);
+          if(st && mode == 'cancle'){
+            handleCancelQueue();
+          }else if(st && mode == 'assign'){
+            handleAssignQueue(check);
+          } else {
+            onClose();
+          }
+        }}
+      >
+      </ManageDialog>
     </div>
   );
 };

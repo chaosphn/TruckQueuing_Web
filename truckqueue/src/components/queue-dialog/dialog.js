@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { getDatabyOrder, getDatabyPlateNumber } from '../../services/http-service';
 
 const TruckQueueDialog = ({ open, mode, onSave, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,40 +16,40 @@ const TruckQueueDialog = ({ open, mode, onSave, onClose }) => {
   };
 
   const handleSave = async () => {
-    if(activeTab =='ค้นหาเลขทะเบียน'){
-        const data = {
-          type: activeTab,
-          headnumber: plateHeadNumber,
-          tailnumber: plateTailNumber
-        };
-        if(plateHeadNumber.length > 0 && plateTailNumber.length > 0){
-          const result = await getDatabyPlateNumber(data.headnumber, data.tailnumber);
-          if(result && result.length > 0){
-            console.log(result);
-            onSave({ mode: 'plate', data: result, type: mode });
-          } else {
-            alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั ้ง');
-          }
-        } else {
-          alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
-        }
-    } else {
-        const data = {
-          type: activeTab,
-          ordernumber: orderNumber
-        };
-        if(orderNumber.length > 0){
-          const result = await getDatabyOrder(data.ordernumber);
-          if(result && result.length > 0){
-            console.log(result);
-            onSave({ mode: 'order', data: result, type: mode });
-          } else {
-            alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั ้ง');
-          }
-        } else {
-          alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
-        }
-    }
+    // if(activeTab =='ค้นหาเลขทะเบียน'){
+    //     const data = {
+    //       type: activeTab,
+    //       headnumber: plateHeadNumber,
+    //       tailnumber: plateTailNumber
+    //     };
+    //     if(plateHeadNumber.length > 0 && plateTailNumber.length > 0){
+    //       const result = await getDatabyPlateNumber(data.headnumber, data.tailnumber);
+    //       if(result && result.length > 0){
+    //         console.log(result);
+    //         onSave({ mode: 'plate', data: result, type: mode });
+    //       } else {
+    //         alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั ้ง');
+    //       }
+    //     } else {
+    //       alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+    //     }
+    // } else {
+    //     const data = {
+    //       type: activeTab,
+    //       ordernumber: orderNumber
+    //     };
+    //     if(orderNumber.length > 0){
+    //       const result = await getDatabyOrder(data.ordernumber);
+    //       if(result && result.length > 0){
+    //         console.log(result);
+    //         onSave({ mode: 'order', data: result, type: mode });
+    //       } else {
+    //         alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั ้ง');
+    //       }
+    //     } else {
+    //       alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+    //     }
+    // }
   };
 
   if (!open) {

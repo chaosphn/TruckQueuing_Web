@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { cancleQueueAtBay, cancleQueueToRegister, finishQueueDataAtBay, getDatabyOrder, getDatabyPlateNumber } from '../../services/http-service';
+import { cancleQueueAtBay, cancleQueueToRegister, finishQueueDataAtBay, getDatabyOrder, getDatabyPlateNumber, setAutoModeToBay, setBaySettingData, setDryRunModeToBay, setManualModeToBay } from '../../services/http-service';
 import bayImg from '../../assets/bay.png';
 import TruckModel from '../truck/truck-model';
 import Slider from '@mui/material/Slider';
@@ -30,7 +30,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   useEffect(() => {
     setDelayTime(data?.autodelay??0);
     setStartWeigth(data?.startweight??0);
-    setExistWeigth(data?.maxLoading??0);
+    setExistWeigth(data?.existweight??0);
   }, [data]);
 
   const handleClose = () => {
@@ -47,9 +47,14 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
     setOpenQueueDialog(false);
 
     switch (selectedAction) {
-      case 'DryRun Mode':
+      case 'Enable DryRun Mode':
         if (cfmStatus) {
-          handleDryRunMode();
+          handleDryRunMode(true);
+        }
+        break;
+      case 'Disable DryRun Mode':
+        if (cfmStatus) {
+          handleDryRunMode(false);
         }
         break;
       case 'Finish DryRun':
@@ -69,14 +74,36 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
         }
         break;
       case 'Auto Queuing':
+        if (cfmStatus) {
+          handleAutoQueue();
+        }
         break;
       case 'Manual Queuing':
+        if (cfmStatus) {
+          handleManualQueue();
+        }
         break;
       default:
         break;
     }
 
-    setSelectedAction('');
+    //setSelectedAction('');
+  };
+
+  const handleAutoQueue = async () => {
+    const result = await setAutoModeToBay(data.id);
+    if(result && result.Message){
+      alert(result.Message);
+    }
+    handleClose();
+  };
+
+  const handleManualQueue = async () => {
+    const result = await setManualModeToBay(data.id);
+    if(result && result.Message){
+      alert(result.Message);
+    }
+    handleClose();
   };
 
   const handleFinishQueue = async () => {
@@ -84,6 +111,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
     if(result && result.Message){
       alert(result.Message);
     }
+    handleClose();
   };
 
   const handleCancleToQueue = async () => {
@@ -91,6 +119,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
     if(result && result.Message){
       alert(result.Message);
     }
+    handleClose();
   };
 
   const handleCancleToRegister = async () => {
@@ -98,13 +127,26 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
     if(result && result.Message){
       alert(result.Message);
     }
+    handleClose();
   };
 
-  const handleDryRunMode = async () => {
-    // const result = await finishQueueDataAtBay(data.id);
-    // if(result && result.Message){
-    //   alert(result.Message);
-    // }
+  const handleDryRunMode = async (st) => {
+    const result = await setDryRunModeToBay(data.id, st);
+    if(result && result.Message){
+      alert(result.Message);
+    }
+    handleClose();
+  };
+
+  const handleSettingBayData = async () => {
+    const delay = delayTime;
+    const stWeigth = startWeigth;
+    const enWeigth = existWeigth;
+    const result = await setBaySettingData(data.id, delay, stWeigth, enWeigth);
+    if(result && result.Message){
+      alert(result.Message);
+    }
+    handleClose();
   };
   
 
@@ -121,7 +163,8 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
         <div className={`bg-gradient-to-l ${data.state === 'finished' ? 'from-emerald-400 to-emerald-600' :
             data.state === 'loading' ? 'from-amber-400 to-orange-500' :
               data.state === 'maintenance' ? 'from-red-400 to-red-600' :
-                data.state === 'dry-run' ? 'from-blue-400 to-blue-600' : 'from-slate-400 to-slate-600'
+                data.state === 'pending' ? 'from-indigo-400 to-indigo-600' :
+                  data.state === 'dry-run' ? 'from-blue-400 to-blue-600' : 'from-slate-400 to-slate-600'
           } text-white text-2xl font-bold px-6 py-4 rounded-t-xl`}>
           Queue {type.toLowerCase()} at BAY {data.id}
         </div>
@@ -266,7 +309,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                         <button
                           disabled={data.state === 'maintenance' ? true : false}
                           className={`flex-1 py-2 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b ${
-                            selectedAction2 === 'Auto Queuing' || data.type == 'auto' ? 'from-blue-400 to-blue-800 text-white' : 'from-gray-100 to-gray-400 text-gray-800'
+                            data.type == 'auto' ? 'from-blue-400 to-blue-800 text-white' : 'from-gray-100 to-gray-400 text-gray-800'
                           }`}
                           onClick={() => {
                             setOpenDataDialog(true);
@@ -280,7 +323,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                         <button
                           disabled={data.state === 'maintenance' ? true : false}
                           className={`flex-1 py-2 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b ${
-                            selectedAction2 === 'Manual Queuing' || data.type == 'manual' ? 'from-blue-400 to-blue-800 text-white' : 'from-gray-100 to-gray-400 text-gray-800'
+                            data.type == 'manual' ? 'from-blue-400 to-blue-800 text-white' : 'from-gray-100 to-gray-400 text-gray-800'
                           }`}
                           onClick={() => {
                             setOpenDataDialog(true);
@@ -304,10 +347,10 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                   <div className="bg-gray-100 rounded-lg px-4 py-4 h-full">
                     <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing {type == 'SETTING' ? 'Setting' : 'Management'}</h4>
                     <div className="grid grid-cols-1 gap-4 mb-3">
-                      <TextField disabled={data.state === 'maintenance' ? true : false} label="Auto Assign Delay (S)" size="small" type='number' value={delayTime} onChange={(e) => setDelayTime(e.target.value)} />
-                      <TextField disabled={data.state === 'maintenance' ? true : false} label="Starting Weight (T)" size="small" type='number' value={startWeigth} onChange={(e) => setStartWeigth(e.target.value)} />
-                      <TextField disabled={data.state === 'maintenance' ? true : false} label="Exit Weight (T)" size="small" type='number' value={existWeigth} onChange={(e) => setExistWeigth(e.target.value)} />
-                      <span className='font-semibold'>Last Update: {data?.sq_start??'---'}</span>
+                      <TextField disabled={data.state !== 'free' ? true : false} label="Auto Assign Delay (S)" size="small" type='number' value={delayTime} onChange={(e) => setDelayTime(e.target.value)} />
+                      <TextField disabled={data.state !== 'free' ? true : false} label="Starting Weight (T)" size="small" type='number' value={startWeigth} onChange={(e) => setStartWeigth(e.target.value)} />
+                      <TextField disabled={data.state !== 'free' ? true : false} label="Exit Weight (T)" size="small" type='number' value={existWeigth} onChange={(e) => setExistWeigth(e.target.value)} />
+                      <span className='font-semibold'>Last Update: {data?.lastchange??'---'}</span>
                     </div>
                   </div>
                 </div>
@@ -317,12 +360,12 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                     <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing {type == 'SETTING' ? 'Setting' : 'Management'}</h4>
                     <button 
                       disabled={data.state === 'maintenance' ? true : false}
-                      className={`w-full mb-3 flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b ${ data.state === 'dry-run' ? 'from-blue-400 to-blue-800 text-white' : 'from-gray-100 to-gray-400 text-gray-800' }`}
+                      className={`w-full mb-3 flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b ${ data.isdryrun ? 'from-blue-400 to-blue-800 text-white' : 'from-gray-100 to-gray-400 text-gray-800' }`}
                       onClick={() => {
                         setSelectedMode(!selectedMode)
                         setOpenDataDialog(true);
                         setcountAction(0)
-                        setSelectedAction('DryRun Mode')
+                        setSelectedAction( !data?.isdryrun ? 'Enable DryRun Mode' : 'Disable DryRun Mode')
                       }
                       }
                     >
@@ -330,20 +373,26 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                     </button>
                     <div className="grid grid-cols-2 gap-6 mb-3">
                       <button
-                        disabled={data.state === 'maintenance' ? true : false}
-                        className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800`}
+                        disabled={data.state === 'maintenance' || data.state === 'free' ? true : false}
+                        className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800
+                           hover:from-gray-100 hover:to-gray-400 hover:text-gray-800 hover:border-x-zinc-400 hover:shadow-sm hover:translate-y-0 hover:scale-100
+                            transition-all duration-300 ease-out
+                            cursor-pointer disabled:cursor-not-allowed`}
                         onClick={() => {
                           setOpenDataDialog(true);
                           setcountAction(0)
-                          setSelectedAction(data.state === 'dry-run' ? 'Finish DryRun' : 'Finish Queue')
+                          setSelectedAction(data.isdryrun ? 'Finish DryRun' : 'Finish Queue')
                         }
                         }
                       >
-                        {data.state === 'dry-run' ? 'Finish DryRun' : 'Finish Queue'}
+                        {data.isdryrun ? 'Finish DryRun' : 'Finish Queue'}
                       </button>
                       <button
-                        disabled={data.state === 'maintenance' || data.isauto ? true : false}
-                        className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800`}
+                        disabled={ data.state === 'free' && !data.isauto ? false : true}
+                        className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800
+                           hover:from-gray-100 hover:to-gray-400 hover:text-gray-800 hover:border-x-zinc-400 hover:shadow-sm hover:translate-y-0 hover:scale-100
+                            transition-all duration-300 ease-out
+                            cursor-pointer disabled:cursor-not-allowed`}
                         onClick={() => {
                           setOpenQueueDialog(true);
                           setcountAction(0)
@@ -356,20 +405,25 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                     </div>
                     <div className="grid grid-cols-2 gap-6 mb-3">
                         <button 
-                          disabled={data.state === 'maintenance' ? true : false}
-                          className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800`}
+                          disabled={data.state === 'maintenance' || data.state === 'free' ? true : false}
+                          className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800
+                           hover:from-gray-100 hover:to-gray-400 hover:text-gray-800 hover:border-x-zinc-400 hover:shadow-sm hover:translate-y-0 hover:scale-100
+                            transition-all duration-300 ease-out
+                            cursor-pointer disabled:cursor-not-allowed`}
                           onClick={() => {
                             setOpenDataDialog(true);
                             setcountAction(10)
                             setSelectedAction('Cancel to Queuing')
-                          }
-                          }
+                          }}
                         >
                           Cancel to Queuing
                         </button>
                         <button 
                           disabled={data.state === 'maintenance' ? true : false}
-                          className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800`}
+                          className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800
+                           hover:from-gray-100 hover:to-gray-400 hover:text-gray-800 hover:border-x-zinc-400 hover:shadow-sm hover:translate-y-0 hover:scale-100
+                            transition-all duration-300 ease-out
+                            cursor-pointer disabled:cursor-not-allowed`}
                           onClick={() => {
                             setOpenDataDialog(true);
                             setcountAction(10)
@@ -393,7 +447,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
           </button>
           {
             type != 'SETTING' ? null :
-              <button onClick={handleClose} className="px-8 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center space-x-2">
+              <button onClick={handleSettingBayData} className="px-8 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center space-x-2">
                 <span>✓</span>
                 <span>ยืนยัน</span>
               </button>
@@ -403,7 +457,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
           setcountAction(0);
           handleSave(st);
         }}></ManageDialog>
-        <QueueListDialog open={openQueueDialog} mode={'assign'} bay={data.id} onClose={handleClose}></QueueListDialog>
+        <QueueListDialog open={openQueueDialog} data={data} mode={'assign'} bay={data.id} onClose={handleClose}></QueueListDialog>
       </div>
     </div>
   );

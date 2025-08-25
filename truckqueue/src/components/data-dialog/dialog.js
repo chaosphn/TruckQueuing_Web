@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { getDatabyOrder, getDatabyPlateNumber } from '../../services/http-service';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -10,6 +9,7 @@ import { dateFormatParser } from '../../services/date-service';
 import Typography from '@mui/material/Typography';
 import DataDetailDialog from '../detail-dialog/dialog';
 import { Button } from '@mui/material';
+import { getQueueDataByLicense, getQueueDataByOrder } from '../../services/http-service';
 
 const TruckDataDialog = ({ open, data, mode, type, truck_type, onSave, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +23,7 @@ const TruckDataDialog = ({ open, data, mode, type, truck_type, onSave, onClose }
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
 
   useEffect(() => {
-    console.log(mode, type, data);
+    //console.log(mode, type, data);
     if(data){
       setQueueData(data);
     }
@@ -37,7 +37,7 @@ const TruckDataDialog = ({ open, data, mode, type, truck_type, onSave, onClose }
   const closeDialog = () => setIsOpen(false);
 
   const handleConfirm = () => {
-    //console.log('Confirmed:', { activeTab, plateNumber, orderNumber });
+    ////console.log('Confirmed:', { activeTab, plateNumber, orderNumber });
     closeDialog();
   };
 
@@ -50,38 +50,37 @@ const TruckDataDialog = ({ open, data, mode, type, truck_type, onSave, onClose }
     if (selectedRows) {
       setSelectionRow(selection);
       setOpenDataDialog(true);
-      console.log('🚀 Selected Row:', selectedRows);
+      //console.log('🚀 Selected Row:', selectedRows);
     }
   };
 
   const handleSelectedRowAction = (row) => {
     // Your action with selected row
-    console.log('🔥 Do something with:', row);
+    //console.log('🔥 Do something with:', row);
   };
 
   const handleReloadData = async () => {
-    console.log(data, mode, type);
+    //console.log(data, mode, type);
     if(mode === 'plate'){
-      const plateHead = data[0].FontLicense ?? '';
-      const plateTail = data[0].RearLicense ?? '';
-      const result = await getDatabyPlateNumber(plateHead, plateTail);
+      const plateHead = queueData[0]?.FRONT_LICENSE ?? '';
+      const plateTail = queueData[0]?.REAR_LICENSE ?? '';
+      const result = await getQueueDataByLicense(plateHead, plateTail);
       if(result && result.length > 0){
-        console.log(result);
+        //console.log(result);
         setQueueData(result);
-      } else {
-        alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั้ง');
-      }
-    } else if(mode === 'order'){
-      const orderNumber = data[0].Code ?? '';
-      const result = await getDatabyOrder(orderNumber);
-      if(result && result.length > 0){
-        console.log(result);
-        setQueueData(result);
-      } else {
-        alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั้ง');
-      }
+      } 
+      // else {
+      //   alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั้ง');
+      // }
     } else {
-      alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั้ง');
+      const result = await getQueueDataByOrder(queueData[0]?.ORDER_CODE);
+      if(result && result.length > 0){
+        //console.log(result);
+        setQueueData(result);
+      } 
+      // else {
+      //   alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั้ง');
+      // }
     }
   };
 

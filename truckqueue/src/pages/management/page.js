@@ -50,7 +50,7 @@ const CarrierManagement = () => {
   }, []);
 
   useEffect(() => {
-    console.log('Updating bay data');
+    //console.log('Updating bay data');
     const bayList = carriers.slice(0, 4);
     const data = bayList.map((item) => {
       const findBayData = bayData.find(x => x.METER_NAME == item.id);
@@ -59,15 +59,15 @@ const CarrierManagement = () => {
           id: item.id,
           status: 
             findBayData.STATUS == 'CALLING' && findBayData.MAINTENANCE == 'n' ? 'เรียกคิว' : 
-            findBayData.STATUS == 'READY'&& findBayData.MAINTENANCE == 'n' ? 'เรียกคิว' : 
+            findBayData.STATUS == 'READY'&& findBayData.MAINTENANCE == 'n' ? 'เตรียมพร้อม' : 
             findBayData.STATUS == 'DRYRUN'&& findBayData.MAINTENANCE == 'n' && findBayData.DRYRUN == 'y' ? 'Dry Run' : 
             findBayData.STATUS == 'LOADING'&& findBayData.MAINTENANCE == 'n' ? 'กำลังโหลด' : 
             findBayData.STATUS == 'LOADED'&& findBayData.MAINTENANCE == 'n' ? 'โหลดเสร็จสิ้น' : 
             findBayData.STATUS == 'EMPTY'&& findBayData.MAINTENANCE == 'n' ? 'ว่าง' : 'อยู่ระหว่างซ่อมบำรุง',
-          weight: findBayData.CURRENT_QNTY,
+          weight: findBayData.CURRENT_WEIGHT,
           loading: findBayData.CURRENT_QNTY,
           maxLoading: findBayData.FINISH_QNTY, 
-          timeLoading: findBayData?.CURRENT_TIME ? `${findBayData.CURRENT_TIME}/${findBayData.FINISH_TIME} นาที` : '',
+          timeLoading: findBayData?.CURRENT_TIME !== null ? `${findBayData.CURRENT_TIME}/${findBayData.FINISH_TIME} นาที` : '',
           state: 
             findBayData.STATUS == 'CALLING' && findBayData.MAINTENANCE == 'n' ? 'pending' : 
             findBayData.STATUS == 'READY' && findBayData.MAINTENANCE == 'n' ? 'pending' : 
@@ -81,13 +81,15 @@ const CarrierManagement = () => {
           rearlicense: findBayData.REAR_LICENSE,
           queuenumber: findBayData.Q_NO,
           product: findBayData.PRODUCT,
-          abnormal: false,
+          abnormal: true,
           maintenance: findBayData.MAINTENANCE === 'y',
           isdryrun: findBayData.DRYRUN === 'y',
           isauto: findBayData.QUEUE_AUTO === 'y',
           memo: findBayData.MEMO,
           cnt: findBayData.CNT,
+          lastchange: findBayData.LAST_CHANG2 ? findBayData.LAST_CHANG2 : findBayData.LAST_CHANGE1 ? findBayData.LAST_CHANGE1 : '---',
           startweight: findBayData.SET_START_WEIGHT,
+          existweight: findBayData.SET_FINISH_WEIGHT,
           autodelay: findBayData.SET_AUTO_DELAY,
           flowrate: findBayData.SET_FLOW_RATE,
           sq_tare: findBayData.SQ_TARE,
@@ -97,7 +99,7 @@ const CarrierManagement = () => {
           usage: findBayData.CNT,
           mode: findBayData.MAINTENANCE === 'y' ? 'MAINTENANCE MODE' : 'OPERATING MODE',
           type: findBayData.QUEUE_AUTO === 'y' ? 'auto' : 'manual',
-        }
+        };
       } else {
         return {
           id: item.id,
@@ -119,7 +121,9 @@ const CarrierManagement = () => {
           isauto: false,
           memo: null,
           cnt: 0,
+          lastchange: '---',
           startweight: 0,
+          existweight: 0,
           autodelay: 0,
           flowrate: 0,
           sq_tare: 0,
@@ -129,7 +133,7 @@ const CarrierManagement = () => {
           usage: 0,
           mode: 'OPERATING MODE',
           type: 'auto'
-        }
+        };
       };
     }); 
     setBayData(data);
@@ -141,25 +145,7 @@ const CarrierManagement = () => {
   }, [waitingQueue]);
 
   const downLoadBayData = (id) => {
-    const selectedCarrier = carriers.find(carrier => carrier.id === id);
-    console.log('Selected Carrier:', selectedCarrier);
-    if (selectedCarrier) {
-      setBayData(prevData =>
-        prevData.map(carrier => 
-          carrier.id === id && carrier.state === 'finished' ? 
-            { ...carrier, weight: 500, counter: 0 } 
-          : carrier.id === id && carrier.state === 'loading' ? 
-            { ...carrier, loading: carrier.maxLoading, counter: 0, state: 'finished', status: 'โหลดเสร็จสิ้น', timeLoading: '10/10 นาที' } 
-          : carrier.id === id && carrier.state === 'free' ?
-            { ...carrier, state: 'pending', status: 'เรียกคิว', loading: 5000, counter: 0, carrier: 'CARRIER-TEST1', weight: 340, timeLoading: '' }
-          : carrier.id === id && carrier.state === 'pending' ?
-            { ...carrier, weight: 2001, counter: 0, state: 'loading', status: 'กำลังโหลด', loading: 2001, timeLoading: '5/10 นาที', verified: true, carrier: 'THAI SPECIAL GAS CO., LTD' }
-          :  carrier.id === id && carrier.state === 'dry-run' ? 
-            { ...carrier, state: 'free', status: 'ว่าง', timeLoading: '',weight: 0, loading: null, counter: 0, verified: false } 
-          : carrier
-        )
-      );
-    }
+  
   };
 
   const carriers = [
@@ -201,45 +187,6 @@ const CarrierManagement = () => {
       product: 'LNG',
        abnormal: true,
     },
-    // {
-    //   id: 'C',
-    //   status: 'ว่าง',
-    //   weight: 0,
-    //   loading: null,
-    //   maxLoading: 17221, 
-    //   timeLoading: '',
-    //   state: 'free',
-    //   carrier: '',
-    //   verified: false,
-    //   frontlicense: '67-9607',
-    //   rearlicense: '53-1217',
-    //   queuenumber: 0,
-    //   usage: 0,
-    //   mode: 'OPERATING MODE',
-    //   type: 'auto',
-    //   product: 'LNG',
-    //   abnormal: false,
-
-    // },
-    // {
-    //   id: 'D',
-    //   status: 'เรียกคิว',
-    //   weight: 0,
-    //   loading: 5000,
-    //   maxLoading: 17221, 
-    //   timeLoading: '',
-    //   state: 'pending',
-    //   carrier: 'CARRIER-TEST1',
-    //   verified: false,
-    //   frontlicense: '67-9607',
-    //   rearlicense: '53-1217',
-    //   queuenumber: 16,
-    //   usage: 3,
-    //   mode: 'OPERATING MODE',
-    //   type: 'manual',
-    //   product: 'LNG',
-    //   abnormal: false,
-    // },
     {
       id: 'C',
       status: 'อยู่ระหว่างซ่อมบำรุง',
@@ -278,13 +225,6 @@ const CarrierManagement = () => {
       product: 'LNG',
       abnormal: false,
     },
-  ];
-
-  const upcomingSlots = [
-    { id: 4, available: true },
-    { id: 5, available: true },
-    { id: 6, available: true },
-    { id: 7, available: false }
   ];
 
   const formatDate = (date) => {
@@ -337,7 +277,8 @@ const CarrierManagement = () => {
           setTotalbay(result.QueueUsage);
         }
       } else {
-        alert('XXXXXXXXXXXXXXXXX');
+        alert('กรุณาเลือกวันที่เริ่มต้นให้น้อยกว่าวันที่สิ้นสุด');
+        setStartDate(endDate);
       }
     } else {
       const date = startDate.toDate();
@@ -395,7 +336,7 @@ const CarrierManagement = () => {
                carrier.state === 'finished' ? 'emerald-50' : 
                     carrier.state === 'loading' ? 'amber-50' : 
                       carrier.state === 'maintenance' ? 'red-100' : 
-                        carrier.state === 'dry-run' ? 'blue-50' : 
+                        carrier.state === 'dry-run' ? 'blue-100' : 
                          carrier.state === 'pending' ? 'indigo-200' : 'slate-50'
             } rounded-2xl px-6 py-4 shadow-lg border border-white/50`}
           >
@@ -431,7 +372,7 @@ const CarrierManagement = () => {
                 <div className="text-center box-border">
                   <div className="text-3xl font-bold text-slate-700 pb-2">คิวที่ { carrier.queuenumber }</div>
                   <div className="text-lg font-semibold text-slate-500">ทะเบียนหน้า { carrier.frontlicense }</div>
-                  <div className="text-lg font-semibold text-slate-500">ทะเบียนหลัง { carrier.rearlicense }</div>
+                  <div className="text-lg font-semibold text-slate-500">ทะเบียนหลัง { carrier.rearlicense ? carrier.rearlicense : '---' }</div>
                 </div>
               }
               <div className={`w-1/5 h-full flex flex-col item-center justify-between bg-white/60 backdrop-blur-sm rounded-xl px-4 py-4 shadow-md border border-white/30`}>
@@ -532,17 +473,17 @@ const CarrierManagement = () => {
                     </div>
                   </div> : 
                   <div className='w-full absolute top-1/2 left-0 -translate-y-1/2 flex flex-col items-center justify-center h-auto gap-1 overflow-x-hidden bg-white/60 backdrop-blur-sm rounded-xl px-4 py-1 shadow-md border border-white/30'>
-                    {carrier.state != 'pending' && carrier.loading >= carrier.startweight ? (
+                    {carrier.state != 'pending' && carrier.weight >= carrier.startweight ? (
                       <div className={`animate-truck-enter`}>
                         <TruckModel key={carrier.id} product={carrier.product}/>
                       </div>
-                    ) : carrier.loading >= carrier.startweight ? (
+                    ) : carrier.weight >= carrier.startweight ? (
                       <div className={`animate-truck-enter`}>
                         <TruckModel key={carrier.id} product={carrier.product}/>
                       </div>
                     ) : null}
                     <div className={`font-semibold text-slate-900`}>
-                      {carrier.carrier}
+                      { carrier.isdryrun ? 'Dry Run' : carrier.carrier }
                     </div>
                   </div>
                 }
@@ -762,5 +703,6 @@ const CarrierManagement = () => {
     </div>
   );
 };
+
 
 export default CarrierManagement;

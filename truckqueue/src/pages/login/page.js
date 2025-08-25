@@ -16,6 +16,7 @@ const LoginPage = () => {
   });
   const [checkData, setCheckData] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isIncorrect, setIsIncorrect] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -55,25 +56,28 @@ const LoginPage = () => {
   };
 
   const handleCheckedChange = (e) => {
-    console.log(e);
+    //console.log(e);
     setCheckData(e.target.checked);
   };
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    
+    setIsIncorrect(false);
     // Simulate login process
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 500));
     const result = await login(formData.username, formData.password);
-    if(result){
+    if(result && !result.error){
         setIsLoading(false);
+        setIsIncorrect(false);
         if(checkData){
-            localStorage.setItem('authToken', 'xxxxxxx');
+            localStorage.setItem('authToken', result.token);
         } else {
-            sessionStorage.setItem('authToken', 'xxxxxxx');
+            sessionStorage.setItem('authToken', result.token);
         }
         navigate(`/management`);
-        //alert('เข้าสู่ระบบสำเร็จ!');
+    } else {
+      setIsLoading(false);
+      setIsIncorrect(true);
     }
   };
   
@@ -192,6 +196,19 @@ const LoginPage = () => {
                 </label>
               </div>
 
+              {/* Alert */}
+              {isIncorrect && (
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center">
+                    <span className="ml-2 text-red-500 text-xl font-semibold animate-slideDownFade">
+                      username หรือ password ไม่ถูกต้อง !
+                    </span>
+                  </label>
+                </div>
+              )}
+
+
+
               {/* Login Button */}
               <button
                 type="button"
@@ -226,7 +243,7 @@ const LoginPage = () => {
         </div>
       </main>
 
-      <footer className="relative z-10 bg-black/20 backdrop-blur-sm border-t border-white/20">
+      <footer className="relative bg-black/20 backdrop-blur-sm border-t border-white/20">
         <div className="mx-auto px-16 py-6">
           <div className="flex items-center justify-between">
             <div className="text-white/80 text-sm drop-shadow">
@@ -236,7 +253,7 @@ const LoginPage = () => {
               <span>Version 1.0.0</span>
               <span>•</span>
               <span>System Online</span>
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <div className="w-4 h-4 bg-green-400 rounded-full"></div>
             </div>
           </div>
         </div>

@@ -14,10 +14,12 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 function ManageDialog({ opens, selectedAction, onSave, count = 0, chaeckbox = false }) {
   const [loading, setLoading] = useState(false);
+  const [checkedResult, setCheckedResult] = useState(false);
   const [timer, setTimer] = useState(null);
   const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
+    setCheckedResult(false);
     if (!opens) {
       setLoading(false);
       setCountdown(0);
@@ -56,13 +58,15 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0, chaeckbox = fa
       const mainTimer = setTimeout(() => {
         setLoading(false);
         clearInterval(countdownInterval);
-        onSave(true);
+        
+        onSave(true, checkedResult);
       }, count * 1000);
 
       setTimer(mainTimer);
     } else {
       // ถ้า count = 0 ดำเนินการทันที
-      onSave(true);
+      
+      onSave(true, checkedResult);
     }
   };
 
@@ -73,14 +77,14 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0, chaeckbox = fa
     }
     setLoading(false);
     setCountdown(0);
-    onSave(false);
+    onSave(false, checkedResult);
   };
 
   const handleClose = () => {
     if (loading) {
       handleCancel();
     } else {
-      onSave(false);
+      onSave(false, checkedResult);
     }
   };
 
@@ -105,7 +109,9 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0, chaeckbox = fa
           {chaeckbox && (
             <Box>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox checked={checkedResult} 
+                  onChange={(event) => setCheckedResult(event.target.checked)}
+                />}
                 label="Loading Bay Abnormal"
                 sx={{ fontWeight: 'bold', mb: 1, backgroundColor: 'grey.100', paddingX: 2, borderRadius: 1 }}
               />

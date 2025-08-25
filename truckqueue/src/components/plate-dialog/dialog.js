@@ -14,7 +14,7 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
   const [queuingData ,setQueuingData] = useState(null);
 
   useEffect(() => {
-    console.log(isDryRun, mode, ishead)
+    //console.log(isDryRun, mode, ishead)
   }, [open]);
 
   const handleSave = async () => {

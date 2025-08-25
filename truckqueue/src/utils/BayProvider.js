@@ -8,7 +8,7 @@ export const BayProvider = ({ children }) => {
 
   const updateBayData = async () => {
     const result = await getBaysData();
-    console.log(result)
+    //console.log(result)
     if (result && result.MeterDashboard) {
       setBayData(result.MeterDashboard);
     }
