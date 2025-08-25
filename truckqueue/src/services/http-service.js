@@ -280,11 +280,10 @@ export const cancleQueueToRegister = async (bay) => {
 
 export const deleteQueueFromRegister = async (id) => {
     try {
-        // const body = {
-        //     METER_NAME: bay,
-        //     CancelToRegister: "y"
-        // }
-        const result = 'xxxx';//await api.post('/queue/cancel', body);
+        const body = {
+            Q_ID: id
+        }
+        const result = await api.post('/queue/cancelQID', body);
         if(result && result.data && result.data){
             return result.data;
         } else {

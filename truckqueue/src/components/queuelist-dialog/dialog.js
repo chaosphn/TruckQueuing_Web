@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { assignQueueDataToBay, getAllRegisteredQueueData, getDatabyOrder, getDatabyPlateNumber } from '../../services/http-service';
+import { assignQueueDataToBay, deleteQueueFromRegister, getAllRegisteredQueueData, getDatabyOrder, getDatabyPlateNumber } from '../../services/http-service';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -60,6 +60,13 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
 
   };
 
+  const handleClose = async () => {
+    setIsOpen(false);
+    setOpenDataDialog(false);
+    setSelectionRow(null);
+    onClose();
+  };
+
   const handleRowSelect = (selection) => {
     if (selection?.ids) {
       const selectedIds = Array.from(selection.ids); 
@@ -84,15 +91,20 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
     const result = await assignQueueDataToBay(selectionRow.Q_ID, bay, status);
     if(result && result.Message){
       alert(result.Message);
+      handleClose();
+    } else {
+      handleClose();
     }
   };
 
   const handleCancelQueue = async () => {
-    setQueueData(queueData.filter(x => x.Q_ID != selectionRow.Q_ID ))
-    // const result = await assignQueueDataToBay(selectionRow.Q_ID, bay);
-    // if(result && result.Message){
-    //   alert(result.Message);
-    // }
+    const result = await deleteQueueFromRegister(selectionRow.Q_ID);
+    if(result && result.Message){
+      alert(result.Message);
+      handleClose();
+    } else {
+      handleClose();
+    }
   };
 
   const paginationModel = { page: 0, pageSize: 5 };
@@ -224,7 +236,7 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
           }else if(st && mode == 'assign'){
             handleAssignQueue(check);
           } else {
-            onClose();
+            handleClose();
           }
         }}
       >

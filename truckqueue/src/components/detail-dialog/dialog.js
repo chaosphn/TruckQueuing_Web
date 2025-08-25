@@ -13,7 +13,7 @@ const DataDetailDialog = ({ open, data, mode, type, truck, onSave, onClose, resu
   const [ queueData, setQueueData ] = useState(null);
   const [ bookingData, setBookingData ] = useState(null);
   const [countdown, setCountdown] = useState(0);
-
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if(data){
@@ -30,16 +30,19 @@ const DataDetailDialog = ({ open, data, mode, type, truck, onSave, onClose, resu
   };
 
   const handleSave = async () => {
+    setIsLoading(true);
     const ConfirmedSelection = true;//window.confirm('คุณต้องการจองคิวหรือไม่ ?');
     if(ConfirmedSelection && queueData && queueData.ORDER_CODE && truck){
       const result = await selectLoadingQueue(queueData?.ORDER_CODE??'', truck??'');
       if(result){
         setBookingData(result);
+        setIsLoading(false);
         if(result.message == "Duplicate Register Queue"){
 
         }
       }
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -217,20 +220,56 @@ const DataDetailDialog = ({ open, data, mode, type, truck, onSave, onClose, resu
 
         {/* Footer */}
         { bookingData ?  null : (
-          <div className="flex justify-between space-x-3 px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+          <div className="p-6 bg-gray-100 rounded-b-xl flex justify-around space-x-4">
+            {/* Back Button */}
             <button
               onClick={onClose}
-              className="flex items-center space-x-2 px-6 py-2 bg-red-500 text-white rounded-md hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              className="px-8 py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center space-x-2"
             >
-              <X className="w-4 h-4" />
+              <span>X</span>
               <span>ปิด</span>
             </button>
+
+            {/* Confirm Button */}
             <button
               onClick={handleSave}
-              className="flex items-center space-x-2 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              disabled={isLoading}
+              className={`px-8 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+                isLoading
+                  ? "bg-green-400 cursor-not-allowed"
+                  : "bg-green-500 hover:bg-green-600 text-white"
+              }`}
             >
-              <span>ยืนยัน</span>
-              <Check className="w-4 h-4" />
+              {isLoading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
+                    ></path>
+                  </svg>
+                  <span>กำลังบันทึก...</span>
+                </>
+              ) : (
+                <>
+                  <span>ตกลง</span>
+                  <span>✓</span>
+                </>
+              )}
             </button>
           </div>
         )}

@@ -271,7 +271,7 @@ const CarrierManagement = () => {
       if(diff <= 0){
         const start = startDate.format('DD-MMM-YYYY');
         const end = endDate.format('DD-MMM-YYYY');
-        const mode = summaryMode == "load" ? "n" : "y";
+        const mode = summaryMode === "load" ? "n" : "y";
         const result = await getPeriodQueueData(start, end, mode);
         if(result && result?.QueueUsage >= 0){
           setTotalbay(result.QueueUsage);
@@ -286,7 +286,7 @@ const CarrierManagement = () => {
       const en = date.setFullYear(date.getFullYear()+1, 0, 1);
       const start = dateFormatParser(new Date(st), 'dd-MMM-yyyy');
       const end = dateFormatParser(new Date(en), 'dd-MMM-yyyy');
-      const mode = summaryMode == "load" ? "n" : "y";
+      const mode = summaryMode === "load" ? "n" : "y";
       const result = await getPeriodQueueData(start, end, mode);
       if(result && result?.QueueUsage >= 0){
         setTotalbay(result.QueueUsage);

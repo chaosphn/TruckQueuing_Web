@@ -12,12 +12,14 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
   const [openAlert, setOpenAlert] = useState(false);
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
   const [queuingData ,setQueuingData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     //console.log(isDryRun, mode, ishead)
   }, [open]);
 
   const handleSave = async () => {
+    setIsLoading(true);
     if(isDryRun){
       if( !ishead && plateHeadNumber.length > 0 && plateTailNumber.length > 0){
         const result = await selectDryRunQueue(plateHeadNumber.trim(), plateTailNumber.trim(), truck_type);
@@ -25,13 +27,16 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
           setQueuingData(result);
           setOpenDataDialog(true);
         }
+        setIsLoading(false);
       } else if( ishead && plateHeadNumber.length > 0 ){
         const result = await selectDryRunQueue(plateHeadNumber.trim(), null, truck_type);
         if(result){
           setQueuingData(result);
           setOpenDataDialog(true);
         }
+        setIsLoading(false);
       } else {
+        setIsLoading(false);
         alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
       }
     } else {
@@ -43,13 +48,16 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
       if(plateHeadNumber.length > 0 && plateTailNumber.length > 0){
         const result = await getQueueDataByLicense(data.headnumber.trim(), data.tailnumber.trim());
         if(result && result.length > 0){
-          const filteredData = result.filter(x => new Date(x.DATEARRIVE).getTime() < getTomorrowMidnight())
+          const filteredData = result.filter(x => new Date(x.DATEARRIVE).getTime() < getTomorrowMidnight());
+          setIsLoading(false);
           onSave({ mode: 'plate', data: filteredData, type: mode });
         } else {
           //alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั ้ง');
+          setIsLoading(false);
           setOpenAlert(true);
         }
       } else {
+        setIsLoading(false);
         alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
       }
     }
@@ -119,6 +127,7 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
 
         {/* Footer */}
         <div className="p-6 bg-gray-100 rounded-b-xl flex justify-around space-x-4">
+          {/* Back Button */}
           <button
             onClick={onClose}
             className="px-8 py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center space-x-2"
@@ -126,12 +135,47 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
             <span>⏮</span>
             <span>ย้อนกลับ</span>
           </button>
+
+          {/* Confirm Button */}
           <button
             onClick={handleSave}
-            className="px-8 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center space-x-2"
+            disabled={isLoading}
+            className={`px-8 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+              isLoading
+                ? "bg-green-400 cursor-not-allowed"
+                : "bg-green-500 hover:bg-green-600 text-white"
+            }`}
           >
-            <span>ตกลง</span>
-            <span>✓</span>
+            {isLoading ? (
+              <>
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
+                  ></path>
+                </svg>
+                <span>กำลังบันทึก...</span>
+              </>
+            ) : (
+              <>
+                <span>ตกลง</span>
+                <span>✓</span>
+              </>
+            )}
           </button>
         </div>
       </div>

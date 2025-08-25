@@ -43,7 +43,6 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0, chaeckbox = fa
       setLoading(true);
       setCountdown(count);
 
-      // สร้าง countdown timer
       const countdownInterval = setInterval(() => {
         setCountdown(prev => {
           if (prev <= 1) {
