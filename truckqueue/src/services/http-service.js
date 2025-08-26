@@ -114,6 +114,48 @@ export const getBaysData = async () => {
     }
 }
 
+export const getTASApiStatus = async () => {
+    try {
+        const result = await api.post('/dashboard/online', {}, { timeout: 2000 });
+        if(result && result.data && result.data.Message == "OK"){
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        return false;
+    }
+}
+
+export const getTASMode = async () => {
+    try {
+        const result = await api.post('/dashboard/getoffline');
+        if(result && result.data && result.data.OfflineMode !== undefined){
+            return result.data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        return null;
+    }
+}
+
+export const setTASMode = async (front) => {
+    try {
+        const body = {
+            OfflineMode: front
+        }
+        const result = await api.post('/dashboard/setoffline', body);
+        if(result && result.data){
+            return result.data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        return null;
+    }
+}
+
 export const getAllQueueData = async () => {
     try {
         const result = await api.post('/queue/all');
@@ -378,31 +420,6 @@ export const setBaySettingData = async (bay, delay, startW, existW) => {
     }
 }
 
-// export const getDatabyOrder = async (orderNumber) => {
-//     try {
-//         const result = order_Data.filter(x => x.Code === orderNumber);//await api.post('', body);
-//         if(result && result.length > 0){
-//             return result;
-//         } else {
-//             return [];
-//         }
-//     } catch (error) {
-//         return error;
-//     }
-// };
-
-// export const getDatabyPlateNumber = async (headNumer, tailNumber) => {
-//     try {
-//         const result = order_Data.filter(x => x.FontLicense === headNumer && x.RearLicense === tailNumber);//await api.post('', body);
-//         if(result && result.length > 0){
-//             return result;
-//         } else {
-//             return [];
-//         }
-//     } catch (error) {
-//         return error;
-//     }
-// };
 
 export const selectLoadingQueue = async (code, truck) => {
     try {
@@ -475,28 +492,38 @@ export const selectDryRunQueue = async (front, rear, truck) => {
     }
 };
 
-// export const getBayStatusData = async () => {
-//     try {
-//         const result = bay_Status_Data.slice(0,4);//await api.post('', body);
-//         if(result && result.length > 0){
-//             return result;
-//         } else {
-//             return [];
-//         }
-//     } catch (error) {
-//         return error;
-//     }
-// };
-
-// export const getQueueData = async () => {
-//     try {
-//         const result = order_Data.slice(0,4);//await api.post('', body);
-//         if(result && result.length > 0){
-//             return result;
-//         } else {
-//             return [];
-//         }
-//     } catch (error) {
-//         return error;
-//     }
-// }
+export const selectOffLineModeQueue = async (front, rear, truck) => {
+    try {
+         const body = {
+            frontLicense: front,
+            rearLicense: rear,
+            Trucktype : truck
+        }
+        const result = await api.post('/queue/registeroffline', body);
+        if( result && result.data ){
+            if(result?.data?.BayName){
+                    return {
+                        success: true,
+                        baynumber: result?.data?.BayName,
+                        queuenumber: result?.data?.QueueNo,
+                        waitingtime: result?.data?.WaitTime,
+                        queuebefore: result?.data?.PreviousQueue,
+                        message: result?.data?.Message??''
+                    };
+            } else {
+                return {
+                    success: false,
+                    baynumber: result?.data?.BayName,
+                    queuenumber: result?.data?.QueueNo,
+                    waitingtime: result?.data?.WaitTime,
+                    queuebefore: result?.data?.PreviousQueue,
+                    message: result?.data?.Message??''
+                };
+            }
+        } else {
+            return null;
+        }
+    } catch (error) {
+        return error;
+    }
+};

@@ -21,7 +21,7 @@ const LandingPage = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-  const { queue, updateQueueData, bayData, waitingQueue, updateBayData, registerQueue, updateRegisterQueueData } = useContext(QueueContext);
+  const { queue, updateQueueData, bayData, waitingQueue, updateBayData, registerQueue, updateRegisterQueueData, apiStatus, updateApiStatus, tasStatus, updateTASStatus } = useContext(QueueContext);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const toggleFullscreen = () => {
@@ -47,7 +47,8 @@ const LandingPage = () => {
   useEffect(() => {
     const cntQ = bayData.filter(x => x.STATUS == 'LOADING' || x.STATUS == 'LOADED').length??0;
     setDailyLoading(cntQ);
-    const fnhQ = bayData.reduce((accumulator, currentValue) => accumulator + currentValue.CNT, 0);
+    //console.log('bayData', bayData);
+    const fnhQ = bayData.map(x => x.CNT??0).reduce((a, b) => a + b, 0);
     setDailyFinish(fnhQ);
   }, [bayData]);
 
@@ -244,8 +245,11 @@ const LandingPage = () => {
             <div className="flex items-center space-x-4 text-white/80 text-sm drop-shadow">
               <span>Version 1.0.0</span>
               <span>•</span>
-              <span>System Online</span>
-              <div className="w-4 h-4 bg-green-400 rounded-full"></div>
+              <span>Mode : { tasStatus && tasStatus.OfflineMode == false ? 'Online' : tasStatus && tasStatus.OfflineMode == true ? 'Offline' : 'Unknow' }</span>
+              <span>•</span>
+              <span>{ apiStatus == true ? 'System Online' : 'System Offline' }</span>
+              <div className={`w-4 h-4 ${ apiStatus == true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
+              { apiStatus != true && (<span> : Can't Connect to TAS Server</span>)}
             </div>
           </div>
         </div>

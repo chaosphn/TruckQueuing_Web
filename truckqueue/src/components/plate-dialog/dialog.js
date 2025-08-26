@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { getDatabyOrder, getDatabyPlateNumber, getQueueDataByLicense, selectDryRunQueue } from '../../services/http-service';
+import React, { useContext, useEffect, useState } from 'react';
+import { getDatabyOrder, getDatabyPlateNumber, getQueueDataByLicense, selectDryRunQueue, selectOffLineModeQueue } from '../../services/http-service';
 import NotFoundDialog from '../notfound-dialog/dialog';
 import DataDetailDialog from '../detail-dialog/dialog';
+import { QueueContext } from '../../utils/AppContext';
 
 const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryRun, truck_type }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,7 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
   const [queuingData ,setQueuingData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { apiStatus, updateApiStatus, tasStatus, updateTASStatus } = useContext(QueueContext);
 
   useEffect(() => {
     //console.log(isDryRun, mode, ishead)
@@ -40,25 +42,39 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
         alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
       }
     } else {
-      const data = {
-        type: activeTab,
-        headnumber: plateHeadNumber,
-        tailnumber: plateTailNumber
-      };
-      if(plateHeadNumber.length > 0 && plateTailNumber.length > 0){
-        const result = await getQueueDataByLicense(data.headnumber.trim(), data.tailnumber.trim());
-        if(result && result.length > 0){
-          const filteredData = result.filter(x => new Date(x.DATEARRIVE).getTime() < getTomorrowMidnight());
+      if( tasStatus && tasStatus.OfflineMode === true ){
+        if(plateHeadNumber.length > 0 && plateTailNumber.length > 0){
+          const result = await selectOffLineModeQueue(plateHeadNumber.trim(), plateTailNumber.trim(), truck_type);
+          if(result){
+            setQueuingData(result);
+            setOpenDataDialog(true);
+          }
           setIsLoading(false);
-          onSave({ mode: 'plate', data: filteredData, type: mode });
         } else {
-          //alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั ้ง');
           setIsLoading(false);
-          setOpenAlert(true);
+          alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
         }
       } else {
-        setIsLoading(false);
-        alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+        const data = {
+          type: activeTab,
+          headnumber: plateHeadNumber,
+          tailnumber: plateTailNumber
+        };
+        if(plateHeadNumber.length > 0 && plateTailNumber.length > 0){
+          const result = await getQueueDataByLicense(data.headnumber.trim(), data.tailnumber.trim());
+          if(result && result.length > 0){
+            const filteredData = result.filter(x => new Date(x.DATEARRIVE).getTime() < getTomorrowMidnight());
+            setIsLoading(false);
+            onSave({ mode: 'plate', data: filteredData, type: mode });
+          } else {
+            //alert('ไม่พบข้อมูลการค้นหา\nกรุณาตรวจสอบอีกครั ้ง');
+            setIsLoading(false);
+            setOpenAlert(true);
+          }
+        } else {
+          setIsLoading(false);
+          alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+        }
       }
     }
   };

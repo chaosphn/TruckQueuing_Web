@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Monitor, List, User, Bell, Settings } from 'lucide-react';
 import backgroundImg from '../../assets/background.png';
 import logoImg from '../../assets/logo.png';
@@ -10,6 +10,9 @@ import TruckDataDialog from '../../components/data-dialog/dialog';
 import { set } from 'date-fns';
 import PlateDialog from '../../components/plate-dialog/dialog';
 import OrderDialog from '../../components/order-dialog/dialog';
+import { QueueContext } from '../../utils/AppContext';
+import dayjs from 'dayjs';
+import { getPeriodQueueData } from '../../services/http-service';
 
 const RegisterPage = () => {
   const [pageState, setPageState] = useState('truck');
@@ -27,6 +30,10 @@ const RegisterPage = () => {
   const [ dialogTopic, setDialogTopic ] = useState('');
   const [ dialogIsHead, setDialogIsHead ] = useState(false);
   const [ dryrunMode, setDryrunMode ] = useState(false);
+  const { apiStatus, updateApiStatus, tasStatus, updateTASStatus } = useContext(QueueContext);
+  const [startDate, setStartDate] = useState(dayjs());
+  const [endDate, setEndDate] = useState(dayjs());
+  const [ totalBay, setTotalbay ] = useState(0);
  
   useEffect(() => {
     const timer = setInterval(() => {
@@ -222,7 +229,25 @@ const RegisterPage = () => {
       // setOpenDryRunDialog(true);
       // setOpenDataDialog(false);
     }
-  }
+  };
+
+  // useEffect(() => {
+  //   handleGetTotaBays();
+  //   const timer = setInterval(() => {
+  //     handleGetTotaBays();
+  //   }, 360000);
+  //   return () => clearInterval(timer);
+  // }, []);
+
+  // const handleGetTotaBays = async () => {
+  //   const start = startDate.format('DD-MMM-YYYY');
+  //   const end = endDate.format('DD-MMM-YYYY');
+  //   const mode = "y";
+  //   const result = await getPeriodQueueData(start, end, mode);
+  //   if(result && result?.QueueUsage >= 0){
+  //     setTotalbay(result.QueueUsage);
+  //   }
+  // };
 
   return (
     <div className="h-full min-h-screen relative overflow-hidden flex flex-col justify-between ">
@@ -378,7 +403,7 @@ const RegisterPage = () => {
             {typeItems.map((item, index) => (
               <div
                 key={item.id}
-                className="group relative w-full"
+                className={`group relative w-full ${ tasStatus && tasStatus.OfflineMode == true && item.id == '2' ? 'hidden' : '' }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
                 onClick={() => {handleOpenDialog(item.id)}}
               >
@@ -472,8 +497,11 @@ const RegisterPage = () => {
             <div className="flex items-center space-x-4 text-white/80 text-sm drop-shadow">
               <span>Version 1.0.0</span>
               <span>•</span>
-              <span>System Online</span>
-              <div className="w-4 h-4 bg-green-400 rounded-full"></div>
+              <span className='font-semibold'>Mode : { tasStatus && tasStatus.OfflineMode == false ? 'Online' : tasStatus && tasStatus.OfflineMode == true ? 'Offline' : 'Unknow' }</span>
+              <span>•</span>
+              <span className='font-semibold'>{ apiStatus == true ? 'System Online' : 'System Offline' }</span>
+              <div className={`w-4 h-4 ${ apiStatus == true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
+              { apiStatus != true && (<span> : Can't Connect to TAS Server</span>)}
             </div>
           </div>
         </div>

@@ -13,7 +13,7 @@ import { loadConfig } from './services/http-service';
 
 function App() {
 
-  const { queue, updateQueueData, bayData, waitingQueue, updateBayData, registerQueue, updateRegisterQueueData } = useContext(QueueContext);
+  const { queue, updateQueueData, bayData, waitingQueue, updateBayData, registerQueue, updateRegisterQueueData, apiStatus, updateApiStatus, tasStatus, updateTASStatus } = useContext(QueueContext);
   const [config, setConfig] = useState(null);
 
   useEffect(() => {
@@ -21,12 +21,16 @@ function App() {
     updateBayData();
     updateRegisterQueueData();
     handleGetConfig();
+    updateApiStatus();
+    updateTASStatus();
     //console.log(bayData)
   }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
       updateBayData();
+      updateApiStatus();
+      updateTASStatus();
     }, config?.INTERVAL??5000);
     return () => clearInterval(timer);
   }, [config]);

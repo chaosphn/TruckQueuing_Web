@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { getAllQueueData, getAllRegisteredQueueData, getBaysData } from "../services/http-service";
+import { getAllQueueData, getAllRegisteredQueueData, getBaysData, getTASApiStatus, getTASMode } from "../services/http-service";
 import { QueueContext } from "./AppContext";
 
 export const QueueProvider = ({ children }) => {
@@ -7,6 +7,28 @@ export const QueueProvider = ({ children }) => {
   const [bayData, setBayData] = useState([]);
   const [waitingQueue, setWaitingQueue] = useState([]);
   const [registerQueue, setRegisterQueue] = useState([]);
+  const [apiStatus, setApiStatus] = useState(false);
+  const [tasStatus, setTASStatus] = useState(null);
+
+  const updateApiStatus = async () => {
+    const result = await getTASApiStatus();
+    //console.log(result)
+    if(result){
+      setApiStatus(result);
+    } else {
+      setApiStatus(false);
+    }
+  };
+
+  const updateTASStatus = async () => {
+    const result = await getTASMode();
+    //console.log(result)
+    if(result){
+      setTASStatus(result);
+    } else {
+      setTASStatus(null);
+    }
+  };
 
   const updateQueueData = async () => {
     const result = await getAllQueueData();
@@ -36,7 +58,7 @@ export const QueueProvider = ({ children }) => {
   };
 
   return (
-    <QueueContext.Provider value={{ queue, updateQueueData, bayData, waitingQueue, updateBayData, registerQueue, updateRegisterQueueData }}>
+    <QueueContext.Provider value={{ queue, updateQueueData, bayData, waitingQueue, updateBayData, registerQueue, updateRegisterQueueData, apiStatus, updateApiStatus, tasStatus, updateTASStatus }}>
       {children}
     </QueueContext.Provider>
   );

@@ -635,7 +635,7 @@ const CarrierDashboard = () => {
                         </div>
                       }
                       <div className="bg-white/80 rounded-lg shadow-md px-4 border border-slate-300 font-semibold">
-                        {carrier.carrier}
+                        { carrier.isdryrun ? 'Dry Run' : carrier.carrier }
                       </div>
                     </div>
                   }

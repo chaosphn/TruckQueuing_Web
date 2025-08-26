@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, use } from 'react';
 import { Truck, Settings, Clock, MapPin, Gauge, Fuel, Verified, Loader2, Loader } from 'lucide-react';
 import { useRouting } from '../../hooks/routing-hook';
 import TruckModel from '../../components/truck/truck-model';
@@ -16,8 +16,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { TextField } from '@mui/material';
 import { QueueContext } from '../../utils/AppContext';
-import { getPeriodQueueData, getTotalQueueData } from '../../services/http-service';
+import { getPeriodQueueData, getTotalQueueData, setTASMode } from '../../services/http-service';
 import { dateFormatParser } from '../../services/date-service';
+import { set } from 'date-fns';
 
 const CarrierManagement = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -28,7 +29,7 @@ const CarrierManagement = () => {
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
   const [ openQueueDialog, setOpenQueueDialog ] = useState(false);
   const [ openModeDialog, setOpenModeDialog ] = useState(false);
-  const [selectedMode, setSelectedMode] = useState('Online');
+  const [selectedMode, setSelectedMode] = useState('');
   const [statusMode, setStatusMode] = useState(true);
   const [selectedAction, setSelectedAction] = useState('');
   const [filterType, setFilterType] = useState('All');
@@ -39,7 +40,7 @@ const CarrierManagement = () => {
   const [ summaryMode, setSummaryMode ] = useState('load');
   const [ totalQueue, setTotalQueue ] = useState(0);
   const [ totalBay, setTotalbay ] = useState(0);
-  const { queue, updateQueueData, bayData, waitingQueue, updateBayData } = useContext(QueueContext);
+  const { queue, updateQueueData, bayData, waitingQueue, updateBayData, tasStatus, updateTASStatus } = useContext(QueueContext);
   
   
   useEffect(() => {
@@ -143,6 +144,37 @@ const CarrierManagement = () => {
     //console.log(bayData, waitingQueue)
     setQueueData(waitingQueue);
   }, [waitingQueue]);
+
+  useEffect(() => {
+    if(tasStatus && tasStatus.OfflineMode !== undefined){
+      if(tasStatus.OfflineMode === true){
+        setSelectedMode('Offline');
+        setStatusMode(true);
+      } else if(tasStatus.OfflineMode === false){
+        setSelectedMode('Online');
+        setStatusMode(false);
+      } else {
+        setSelectedMode('Unknow');
+        setStatusMode(true);
+      }
+    } else {
+      setSelectedMode('Unknow');
+      setStatusMode(true);
+    }
+  }, [tasStatus]);
+
+  const handleSelectMode = async () => {
+    const mode = selectedMode === 'Offline' ? 'n' : 'y';
+    const res = await setTASMode(mode);
+    if(res && res.Message){
+      alert(res.Message);
+      await updateTASStatus();
+      setOpenModeDialog(false);
+    } else {
+      alert('เกิดข้อผิดพลาดในการเปลี่ยนโหมด กรุณาลองใหม่อีกครั้ง');
+      setOpenModeDialog(false);
+    }
+  };
 
   const downLoadBayData = (id) => {
   
@@ -535,9 +567,10 @@ const CarrierManagement = () => {
               </div>
               <div className='w-full flex items-center gap-2 cursor-pointer'>
                 <div onClick={() => {
-                  setSelectedMode(!statusMode ? 'Online Mode' : 'Offline Mode');
+                  //setSelectedMode(!statusMode ? 'Online Mode' : 'Offline Mode');
                   setOpenModeDialog(true)
-                }} className={`w-full py-1.5 text-sm text-center font-bold rounded-md  ${ !statusMode ? 'text-slate-200 bg-red-500 border-white' : 'text-black bg-emerald-400 border-emerald-600' } shadow-black/30 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>{statusMode ? 'Online' : 'Offline'} Mode</div>
+                }} className={`w-full py-1.5 text-sm text-center font-bold rounded-md  ${ statusMode ? 'text-slate-200 bg-red-500 border-white' : 'text-black bg-emerald-400 border-emerald-600' } 
+                  shadow-black/30 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>{ !statusMode ? 'Online' : 'Offline'} Mode</div>
                 <div onClick={() => setOpenQueueDialog(true)} className='w-full py-1.5 text-sm text-center font-bold rounded-md text-slate-200 border-slate-200 bg-black/50 shadow-black/30 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>Wait for Queue</div>
               </div>
             </div>
@@ -692,12 +725,15 @@ const CarrierManagement = () => {
           </div>
         </div>
         <QueueListDialog open={openQueueDialog} data={selectBayData} mode={'cancle'} onClose={() => {setOpenQueueDialog(false)}}></QueueListDialog>
-        <ManageDialog opens={openModeDialog}  selectedAction={selectedMode} count={0} onSave={(st) => {
-          setOpenModeDialog(false);
-          setSelectedMode('');
-          if(st){
-            setStatusMode(!statusMode);
-          }
+        <ManageDialog opens={openModeDialog}  selectedAction={
+          selectedMode === 'Online' ? 'เปลี่ยนเป็น Offline Mode' : 
+            selectedMode === 'Offline' ? 'เปลี่ยนเป็น Online Mode' : 
+              'สถานะไม่ชัดเจน'
+          } count={0} onSave={(st) => {
+            setOpenModeDialog(false);
+            if(st){
+              handleSelectMode();
+            }
         }}></ManageDialog>
       </div>
     </div>
