@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { getAllQueueData, getAllRegisteredQueueData, getBaysData, getTASApiStatus, getTASMode } from "../services/http-service";
+import { getAllQueueData, getAllRegisteredQueueData, getBaysData, getQueueInfomation, getTASApiStatus, getTASMode } from "../services/http-service";
 import { QueueContext } from "./AppContext";
 
 export const QueueProvider = ({ children }) => {
-  const [queue, setQueue] = useState([]);
+  const [queue, setQueue] = useState(null);
   const [bayData, setBayData] = useState([]);
   const [waitingQueue, setWaitingQueue] = useState([]);
   const [registerQueue, setRegisterQueue] = useState([]);
@@ -31,9 +31,9 @@ export const QueueProvider = ({ children }) => {
   };
 
   const updateQueueData = async () => {
-    const result = await getAllQueueData();
+    const result = await getQueueInfomation();
     //console.log(result)
-    if(result && result.length > 0){
+    if(result){
         setQueue(result);
     }
   };

@@ -70,7 +70,7 @@ const RegisterPage = () => {
     },
     {
       id: '2',
-      title: 'DRY RUN',
+      title: 'Dry Run',
       subtitle: 'ติดตามสถานะการโหลด',
       icon: Monitor,
       color: 'from-green-500 to-green-600',
@@ -81,7 +81,7 @@ const RegisterPage = () => {
   const truckItems = [
     {
       id: '1',
-      title: '10 Wheel',
+      title: '10 Wheels',
       value: '10-Wheel',
       subtitle: 'ลงทะเบียนรถบรรทุก',
       icon: User,
@@ -166,6 +166,14 @@ const RegisterPage = () => {
       setOpenDryRunDialog(true);
       setOpenDataDialog(false);
     }
+  }
+
+  const handleBackDialog = () => {
+    setPageState('mode');
+    setDialogTitle('');
+    setOpenQueueDialog(false);
+    setOpenDryRunDialog(false);
+    setOpenDataDialog(false);
   }
 
   const handleOpenDryRunDialog = (id) => {
@@ -314,7 +322,7 @@ const RegisterPage = () => {
                 onClick={() => {handleSelectTruck(item.value)}}
               >
                 <div className={`absolute inset-0 bg-gradient-to-r ${item.color} rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-300`}></div>         
-                <button className={`relative w-full bg-gradient-to-r ${item.color} hover:bg-gradient-to-r hover:${item.hoverColor} rounded-2xl p-16 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl border border-white/10`}>
+                <button className={`relative w-full bg-gradient-to-r ${item.color} rounded-2xl p-16 transition-all duration-300 transform border border-white/10`}>
                   <div className="flex flex-col items-center text-center space-y-4">
                     {/* <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 transition-colors">
                       <item.icon className="w-8 h-8 text-white" />
@@ -338,9 +346,10 @@ const RegisterPage = () => {
               </div>
             ))}
           </div>
+
         </main> 
         : pageState == 'mode' ?
-        <main className="relative z-10 max-w-screen-xl mx-auto px-6 py-12">
+        <main className="relative z-10 max-w-screen-xl mx-auto px-6 pt-12">
           {/* Hero Section */}
           <div className="text-center mb-16 py-12 px-32 rounded-lg bg-black/10 backdrop-blur-sm border border-white/20">
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 tracking-tight drop-shadow-2xl">
@@ -352,16 +361,16 @@ const RegisterPage = () => {
           </div>
 
           {/* Menu Cards */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-12 max-w-screen-xl mx-auto">
+          <div className="flex flex-wrap items-center justify-center gap-8 max-w-screen-xl mx-auto">
             {menuItems.map((item, index) => (
               <div
                 key={item.id}
-                className="group relative w-full"
+                className="group relative min-w-[500px]"
                 style={{ animationDelay: `${index * 0.1}s` }}
                 onClick={() => {handleSelectMode(item.id)}}
               >
                 <div className={`absolute inset-0 bg-gradient-to-r ${item.color} rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-300`}></div>         
-                <button className={`relative w-full bg-gradient-to-r ${item.color} hover:bg-gradient-to-r hover:${item.hoverColor} rounded-2xl p-16 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl border border-white/10`}>
+                <button className={`relative w-full bg-gradient-to-r ${item.color} rounded-2xl p-16 transition-all duration-300 transform border border-white/10`}>
                   <div className="flex flex-col items-center text-center space-y-4">
                     {/* <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 transition-colors">
                       <item.icon className="w-8 h-8 text-white" />
@@ -385,9 +394,19 @@ const RegisterPage = () => {
               </div>
             ))}
           </div>
+
+          <div className="w-full flex justify-center mt-12">
+            <button
+              onClick={handleCloseQueueDialog}
+              className="px-8 py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center space-x-2"
+            >
+              <span>⏮</span>
+              <span>ย้อนกลับ</span>
+            </button>
+          </div>
         </main> 
         : pageState == 'queue' ?
-        <main className="relative z-10 max-w-screen-xl mx-auto px-6 py-12">
+        <main className="relative z-10 max-w-screen-xl mx-auto px-6 pt-12">
           {/* Hero Section */}
           <div className="text-center mb-16 py-12 px-32 rounded-lg bg-black/10 backdrop-blur-sm border border-white/20">
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-14 tracking-tight drop-shadow-2xl">
@@ -408,7 +427,7 @@ const RegisterPage = () => {
                 onClick={() => {handleOpenDialog(item.id)}}
               >
                 <div className={`absolute inset-0 bg-gradient-to-r ${item.color} rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-300`}></div>         
-                <button className={`relative w-full bg-gradient-to-r ${item.color} hover:bg-gradient-to-r hover:${item.hoverColor} rounded-2xl p-16 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl border border-white/10`}>
+                <button className={`relative w-full bg-gradient-to-r ${item.color} rounded-2xl p-16 transition-all duration-300 transform border border-white/10`}>
                   <div className="flex flex-col items-center text-center space-y-4">
                     {/* <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 transition-colors">
                       <item.icon className="w-8 h-8 text-white" />
@@ -432,9 +451,19 @@ const RegisterPage = () => {
               </div>
             ))}
           </div>
+
+          <div className="w-full flex justify-center mt-12">
+            <button
+              onClick={handleBackDialog}
+              className="px-8 py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center space-x-2"
+            >
+              <span>⏮</span>
+              <span>ย้อนกลับ</span>
+            </button>
+          </div>
         </main> 
         : pageState == 'dryrun' ?
-        <main className="relative z-10 max-w-screen-xl mx-auto px-6 py-12">
+        <main className="relative z-10 max-w-screen-xl mx-auto px-6 pt-12">
           {/* Hero Section */}
           <div className="text-center mb-16 py-12 px-32 rounded-lg bg-black/10 backdrop-blur-sm border border-white/20">
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-14 tracking-tight drop-shadow-2xl">
@@ -444,6 +473,7 @@ const RegisterPage = () => {
               ลงทะเบียนจองคิว Dry Run
             </p>
           </div>
+
           {/* Menu Cards */}
           <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-12 max-w-screen-xl mx-auto">
             {typeDryrunItems.map((item, index) => (
@@ -454,7 +484,7 @@ const RegisterPage = () => {
                 onClick={() => {handleOpenDryRunDialog(item.id)}}
               >
                 <div className={`absolute inset-0 bg-gradient-to-r ${item.color} rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-300`}></div>         
-                <button className={`relative w-full bg-gradient-to-r ${item.color} hover:bg-gradient-to-r hover:${item.hoverColor} rounded-2xl p-16 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl border border-white/10`}>
+                <button className={`relative w-full bg-gradient-to-r ${item.color} rounded-2xl p-16 transition-all duration-300 transform border border-white/10`}>
                   <div className="flex flex-col items-center text-center space-y-4">
                     {/* <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 transition-colors">
                       <item.icon className="w-8 h-8 text-white" />
@@ -478,6 +508,16 @@ const RegisterPage = () => {
               </div>
             ))}
           </div>
+
+          <div className="w-full flex justify-center mt-12">
+            <button
+              onClick={handleBackDialog}
+              className="px-8 py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center space-x-2"
+            >
+              <span>⏮</span>
+              <span>ย้อนกลับ</span>
+            </button>
+          </div>
         </main> 
         : <main className="relative z-10 max-w-7xl mx-auto px-6 py-12">
             <PlateDialog open={openQueueDialog} mode={pageState} title={dialogTitle} topic={dialogTopic} ishead={dialogIsHead} isDryRun={dryrunMode} truck_type={seletedTruck} onClose={handleCloseQueueDialog} onSave={handleSaveDialog}></PlateDialog>
@@ -491,17 +531,17 @@ const RegisterPage = () => {
       <footer className="relative bg-black/20 backdrop-blur-sm border-t border-white/20">
         <div className="mx-auto px-16 py-6">
           <div className="flex items-center justify-between">
-            <div className="text-white/80 text-sm drop-shadow">
+            <div className="text-white/80 text-base drop-shadow">
               © 2025 PTT LNG Truck Loading System
             </div>
-            <div className="flex items-center space-x-4 text-white/80 text-sm drop-shadow">
+            <div className="flex items-center space-x-4 text-white/80 text-base drop-shadow">
               <span>Version 1.0.0</span>
               <span>•</span>
               <span className='font-semibold'>Mode : { tasStatus && tasStatus.OfflineMode == false ? 'Online' : tasStatus && tasStatus.OfflineMode == true ? 'Offline' : 'Unknow' }</span>
               <span>•</span>
-              <span className='font-semibold'>{ apiStatus == true ? 'System Online' : 'System Offline' }</span>
-              <div className={`w-4 h-4 ${ apiStatus == true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
-              { apiStatus != true && (<span> : Can't Connect to TAS Server</span>)}
+              <span className='font-semibold'>{ apiStatus === true ? 'System Operational' : 'System Unavailable' }</span>
+              <div className={`w-4 h-4 ${ apiStatus === true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
+              { apiStatus !== true && (<span > : Unable to establish connection with TAS Server </span>)}
             </div>
           </div>
         </div>

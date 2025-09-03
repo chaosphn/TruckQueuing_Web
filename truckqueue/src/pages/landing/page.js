@@ -34,15 +34,15 @@ const LandingPage = () => {
     }
   };
 
-  useEffect(() => {
-    const cntQ = registerQueue.filter(x => new Date(x.DATEARRIVE).getDate() == new Date().getDate()).length??0;
-    setDailyQueue(cntQ);
-  }, [queue]);
+  // useEffect(() => {
+  //   const cntQ = registerQueue.filter(x => new Date(x.DATEARRIVE).getDate() == new Date().getDate()).length??0;
+  //   setDailyQueue(cntQ);
+  // }, [queue]);
 
-  useEffect(() => {
-    const cntQ = queue.filter(x => new Date(x.DATEARRIVE).getDate() == new Date().getDate()).length??0;
-    setDailyWaiting(cntQ);
-  }, [queue]);
+  // useEffect(() => {
+  //   const cntQ = queue.filter(x => new Date(x.DATEARRIVE).getDate() == new Date().getDate()).length??0;
+  //   setDailyWaiting(cntQ);
+  // }, [queue]);
 
   useEffect(() => {
     const cntQ = bayData.filter(x => x.STATUS == 'LOADING' || x.STATUS == 'LOADED').length??0;
@@ -216,19 +216,19 @@ const LandingPage = () => {
         <div className="mt-20 bg-black/20 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
-              <div className="text-5xl font-bold text-green-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>{dailyQueue??'---'}</div>
+              <div className="text-5xl font-bold text-green-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>{queue?.WaitQueue??'---'}</div>
               <div className="text-white/80 text-2xl mt-4 drop-shadow">รถในคิว</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-blue-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>{dailyLoading??'---'}</div>
+              <div className="text-5xl font-bold text-blue-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>{queue?.Loadding??'---'}</div>
               <div className="text-white/80 text-2xl mt-4 drop-shadow">กำลังโหลด</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-yellow-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>{dailyWaiting??'---'}</div>
+              <div className="text-5xl font-bold text-yellow-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>{queue?.OrderToday??'---'}</div>
               <div className="text-white/80 text-2xl mt-4 drop-shadow">ออเดอร์วันนี้</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-purple-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>{dailyFinish??'---'}</div>
+              <div className="text-5xl font-bold text-purple-400 drop-shadow-lg" style={{ textShadow: '0 2px 5px rgba(0, 0, 0, 0.8)' }}>{queue?.FinishQueue??'---'}</div>
               <div className="text-white/80 text-2xl mt-4 drop-shadow">เสร็จสิ้นวันนี้</div>
             </div>
           </div>
@@ -239,15 +239,15 @@ const LandingPage = () => {
       <footer className="relative bg-black/20 backdrop-blur-sm border-t border-white/20">
         <div className="mx-auto px-16 py-6">
           <div className="flex items-center justify-between">
-            <div className="text-white/80 text-sm drop-shadow">
+            <div className="text-white/80 text-base drop-shadow">
               © 2025 PTT LNG Truck Loading System
             </div>
-            <div className="flex items-center space-x-4 text-white/80 text-sm drop-shadow">
+            <div className="flex items-center space-x-4 text-white/80 text--batext-base drop-shadow">
               <span>Version 1.0.0</span>
               <span>•</span>
-              <span>Mode : { tasStatus && tasStatus.OfflineMode == false ? 'Online' : tasStatus && tasStatus.OfflineMode == true ? 'Offline' : 'Unknow' }</span>
+              <span className='font-semibold'>Mode : { tasStatus && tasStatus.OfflineMode == false ? 'Online' : tasStatus && tasStatus.OfflineMode == true ? 'Offline' : 'Unknow' }</span>
               <span>•</span>
-              <span>{ apiStatus == true ? 'System Online' : 'System Offline' }</span>
+              <span className='font-semibold'>{ apiStatus == true ? 'System Online' : 'System Offline' }</span>
               <div className={`w-4 h-4 ${ apiStatus == true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
               { apiStatus != true && (<span> : Can't Connect to TAS Server</span>)}
             </div>

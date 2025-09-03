@@ -17,6 +17,7 @@ const CarrierDashboard = () => {
 
   useEffect(() => {
     const screen = window.innerWidth/window.innerHeight;
+    console.log('Screen ratio:', screen);
     updateQueueData();
     setScreenRatio(screen);
     const timer = setInterval(() => {
@@ -35,7 +36,7 @@ const CarrierDashboard = () => {
           id: item.id,
           status: 
             findBayData.STATUS == 'CALLING' && findBayData.MAINTENANCE == 'n' ? 'เรียกคิว' : 
-            findBayData.STATUS == 'READY'&& findBayData.MAINTENANCE == 'n' ? 'เตรียมพร้อม' : 
+            findBayData.STATUS == 'READY'&& findBayData.MAINTENANCE == 'n' ? 'พร้อมโหลด' : 
             findBayData.STATUS == 'DRYRUN'&& findBayData.MAINTENANCE == 'n' && findBayData.DRYRUN == 'y' ? 'Dry Run' : 
             findBayData.STATUS == 'LOADING'&& findBayData.MAINTENANCE == 'n' ? 'กำลังโหลด' : 
             findBayData.STATUS == 'LOADED'&& findBayData.MAINTENANCE == 'n' ? 'โหลดเสร็จสิ้น' : 
@@ -238,7 +239,6 @@ const CarrierDashboard = () => {
               </div>
             </div>
           </div>
-
           {/* Active Carriers */}
           <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
             {bayDatas.map((carrier) => (
@@ -249,8 +249,8 @@ const CarrierDashboard = () => {
                     carrier.state === 'loading' ? 'bg-amber-50' : 
                       carrier.state === 'maintenance' ? 'bg-red-100' : 
                         carrier.state === 'dry-run' ? 'bg-blue-100' : 
-                         carrier.state === 'pending' ? 'bg-indigo-200 animate-blink' : 'bg-slate-50'
-                } rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${ carrier.abnormal ? 'border-4 border-solid border-red-500' : 'border border-white/50' } `}
+                         carrier.state === 'pending' ? 'bg-indigo-200' : 'bg-slate-50'
+                } ${ carrier.status === 'เรียกคิว' ? 'animate-blink' : '' } rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${ carrier.abnormal ? 'border-4 border-solid border-red-500' : 'border border-white/50' } `}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3" onClick={() => downLoadBayData(carrier.id)}>
@@ -418,14 +418,8 @@ const CarrierDashboard = () => {
               </div>
             ))}
           </div>
-
           {/* Upcoming Slots */}
           <div className="bg-white rounded-2xl shadow-xl p-4">
-            {/* <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
-              <Clock className="w-6 h-6 text-blue-600" />
-              คิวถัดไป
-            </h2> */}
-            
             <div className="grid grid-cols-5 gap-4">
               <div
                 className={`p-2 rounded-xl border-2 transition-all duration-300 ${
@@ -501,8 +495,8 @@ const CarrierDashboard = () => {
                     carrier.state === 'loading' ? 'bg-amber-50' : 
                       carrier.state === 'maintenance' ? 'bg-red-100' : 
                         carrier.state === 'dry-run' ? 'bg-blue-100' : 
-                         carrier.state === 'pending' ? 'bg-indigo-200 animate-blink' : 'bg-slate-50'
-                } rounded-2xl pl-4 py-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${ carrier.abnormal ? 'border-4 border-solid border-red-500' : 'border border-white/50' }`}
+                         carrier.state === 'pending' ? 'bg-indigo-200' : 'bg-slate-50'
+                } ${ carrier.status === 'เรียกคิว' ? 'animate-blink' : '' } rounded-2xl pl-4 py-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${ carrier.abnormal ? 'border-4 border-solid border-red-500' : 'border border-white/50' }`}
               >
                 <div className="flex items-center justify-between ">
                   <div className="flex items-center gap-3" onClick={() => downLoadBayData(carrier.id)}>
@@ -656,13 +650,13 @@ const CarrierDashboard = () => {
                         </div> 
                       </div>
                    :
-                    <div className="flex items-center gap-4 h-full box-border scale-90 ">
+                    <div className="min-w-[380px] flex justify-end items-center gap-4 h-full box-border scale-90 ">
                       <div className="text-4xl font-bold text-slate-700 bg-white px-4 py-4 rounded-lg shadow-md h-24 flex flex-col justify-center items-center">
                         <div >คิวที่ {carrier.queuenumber}</div>
                       </div>
-                      <div className='text-right '>
+                      <div className='text-left '>
                         <div className="text-3xl font-semibold text-slate-600 bg-white px-2 py-1 rounded-md shadow-md">หน้า { carrier.frontlicense }</div>
-                        <div className="text-3xl font-semibold text-slate-600 mt-2 bg-white px-2 py-1 rounded-md shadow-md">หลัง { carrier.rearlicense}</div>
+                        <div className="text-3xl font-semibold text-slate-600 mt-2 bg-white px-2 py-1 rounded-md shadow-md">หลัง { carrier.rearlicense??'---' }</div>
                       </div>
                     </div>
                   }
@@ -672,7 +666,7 @@ const CarrierDashboard = () => {
           </div>
           {/* Upcoming Slots */}
           <div className="bg-white rounded-2xl shadow-xl p-2">
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-5 gap-3">
               <div
                 className={`p-2 rounded-xl border-2 transition-all duration-300 ${
                   false 
@@ -696,8 +690,9 @@ const CarrierDashboard = () => {
                   }`}
                 >
                   <div className="div flex items-center justify-around h-full">
-                    <div className={`text-2xl font-bold mb-2 ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
-                      คิวที่ {slot.Q_NO}
+                    <div className={`text-2xl font-bold mb-2 flex flex-col items-center ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
+                      <div>คิวที่</div>
+                      <div className='text-3xl'>{slot.Q_NO}</div>
                     </div>
                     
                     <div className="space-y-2">

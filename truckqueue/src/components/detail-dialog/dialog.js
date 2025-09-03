@@ -148,7 +148,7 @@ const DataDetailDialog = ({ open, data, mode, type, truck, onSave, onClose, resu
           </div>
 
         : (
-          <div className='p-6 content-center'>
+          <div className='px-6 py-3 content-center'>
             <div className="flex flex-col border-collapse border border-gray-500">
               <div className='flex text-center'>
                 <div className="w-2/5 border border-gray-500 block text-gray-700 font-bold text-lg py-1">Order No.</div>

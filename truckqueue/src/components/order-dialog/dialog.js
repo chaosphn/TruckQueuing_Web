@@ -7,7 +7,7 @@ const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
   const [activeTab, setActiveTab] = useState('ค้นหาเลขออเดอร์');
   const [plateHeadNumber, setPlateHeadNumber] = useState('');
   const [plateTailNumber, setPlateTailNumber] = useState('');
-  const [orderNumber, setOrderNumber] = useState('D');
+  const [orderNumber, setOrderNumber] = useState(null);
   const [openAlert, setOpenAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,10 +23,10 @@ const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
     setIsLoading(true);
     const data = {
       type: activeTab,
-      ordernumber: orderNumber
+      ordernumber: `D${orderNumber.toString()}`.trim(),
     };
-    if(orderNumber.length > 0){
-      const result = await getQueueDataByOrder(data.ordernumber.trim());
+    if(orderNumber > 0){
+      const result = await getQueueDataByOrder(data.ordernumber);
       if(result && result.length > 0){
         //console.log(result);
         setIsLoading(false);
@@ -73,10 +73,10 @@ const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
           <div className="space-y-6">
             <div>
                 <label className="block text-gray-700 font-medium mb-3 text-lg">
-                  ใส่เลขออเดอร์
+                  ป้อนเลขออเดอร์
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   value={orderNumber}
                   onChange={(e) => setOrderNumber(e.target.value)}
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg focus:border-blue-500 focus:outline-none transition-colors bg-gray-50"
@@ -129,7 +129,7 @@ const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
                     d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
                   ></path>
                 </svg>
-                <span>กำลังบันทึก...</span>
+                <span>กำลังค้นหา...</span>
               </>
             ) : (
               <>

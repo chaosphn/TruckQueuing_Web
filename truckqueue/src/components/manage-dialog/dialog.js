@@ -47,17 +47,17 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
     setOpenQueueDialog(false);
 
     switch (selectedAction) {
-      case 'Enable DryRun Mode':
+      case 'Enable Dry Run Mode':
         if (cfmStatus) {
           handleDryRunMode(true);
         }
         break;
-      case 'Disable DryRun Mode':
+      case 'Disable Dry Run Mode':
         if (cfmStatus) {
           handleDryRunMode(false);
         }
         break;
-      case 'Finish DryRun':
+      case 'Finish Dry Run':
       case 'Finish Queue':
         if (cfmStatus) {
           handleFinishQueue();
@@ -347,9 +347,27 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                   <div className="bg-gray-100 rounded-lg px-4 py-4 h-full">
                     <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing {type == 'SETTING' ? 'Setting' : 'Management'}</h4>
                     <div className="grid grid-cols-1 gap-4 mb-3">
-                      <TextField disabled={data.state !== 'free' ? true : false} label="Auto Assign Delay (S)" size="small" type='number' value={delayTime} onChange={(e) => setDelayTime(e.target.value)} />
-                      <TextField disabled={data.state !== 'free' ? true : false} label="Starting Weight (T)" size="small" type='number' value={startWeigth} onChange={(e) => setStartWeigth(e.target.value)} />
-                      <TextField disabled={data.state !== 'free' ? true : false} label="Exit Weight (T)" size="small" type='number' value={existWeigth} onChange={(e) => setExistWeigth(e.target.value)} />
+                      <TextField disabled={data.state !== 'free' ? true : false} label="Auto Assign Delay (S)" size="small" type='number' value={delayTime} onChange={(e) => {
+                        if(e.target.value<0){
+                          //setDelayTime(0);
+                        } else {
+                          setDelayTime(e.target.value);
+                        }
+                      }} />
+                      <TextField disabled={data.state !== 'free' ? true : false} label="Starting Weight (T)" size="small" type='number' value={startWeigth} onChange={(e) => {
+                        if(e.target.value<0){
+                          //setStartWeigth(0);
+                        } else {
+                          setStartWeigth(e.target.value);
+                        }
+                      }} />
+                      <TextField disabled={data.state !== 'free' ? true : false} label="Exit Weight (T)" size="small" type='number' value={existWeigth} onChange={(e) => {
+                        if(e.target.value<0){
+                          //setExistWeigth(0);
+                        } else {
+                          setExistWeigth(e.target.value);
+                        }
+                      }} />
                       <span className='font-semibold'>Last Update: {data?.lastchange??'---'}</span>
                     </div>
                   </div>
@@ -365,11 +383,11 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                         setSelectedMode(!selectedMode)
                         setOpenDataDialog(true);
                         setcountAction(0)
-                        setSelectedAction( !data?.isdryrun ? 'Enable DryRun Mode' : 'Disable DryRun Mode')
+                        setSelectedAction( !data?.isdryrun ? 'Enable Dry Run Mode' : 'Disable Dry Run Mode')
                       }
                       }
                     >
-                      DryRun Mode
+                      Dry Run Mode
                     </button>
                     <div className="grid grid-cols-2 gap-6 mb-3">
                       <button
@@ -381,11 +399,11 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                         onClick={() => {
                           setOpenDataDialog(true);
                           setcountAction(0)
-                          setSelectedAction(data.isdryrun ? 'Finish DryRun' : 'Finish Queue')
+                          setSelectedAction(data.isdryrun ? 'Finish Dry Run' : 'Finish Queue')
                         }
                         }
                       >
-                        {data.isdryrun ? 'Finish DryRun' : 'Finish Queue'}
+                        {data.isdryrun ? 'Finish Dry Run' : 'Finish Queue'}
                       </button>
                       <button
                         disabled={ data.state === 'free' && !data.isauto ? false : true}
@@ -404,35 +422,35 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                       </button>
                     </div>
                     <div className="grid grid-cols-2 gap-6 mb-3">
-                        <button 
-                          disabled={data.state === 'maintenance' || data.state === 'free' ? true : false}
-                          className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800
-                           hover:from-gray-100 hover:to-gray-400 hover:text-gray-800 hover:border-x-zinc-400 hover:shadow-sm hover:translate-y-0 hover:scale-100
-                            transition-all duration-300 ease-out
-                            cursor-pointer disabled:cursor-not-allowed`}
-                          onClick={() => {
-                            setOpenDataDialog(true);
-                            setcountAction(10)
-                            setSelectedAction('Cancel to Queuing')
-                          }}
-                        >
-                          Cancel to Queuing
-                        </button>
-                        <button 
-                          disabled={data.state === 'maintenance' ? true : false}
-                          className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800
-                           hover:from-gray-100 hover:to-gray-400 hover:text-gray-800 hover:border-x-zinc-400 hover:shadow-sm hover:translate-y-0 hover:scale-100
-                            transition-all duration-300 ease-out
-                            cursor-pointer disabled:cursor-not-allowed`}
-                          onClick={() => {
-                            setOpenDataDialog(true);
-                            setcountAction(10)
-                            setSelectedAction('Cancel to Register')
-                          }
-                          }
-                        >
-                          Cancel to Register
-                        </button>
+                      <button 
+                        disabled={data.state === 'maintenance' || data.state === 'free' ? true : false}
+                        className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800
+                          hover:from-gray-100 hover:to-gray-400 hover:text-gray-800 hover:border-x-zinc-400 hover:shadow-sm hover:translate-y-0 hover:scale-100
+                          transition-all duration-300 ease-out
+                          cursor-pointer disabled:cursor-not-allowed`}
+                        onClick={() => {
+                          setOpenDataDialog(true);
+                          setcountAction(10)
+                          setSelectedAction('Cancel to Queuing')
+                        }}
+                      >
+                        Cancel to Queuing
+                      </button>
+                      <button 
+                        disabled={data.state === 'maintenance' || data.state === 'free' ? true : false}
+                        className={`w-full flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b from-gray-100 to-gray-400 text-gray-800
+                          hover:from-gray-100 hover:to-gray-400 hover:text-gray-800 hover:border-x-zinc-400 hover:shadow-sm hover:translate-y-0 hover:scale-100
+                          transition-all duration-300 ease-out
+                          cursor-pointer disabled:cursor-not-allowed`}
+                        onClick={() => {
+                          setOpenDataDialog(true);
+                          setcountAction(10)
+                          setSelectedAction('Cancel to Register')
+                        }
+                        }
+                      >
+                        Cancel to Register
+                      </button>
                     </div>
                   </div>
                 </div>

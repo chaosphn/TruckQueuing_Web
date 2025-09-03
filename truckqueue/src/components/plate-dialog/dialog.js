@@ -7,8 +7,8 @@ import { QueueContext } from '../../utils/AppContext';
 const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryRun, truck_type }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('ค้นหาเลขทะเบียน');
-  const [plateHeadNumber, setPlateHeadNumber] = useState('');
-  const [plateTailNumber, setPlateTailNumber] = useState('');
+  const [plateHeadNumber, setPlateHeadNumber] = useState(null);
+  const [plateTailNumber, setPlateTailNumber] = useState(null);
   const [orderNumber, setOrderNumber] = useState('');
   const [openAlert, setOpenAlert] = useState(false);
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
@@ -116,10 +116,10 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
           <div className="space-y-6">
             <div>
               <label className="block text-gray-700 font-medium mb-3 text-lg">
-                ใส่เลขทะเบียนหัว
+                ป้อนเลขทะเบียนหัว
               </label>
               <input
-                type="text"
+                type="number"
                 value={plateHeadNumber}
                 onChange={(e) => setPlateHeadNumber(e.target.value)}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg focus:border-blue-500 focus:outline-none transition-colors bg-gray-50"
@@ -128,10 +128,10 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
             </div>
             <div className={ ishead ? 'invisible' : '' }>
               <label className="block text-gray-700 font-medium mb-3 text-lg">
-                ใส่เลขทะเบียนหาง
+                ป้อนเลขทะเบียนหาง
               </label>
               <input
-                type="text"
+                type="number"
                 value={plateTailNumber}
                 onChange={(e) => setPlateTailNumber(e.target.value)}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg focus:border-blue-500 focus:outline-none transition-colors bg-gray-50"
@@ -184,7 +184,7 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
                     d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
                   ></path>
                 </svg>
-                <span>กำลังบันทึก...</span>
+                <span>กำลังค้นหา...</span>
               </>
             ) : (
               <>

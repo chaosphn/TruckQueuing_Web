@@ -60,7 +60,7 @@ const CarrierManagement = () => {
           id: item.id,
           status: 
             findBayData.STATUS == 'CALLING' && findBayData.MAINTENANCE == 'n' ? 'เรียกคิว' : 
-            findBayData.STATUS == 'READY'&& findBayData.MAINTENANCE == 'n' ? 'เตรียมพร้อม' : 
+            findBayData.STATUS == 'READY'&& findBayData.MAINTENANCE == 'n' ? 'พร้อมโหลด' : 
             findBayData.STATUS == 'DRYRUN'&& findBayData.MAINTENANCE == 'n' && findBayData.DRYRUN == 'y' ? 'Dry Run' : 
             findBayData.STATUS == 'LOADING'&& findBayData.MAINTENANCE == 'n' ? 'กำลังโหลด' : 
             findBayData.STATUS == 'LOADED'&& findBayData.MAINTENANCE == 'n' ? 'โหลดเสร็จสิ้น' : 
@@ -521,9 +521,23 @@ const CarrierManagement = () => {
                 }
               </div>
               <div className='w-1/5 min-h-24 h-full grid grid-cols-2 gap-4 cursor-pointer'>
-                <div className={`w-full h-full col-span-2 grid place-items-center text-center text-base font-bold rounded-md border-2 
+                {/* <div className={`w-full h-full col-span-2 grid place-items-center text-center text-base font-bold rounded-md border-2 
                   ${ carrier.state === 'maintenance' ? 'text-slate-200 bg-red-500 border-white' : 'text-black bg-emerald-400 border-emerald-600' } shadow-black/30 shadow-lg`}>
                   <div>{carrier.mode}</div>
+                </div> */}
+                <div className={`w-full h-full grid place-items-center text-center text-sm font-bold rounded-md border-2 
+                  ${ carrier.state === 'maintenance' ? 'text-slate-200 bg-red-500 border-white' : 'text-black bg-emerald-400 border-emerald-600' } shadow-black/30 shadow-lg`}>
+                  <div>{carrier.mode}</div>
+                </div>
+                <div className={`w-full h-full grid grid-cols-2 gap-2`}>
+                  <div className={`w-full h-full grid place-items-center text-center text-sm font-bold rounded-md border-2 shadow-black/30 shadow-lg
+                    ${ carrier.type === 'auto' ? 'text-slate-200 bg-blue-500 border-white' : 'text-black bg-amber-400 border-amber-600' }`}>
+                    { carrier.type === 'auto' ? 'Auto' : 'Manual' } 
+                  </div>
+                  <div className={`w-full h-full grid place-items-center text-center text-sm font-bold rounded-md border-2 shadow-black/30 shadow-lg
+                    ${ carrier.isdryrun ? 'text-slate-200 bg-blue-500 border-white' : 'text-black bg-emerald-400 border-emerald-600' }`}>
+                    { carrier.isdryrun ? 'Dry Run' : 'Normal' }
+                  </div>
                 </div>
                 <div onClick={() => {
                     setSelectBayData(carrier);

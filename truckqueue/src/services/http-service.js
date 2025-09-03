@@ -114,6 +114,30 @@ export const getBaysData = async () => {
     }
 }
 
+export const getQueueInfomation = async () => {
+    try {
+        const result = await api.post('/dashboard/queueinfo');
+        //console.log(result.data)
+        if(result && result.data ){
+            return result.data;
+        } else {
+            return {
+                WaitQueue: 0,
+                Loadding: 0,
+                OrderToday: 0,
+                FinishQueue: 0
+            };
+        }
+    } catch (error) {
+        return {
+            WaitQueue: 0,
+            Loadding: 0,
+            OrderToday: 0,
+            FinishQueue: 0
+        };
+    }
+}
+
 export const getTASApiStatus = async () => {
     try {
         const result = await api.post('/dashboard/online', {}, { timeout: 2000 });

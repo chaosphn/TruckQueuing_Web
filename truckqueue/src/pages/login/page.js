@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Eye, EyeOff, User, Lock, LogIn } from 'lucide-react';
 import backgroundImg from '../../assets/background.png';
 import logoImg from '../../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
 import TruckModel from '../../components/truck/truck-model';
 import { login } from '../../services/http-service';
+import { QueueContext } from '../../utils/AppContext';
 
 const LoginPage = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -14,9 +15,10 @@ const LoginPage = () => {
     username: '',
     password: ''
   });
-  const [checkData, setCheckData] = useState(false);
+  const [checkData, setCheckData] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isIncorrect, setIsIncorrect] = useState(false);
+  const { apiStatus, updateApiStatus, tasStatus, updateTASStatus } = useContext(QueueContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,7 +67,7 @@ const LoginPage = () => {
     setIsIncorrect(false);
     // Simulate login process
     await new Promise(resolve => setTimeout(resolve, 500));
-    const result = await login(formData.username, formData.password);
+    const result = await login(formData.username.trim(), formData.password.trim());
     if(result && !result.error){
         setIsLoading(false);
         setIsIncorrect(false);
@@ -185,7 +187,7 @@ const LoginPage = () => {
               </div>
 
               {/* Remember Me */}
-              <div className="flex items-center justify-between">
+              {/* <div className="flex items-center justify-between">
                 <label className="flex items-center">
                   <input
                     type="checkbox"
@@ -194,7 +196,7 @@ const LoginPage = () => {
                   />
                   <span className="ml-2 text-white/80 text-lg">จดจำการเข้าสู่ระบบ</span>
                 </label>
-              </div>
+              </div> */}
 
               {/* Alert */}
               {isIncorrect && (
@@ -246,14 +248,17 @@ const LoginPage = () => {
       <footer className="relative bg-black/20 backdrop-blur-sm border-t border-white/20">
         <div className="mx-auto px-16 py-6">
           <div className="flex items-center justify-between">
-            <div className="text-white/80 text-sm drop-shadow">
+            <div className="text-white/80 text-base drop-shadow">
               © 2025 PTT LNG Truck Loading System
             </div>
-            <div className="flex items-center space-x-4 text-white/80 text-sm drop-shadow">
+            <div className="flex items-center space-x-4 text-white/80 text-base drop-shadow">
               <span>Version 1.0.0</span>
               <span>•</span>
-              <span>System Online</span>
-              <div className="w-4 h-4 bg-green-400 rounded-full"></div>
+              <span className='font-semibold'>Mode : { tasStatus && tasStatus.OfflineMode == false ? 'Online' : tasStatus && tasStatus.OfflineMode == true ? 'Offline' : 'Unknow' }</span>
+              <span>•</span>
+              <span className='font-semibold'>{ apiStatus === true ? 'System Operational' : 'System Unavailable' }</span>
+              <div className={`w-4 h-4 ${ apiStatus === true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
+              { apiStatus !== true && (<span > : Unable to establish connection with TAS Server </span>)}
             </div>
           </div>
         </div>
