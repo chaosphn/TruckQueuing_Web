@@ -21,11 +21,11 @@ const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
 
   const handleSave = async () => {
     setIsLoading(true);
-    const data = {
-      type: activeTab,
-      ordernumber: `D${orderNumber.toString()}`.trim(),
-    };
     if(orderNumber > 0){
+      const data = {
+        type: activeTab,
+        ordernumber: `D${orderNumber.toString()}`.trim(),
+      };
       const result = await getQueueDataByOrder(data.ordernumber);
       if(result && result.length > 0){
         //console.log(result);

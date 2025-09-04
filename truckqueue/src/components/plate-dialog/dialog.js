@@ -23,15 +23,15 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
   const handleSave = async () => {
     setIsLoading(true);
     if(isDryRun){
-      if( !ishead && plateHeadNumber.length > 0 && plateTailNumber.length > 0){
-        const result = await selectDryRunQueue(plateHeadNumber.trim(), plateTailNumber.trim(), truck_type);
+      if( !ishead && plateHeadNumber > 0 && plateTailNumber > 0){
+        const result = await selectDryRunQueue(plateHeadNumber, plateTailNumber, truck_type);
         if(result){
           setQueuingData(result);
           setOpenDataDialog(true);
         }
         setIsLoading(false);
-      } else if( ishead && plateHeadNumber.length > 0 ){
-        const result = await selectDryRunQueue(plateHeadNumber.trim(), null, truck_type);
+      } else if( ishead && plateHeadNumber > 0 ){
+        const result = await selectDryRunQueue(plateHeadNumber, null, truck_type);
         if(result){
           setQueuingData(result);
           setOpenDataDialog(true);
@@ -43,8 +43,8 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
       }
     } else {
       if( tasStatus && tasStatus.OfflineMode === true ){
-        if(plateHeadNumber.length > 0 && plateTailNumber.length > 0){
-          const result = await selectOffLineModeQueue(plateHeadNumber.trim(), plateTailNumber.trim(), truck_type);
+        if(plateHeadNumber > 0 && plateTailNumber > 0){
+          const result = await selectOffLineModeQueue(plateHeadNumber, plateTailNumber, truck_type);
           if(result){
             setQueuingData(result);
             setOpenDataDialog(true);
@@ -60,8 +60,8 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
           headnumber: plateHeadNumber,
           tailnumber: plateTailNumber
         };
-        if(plateHeadNumber.length > 0 && plateTailNumber.length > 0){
-          const result = await getQueueDataByLicense(data.headnumber.trim(), data.tailnumber.trim());
+        if(plateHeadNumber > 0 && plateTailNumber > 0){
+          const result = await getQueueDataByLicense(data.headnumber, data.tailnumber);
           if(result && result.length > 0){
             const filteredData = result.filter(x => new Date(x.DATEARRIVE).getTime() < getTomorrowMidnight());
             setIsLoading(false);

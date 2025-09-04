@@ -208,24 +208,8 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
             <span>⏮</span>
             <span>ย้อนกลับ</span>
           </button>
-          {/* <button
-            onClick={handleReloadData}
-            className="px-8 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center space-x-2"
-          >
-            <span>✓</span>
-            <span>ยืนยัน</span>
-          </button> */}
         </div>       
       </div>
-      {/* <DataDetailDialog open={openDataDialog} data={selectionRow} mode={mode} type={type} 
-        onClose={() => {
-          setOpenDataDialog(false);
-          setSelectionRow(null);
-        }} 
-        onSave={() => {
-          setOpenDataDialog(false);
-        }}
-      ></DataDetailDialog> */}
       <ManageDialog opens={openDataDialog} selectedAction={selectedAction} chaeckbox={ mode !== 'cancle' ? true : false } count={mode == 'cancle' ? 10 : 0} 
         onSave2={(d) => setIsAbnormal(d) }
         onSave={(st, check) => {

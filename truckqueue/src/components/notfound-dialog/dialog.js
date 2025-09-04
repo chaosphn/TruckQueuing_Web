@@ -52,24 +52,7 @@ function NotFoundDialog({ opens, onSave }) {
       </DialogContent>
       
       <DialogActions sx={{ justifyContent: 'center', gap: 2, pb: 2 }}>
-        {/* <Button 
-          onClick={handleClose} 
-          color="inherit"
-          variant="outlined"
-          disabled={loading}
-          sx={{ minWidth: 100 }}
-        >
-          ปิด
-        </Button>
-        <Button 
-          onClick={handleConfirm} 
-          color="primary"
-          variant="contained"
-          disabled={loading}
-          sx={{ minWidth: 100 }}
-        >
-          ตกลง
-        </Button> */}
+        
       </DialogActions>
     </Dialog>
   );

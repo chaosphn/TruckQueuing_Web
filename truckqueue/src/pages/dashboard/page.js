@@ -185,13 +185,6 @@ const CarrierDashboard = () => {
     }
   ];
 
-  const upcomingSlots = [
-    { id: 4, available: true },
-    { id: 5, available: true },
-    { id: 6, available: true },
-    { id: 7, available: false }
-  ];
-
   const formatDate = (date) => {
     return date.toLocaleDateString('th-TH', {
       weekday: 'long',
@@ -199,17 +192,6 @@ const CarrierDashboard = () => {
       month: 'long',
       day: 'numeric'
     });
-  };
-
-  const [text, setText] = useState('queue tee sibjet pai tee bay A');
-
-  const handleSpeak = () => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      window.speechSynthesis.speak(utterance);
-    } else {
-      alert('Sorry, your browser does not support text to speech!');
-    }
   };
 
   return (
@@ -428,7 +410,7 @@ const CarrierDashboard = () => {
                     : 'border-slate-300 bg-slate-100'
                 }`}
               >
-                <div className="div flex items-center justify-around h-full" onClick={() => handleSpeak()}>
+                <div className="div flex items-center justify-around h-full" >
                   <div className={`text-3xl font-bold mb-2 ${true ? 'text-slate-700' : 'text-slate-900'}`}>
                     คิวที่ถัดไป
                   </div>

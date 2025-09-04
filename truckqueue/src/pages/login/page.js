@@ -186,18 +186,6 @@ const LoginPage = () => {
                 </div>
               </div>
 
-              {/* Remember Me */}
-              {/* <div className="flex items-center justify-between">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    onChange={(e) => handleCheckedChange(e)}
-                    className="w-4 h-4 text-blue-400 bg-white/10 border-white/20 rounded focus:ring-blue-400 focus:ring-2"
-                  />
-                  <span className="ml-2 text-white/80 text-lg">จดจำการเข้าสู่ระบบ</span>
-                </label>
-              </div> */}
-
               {/* Alert */}
               {isIncorrect && (
                 <div className="flex items-center justify-between">

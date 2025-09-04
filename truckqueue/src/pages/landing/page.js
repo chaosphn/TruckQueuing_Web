@@ -34,24 +34,6 @@ const LandingPage = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const cntQ = registerQueue.filter(x => new Date(x.DATEARRIVE).getDate() == new Date().getDate()).length??0;
-  //   setDailyQueue(cntQ);
-  // }, [queue]);
-
-  // useEffect(() => {
-  //   const cntQ = queue.filter(x => new Date(x.DATEARRIVE).getDate() == new Date().getDate()).length??0;
-  //   setDailyWaiting(cntQ);
-  // }, [queue]);
-
-  useEffect(() => {
-    const cntQ = bayData.filter(x => x.STATUS == 'LOADING' || x.STATUS == 'LOADED').length??0;
-    setDailyLoading(cntQ);
-    //console.log('bayData', bayData);
-    const fnhQ = bayData.map(x => x.CNT??0).reduce((a, b) => a + b, 0);
-    setDailyFinish(fnhQ);
-  }, [bayData]);
-
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(Boolean(document.fullscreenElement));
