@@ -86,19 +86,37 @@ const TruckDataDialog = ({ open, data, mode, type, truck_type, onSave, onClose }
 
   const paginationModel = { page: 0, pageSize: 5 };
   const columns = [
-    { field: 'ORDER_CODE', headerName: 'เลขออเดอร์', flex: 0.3, resizable: true },
+    { field: 'ORDER_CODE', headerName: 'เลขออเดอร์', flex: 0.2, resizable: true,
+      renderCell: (params) => (
+        <Typography variant="body2" style={{ fontSize: '1.125rem', paddingTop: 8 }}>
+          {params.value || '---'}
+        </Typography>  
+      )
+    },
     { field: 'DATEARRIVE', headerName: 'วันที่', flex: 0.4, resizable: true,
       renderCell: (params) => (
-        <Typography variant="body2" style={{ color: 'var(--textSecondary)', fontSize: 14, paddingTop: 8 }}>
+        <Typography variant="body2" style={{ color: 'var(--textSecondary)', fontSize: '1.125rem', paddingTop: 8 }}>
           {dateFormatParser(new Date(params.value), 'dd-MM-yyyy HH:mm')}
         </Typography>  
       )
     },
-    { field: 'CARRIER', headerName: 'บริษัท', flex: 0.4, resizable: true },
+    { field: 'CARRIER', headerName: 'บริษัท', flex: 0.6, resizable: true,
+      renderCell: (params) => (
+        <Typography variant="body2" style={{ fontSize: '1.125rem', paddingTop: 8 }}>
+          {params.value || '---'}
+        </Typography>  
+      )
+    },
     // { field: 'FontLicense', headerName: 'ทะเบียนหัว', flex: 0.3, resizable: true },
     // { field: 'RearLicense', headerName: 'ทะเบียนหาง', flex: 0.3, resizable: true },
     // { field: 'Driver1', headerName: 'ชื่อคนขับ', flex: 0.5, resizable: true },
-    { field: 'DESTINATION_NAME', headerName: 'ปลายทาง', flex: 1, resizable: true },
+    { field: 'DESTINATION_NAME', headerName: 'ปลายทาง', flex: 1, resizable: true,
+      renderCell: (params) => (
+        <Typography variant="body2" style={{ fontSize: '1.125rem', paddingTop: 8 }}>
+          {params.value || '---'}
+        </Typography>  
+      )
+     },
     { field: 'dawda', headerName: 'Action', flex: 0.2, resizable: true,
       renderCell: (params) => (
         <Button startIcon={ <MousePointer2 /> } variant='contained' size='small' color="info" onClick={() => handleRowSelect(params.row)}>เลือก</Button>

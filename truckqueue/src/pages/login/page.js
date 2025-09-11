@@ -237,7 +237,7 @@ const LoginPage = () => {
         <div className="mx-auto px-16 py-6">
           <div className="flex items-center justify-between">
             <div className="text-white/80 text-base drop-shadow">
-              © 2025 PTT LNG Truck Loading System
+              © 2025 PTTLNG Truck Queuing System
             </div>
             <div className="flex items-center space-x-4 text-white/80 text-base drop-shadow">
               <span>Version 1.0.0</span>

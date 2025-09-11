@@ -1,5 +1,5 @@
 {
-    "APIURL": "http://192.168.68.72:8011/api",
+    "APIURL": "http://127.0.0.1:8012/api",
     "INTERVAL": 5000,
     "AUTH_ALIVE": 7,
     "USERS": [

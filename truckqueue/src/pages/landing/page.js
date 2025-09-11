@@ -123,8 +123,8 @@ const LandingPage = () => {
                 </div> */}
                 <img alt='logo' src={logoImg} width={100} height={100} className=''/>
                 <div>
-                  <h1 className="text-2xl font-bold text-white drop-shadow-lg">PTT LNG</h1>
-                  <p className="text-blue-100 text-xl drop-shadow mt-1">ระบบบริหารจัดการคิวรถบรรทุก</p>
+                  <h1 className="text-2xl font-bold text-white drop-shadow-lg">PTTLNG Truck Queuing System</h1>
+                  <p className="text-blue-100 text-xl drop-shadow mt-1">ระบบบริหารจัดการคิวรถ</p>
                 </div>
               </div>
             </div>
@@ -151,7 +151,7 @@ const LandingPage = () => {
         {/* Hero Section */}
         <div className="text-center mb-16 py-6 rounded-lg bg-black/10 backdrop-blur-sm border-t border-white/20 shadow-2xl">
           <h2 className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-tight drop-shadow-2xl">
-            TRUCK LOADING SYSTEM
+            TRUCK QUEUING SYSTEM
           </h2>
           {/* <p className="text-xl text-white/90 max-w-2xl mx-auto drop-shadow-lg">
             ระบบจัดการการโหลดรถบรรทุก
@@ -222,7 +222,7 @@ const LandingPage = () => {
         <div className="mx-auto px-16 py-6">
           <div className="flex items-center justify-between">
             <div className="text-white/80 text-base drop-shadow">
-              © 2025 PTT LNG Truck Loading System
+              © 2025 PTTLNG Truck Queuing System
             </div>
             <div className="flex items-center space-x-4 text-white/80 text--batext-base drop-shadow">
               <span>Version 1.0.0</span>

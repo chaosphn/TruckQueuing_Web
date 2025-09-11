@@ -81,11 +81,14 @@ const DataDetailDialog = ({ open, data, mode, type, truck, onSave, onClose, resu
       <div className="bg-white rounded-lg shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-t-lg flex items-center justify-between">
-          <h2 className="text-3xl font-semibold">{ bookingData && bookingData?.baynumber ? 'จองคิวสำเร็จ' : bookingData ? 'มีคิวก่อนหน้า' : 'Order Information' }</h2>
-          <X  onClick={() => {
-            setBookingData(null);
-            onSave();
-          }} ></X>
+          <h2 className="text-3xl font-semibold">{ bookingData && bookingData?.baynumber ? 'จองคิวสำเร็จ' : bookingData ? 'จองคิวสำเร็จ' : 'Order Information' }</h2>
+          { bookingData ? 
+            <X  onClick={() => {
+              setBookingData(null);
+              onSave();
+            }} ></X>
+            : null 
+          }
         </div>
 
         {/* Content */}
@@ -118,30 +121,30 @@ const DataDetailDialog = ({ open, data, mode, type, truck, onSave, onClose, resu
                   <div className="flex items-center justify-center mb-3">
                     <Clock className="w-12 h-12 text-amber-500 mr-4 mt-4" />
                     <span className="text-5xl font-bold text-amber-600">
-                      รอประมาณ {bookingData?.waitingtime || 'ไม่ทราบ'} นาที
+                      รอประมาณ {bookingData?.waitingtime || '0'} นาที
                     </span>
                   </div>
                   
                   <div className="flex items-center justify-center">
                     <Users className="w-6 h-6 text-amber-500 mr-4 mt-1" />
                     <span className="text-4xl text-amber-600 font-medium">
-                      มีคิวก่อนหน้า {bookingData?.queuebefore || 'ไม่ทราบ'} คิว
+                      มีคิวก่อนหน้า {bookingData?.queuebefore || '0'} คิว
                     </span>
                   </div>
                 </div>
           
               </div>
             )}
-            {bookingData?.message == 'Duplicate Register Queue' ? (
+            { bookingData && bookingData?.message.includes('Successful') ? (
               <div className="mt-6 p-3 bg-gray-50 rounded-lg">
                 <p className="text-red-600 text-2xl font-bold underline text-center">
-                  ไม่สามารถลงทะเบียนได้ ออเดอร์นี้ได้ถูกจองคิวไปแล้ว
+                  กรุณาจดบันทึกหมายเลขคิวของคุณ
                 </p>
               </div>
             ) : (
               <div className="mt-6 p-3 bg-gray-50 rounded-lg">
                 <p className="text-red-600 text-2xl font-bold underline text-center">
-                  กรุณาจดบันทึกหมายเลขคิวของคุณ
+                  ไม่สามารถลงทะเบียนได้ : { bookingData?.message }
                 </p>
               </div>
             )}

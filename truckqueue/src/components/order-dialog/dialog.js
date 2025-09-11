@@ -73,7 +73,7 @@ const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
           <div className="space-y-6">
             <div>
                 <label className="block text-gray-700 font-medium mb-3 text-lg">
-                  ป้อนเลขออเดอร์
+                  ป้อนเลขออเดอร์ (เฉพาะตัวเลข)
                 </label>
                 <input
                   type="number"

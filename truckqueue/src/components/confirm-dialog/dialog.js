@@ -111,7 +111,7 @@ function ManageDialog({ opens, selectedAction, onSave, count = 0, chaeckbox = fa
                 control={<Checkbox checked={checkedResult} 
                   onChange={(event) => setCheckedResult(event.target.checked)}
                 />}
-                label="Loading Bay Abnormal"
+                label="Loading for abnormal case"
                 sx={{ fontWeight: 'bold', mb: 1, backgroundColor: 'grey.100', paddingX: 2, borderRadius: 1 }}
               />
             </Box>

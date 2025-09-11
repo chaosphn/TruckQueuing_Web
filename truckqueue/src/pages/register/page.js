@@ -13,6 +13,7 @@ import OrderDialog from '../../components/order-dialog/dialog';
 import { QueueContext } from '../../utils/AppContext';
 import dayjs from 'dayjs';
 import { getPeriodQueueData } from '../../services/http-service';
+import ExpireDialog from '../../components/exxpire-dialog/dialog';
 
 const RegisterPage = () => {
   const [pageState, setPageState] = useState('truck');
@@ -22,6 +23,7 @@ const RegisterPage = () => {
   const [ openQueueDialog, setOpenQueueDialog ] = useState(false);
   const [ openDryRunDialog, setOpenDryRunDialog ] = useState(false);
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
+  const [ openExpireDialog, setOpenExpireDialog ] = useState(false);
   const [ queueData, setQueueData ] = useState([]);
   const [ queueDataMode, setQueueDataMode ] = useState('');
   const [ queueDataType, setQueueDataType ] = useState('');
@@ -103,8 +105,8 @@ const RegisterPage = () => {
       value: 'ISO-Tank',
       subtitle: 'ติดตามสถานะการโหลด',
       icon: Monitor,
-      color: 'from-green-500 to-green-600',
-      hoverColor: 'from-green-600 to-green-700'
+      color: 'from-gray-500 to-gray-600',
+      hoverColor: 'from-gray-500 to-gray-600'
     }
   ];
 
@@ -223,15 +225,33 @@ const RegisterPage = () => {
   };
 
   const handleSelectTruck = (truck) => {
-    setSelectedTruck(truck);
-    setPageState('mode');
+    const hour = new Date().getHours();
+    const minute = new Date().getMinutes();
+    //console.log(hour, minute)
+    if(hour > 22){
+      setOpenExpireDialog(true);
+    } else if(hour == 22){
+      if(minute >= 30){
+        setOpenExpireDialog(true);
+      } else {
+        setSelectedTruck(truck);
+        setPageState('mode');
+      }
+    } else {
+      setSelectedTruck(truck);
+      setPageState('mode');
+    }
   };
 
   const handleSelectMode = (mode) => {
     if(mode === '1'){
       setPageState('queue');
     } else {
-      setPageState('dryrun');
+      if(seletedTruck == '10-Wheel'){
+        handleOpenDryRunDialog('1');
+      } else {
+        setPageState('dryrun');
+      }
       // setDialogTitle('ลงทะเบียนจองคิว Dry Run');
       // setOpenQueueDialog(false);
       // setOpenDryRunDialog(true);
@@ -265,7 +285,7 @@ const RegisterPage = () => {
         <img alt='bg' src={backgroundImg} className='w-full h-auto' />
       </div>
       
-      <header className="relative z-10 bg-black/30 backdrop-blur-sm border-b border-white/20">
+      <header className="relative z-10 bg-black/30 backdrop-blur-sm border-b border-white/20 ">
         <div className="mx-auto px-16 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -275,8 +295,8 @@ const RegisterPage = () => {
                 </div> */}
                 <img alt='logo' src={logoImg} width={100} height={100} className=''/>
                 <div>
-                  <h1 className="text-2xl font-bold text-white drop-shadow-lg">PTT LNG</h1>
-                  <p className="text-blue-100 text-xl drop-shadow mt-1">ระบบบริหารจัดการคิวรถบรรทุก</p>
+                  <h1 className="text-2xl font-bold text-white drop-shadow-lg">PTTLNG Truck Queuing System</h1>
+                  <p className="text-blue-100 text-xl drop-shadow mt-1">ระบบบริหารจัดการคิวรถ</p>
                 </div>
               </div>
             </div>
@@ -305,7 +325,7 @@ const RegisterPage = () => {
           {/* Hero Section */}
           <div className="text-center mb-16 py-12 px-32 rounded-lg bg-black/10 backdrop-blur-sm border border-white/20">
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 tracking-tight drop-shadow-2xl">
-              กรุณาเลือกประเภทของรถบรรทุก
+              กรุณาเลือกประเภทของรถ
             </h2>
             {/* <p className="text-xl text-white/90 max-w-2xl mx-auto drop-shadow-lg">
               ระบบจัดการการโหลดรถบรรทุก
@@ -353,7 +373,7 @@ const RegisterPage = () => {
           {/* Hero Section */}
           <div className="text-center mb-16 py-12 px-32 rounded-lg bg-black/10 backdrop-blur-sm border border-white/20">
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 tracking-tight drop-shadow-2xl">
-              TRUCK LOADING SYSTEM
+              TRUCK QUEUING SYSTEM
             </h2>
             {/* <p className="text-xl text-white/90 max-w-2xl mx-auto drop-shadow-lg">
               ระบบจัดการการโหลดรถบรรทุก
@@ -410,7 +430,7 @@ const RegisterPage = () => {
           {/* Hero Section */}
           <div className="text-center mb-16 py-12 px-32 rounded-lg bg-black/10 backdrop-blur-sm border border-white/20">
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-14 tracking-tight drop-shadow-2xl">
-              TRUCK LOADING SYSTEM
+              TRUCK QUEUING SYSTEM
             </h2>
             <p className="text-5xl text-white/90 max-w-2xl mx-auto drop-shadow-lg">
               ลงทะเบียนจองคิวเข้าโหลดสินค้า
@@ -467,7 +487,7 @@ const RegisterPage = () => {
           {/* Hero Section */}
           <div className="text-center mb-16 py-12 px-32 rounded-lg bg-black/10 backdrop-blur-sm border border-white/20">
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-14 tracking-tight drop-shadow-2xl">
-              TRUCK LOADING SYSTEM
+              TRUCK QUEUING SYSTEM
             </h2>
             <p className="text-5xl text-white/90 max-w-2xl mx-auto drop-shadow-lg">
               ลงทะเบียนจองคิว Dry Run
@@ -532,7 +552,7 @@ const RegisterPage = () => {
         <div className="mx-auto px-16 py-6">
           <div className="flex items-center justify-between">
             <div className="text-white/80 text-base drop-shadow">
-              © 2025 PTT LNG Truck Loading System
+              © 2025 PTTLNG Truck Queuing System
             </div>
             <div className="flex items-center space-x-4 text-white/80 text-base drop-shadow">
               <span>Version 1.0.0</span>
@@ -546,6 +566,7 @@ const RegisterPage = () => {
           </div>
         </div>
       </footer>
+      <ExpireDialog opens={openExpireDialog} onSave={() => setOpenExpireDialog(false)} />
     </div>
   );
 };

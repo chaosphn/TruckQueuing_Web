@@ -5,6 +5,7 @@ import TruckModel from '../../components/truck/truck-model';
 import Slider from '@mui/material/Slider';
 import alertImg from '../../assets/warning.png';
 import { QueueContext } from '../../utils/AppContext';
+import logoImg from '../../assets/logo.png';
 
 const CarrierDashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -17,12 +18,12 @@ const CarrierDashboard = () => {
 
   useEffect(() => {
     const screen = window.innerWidth/window.innerHeight;
-    console.log('Screen ratio:', screen);
-    updateQueueData();
+    //console.log('Screen ratio:', screen);
+    //updateQueueData();
     setScreenRatio(screen);
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 3000);
+    }, 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -64,7 +65,8 @@ const CarrierDashboard = () => {
           isauto: findBayData.QUEUE_AUTO === 'y',
           memo: findBayData.MEMO,
           cnt: findBayData.CNT,
-          lastchange: findBayData.LAST_CHANG2 ? findBayData.LAST_CHANG2 : findBayData.LAST_CHANGE1 ? findBayData.LAST_CHANGE1 : '---',
+          lastchange1: findBayData.LAST_CHANGE1 ? findBayData.LAST_CHANGE1 : '---',
+          lastchange2: findBayData.LAST_CHANGE2 ? findBayData.LAST_CHANGE2 : '---',
           startweight: findBayData.SET_START_WEIGHT,
           existweight: findBayData.SET_FINISH_WEIGHT,
           autodelay: findBayData.SET_AUTO_DELAY,
@@ -203,11 +205,11 @@ const CarrierDashboard = () => {
           <div className="">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4" onClick={() => navigatePage('/overview')}>
-                <div className="bg-white p-3 rounded-xl shadow-lg">
-                  <Truck className="w-8 h-8 text-blue-600" />
+                <div className="bg-white p-3 rounded-xl ">
+                  <img alt='logo' src={logoImg} width={100} height={100} className=''/>
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-800">Queue Dashboard</h1>
+                  <h1 className="text-3xl font-bold text-slate-800">PTTLNG Truck Queuing Dashboard</h1>
                   <p className="text-xl text-slate-600">รายการสถานะคิว</p>
                 </div>
               </div>
@@ -227,11 +229,11 @@ const CarrierDashboard = () => {
               <div
                 key={carrier.id}
                 className={`${ 
-                  carrier.state === 'finished' ? 'bg-emerald-50' : 
-                    carrier.state === 'loading' ? 'bg-amber-50' : 
-                      carrier.state === 'maintenance' ? 'bg-red-100' : 
+                  carrier.state === 'finished' ? 'bg-emerald-400' : 
+                    carrier.state === 'loading' ? 'bg-emerald-200' : 
+                      carrier.state === 'maintenance' ? 'bg-red-600' : 
                         carrier.state === 'dry-run' ? 'bg-blue-100' : 
-                         carrier.state === 'pending' ? 'bg-indigo-200' : 'bg-slate-50'
+                         carrier.state === 'pending' ? 'bg-amber-500' : 'bg-slate-50'
                 } ${ carrier.status === 'เรียกคิว' ? 'animate-blink' : '' } rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${ carrier.abnormal ? 'border-4 border-solid border-red-500' : 'border border-white/50' } `}
               >
                 <div className="flex items-center justify-between">
@@ -240,10 +242,10 @@ const CarrierDashboard = () => {
                       key={carrier.id} 
                       className={`w-24 h-24 bg-gradient-to-r ${ 
                         carrier.state === 'finished' ? 'from-emerald-400 to-emerald-600' : 
-                          carrier.state === 'loading' ? 'from-amber-400 to-orange-500' : 
+                          carrier.state === 'loading' ? 'from-emerald-400 to-emerald-600' : 
                             carrier.state === 'maintenance' ? 'from-red-400 to-red-600': 
                               carrier.state === 'dry-run' ? 'from-blue-400 to-blue-600' :
-                                carrier.state === 'pending' ? 'from-indigo-400 to-indigo-600'  : 'from-slate-400 to-slate-600'
+                                carrier.state === 'pending' ? 'from-amber-400 to-amber-600'  : 'from-slate-400 to-slate-600'
                         } rounded-xl flex items-center justify-center text-white font-bold text-6xl shadow-lg `}>
                       {carrier.id}
                     </div>
@@ -311,19 +313,22 @@ const CarrierDashboard = () => {
                       </div> : null
                     }
                     <div className='flex items-center justify-between'>
-                      <div className={`text-2xl font-semibold ${ 
-                        carrier.state === 'finished' ? 'text-emerald-800' : 
-                          carrier.state === 'loading' ? 'text-amber-800' : 
-                            carrier.state === 'maintenance' ? 'text-red-800 -translate-x-7' : 
+                      <div className={`text-3xl font-semibold ${ 
+                        carrier.state === 'finished' ? 'text-white' : 
+                          carrier.state === 'loading' ? 'text-black' : 
+                            carrier.state === 'maintenance' ? 'text-white -translate-x-9' : 
                               carrier.state === 'dry-run' ? 'text-blue-800 ' :
-                                carrier.state === 'pending' ? 'text-indigo-800' : 'text-slate-800 -translate-x-7'
+                                carrier.state === 'pending' ? 'text-white' : 'text-slate-800 -translate-x-7'
                       }`}>สถานะ: {carrier.status}</div>
-                      <div className={`text-2xl font-semibold ${ 
-                        carrier.state === 'finished' ? 'text-emerald-800' : 
-                          carrier.state === 'loading' ? 'text-amber-800' : 
-                            carrier.state === 'maintenance' ? 'text-indigo-800' : 
+                      <div className={`text-3xl font-semibold ${ 
+                        carrier.state === 'finished' ? 'text-white' : 
+                          carrier.state === 'loading' ? 'text-black' : 
+                            carrier.state === 'maintenance' ? 'text-white' : 
                               carrier.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
-                      }`}> { carrier.state === 'loading' || carrier.state === 'finished' ? carrier.timeLoading : '' } </div>
+                      }`}> { 
+                        carrier.loading >= 0 && carrier.maxLoading >= 0 && carrier.verified &&  carrier.state != 'maintenance' &&  carrier.state != 'dry-run' &&  carrier.state != 'free' &&  carrier.state != 'pending' ? 
+                        carrier.timeLoading : '' } 
+                      </div>
                     </div>
                   </div>
                   <div className='w-1/4 min-h-24 h-full relative'>
@@ -346,7 +351,7 @@ const CarrierDashboard = () => {
                     </div> : 
                     carrier.state === 'free' ? 
                     <div className='absolute top-1/2 left-1/3 -translate-y-1/2 flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden '>
-                      <div className="bg-white/80 rounded-lg p-2 shadow-md">
+                      <div className="bg-white/80 rounded-lg p-2 shadow-md invisible">
                           <Loader className="w-24 h-24 text-slate-500" style={{animationDuration: '4s'}} />
                       </div> 
                     </div> : 
@@ -364,7 +369,7 @@ const CarrierDashboard = () => {
                           <TruckModel key={carrier.id} product={carrier.product}/>
                         </div>
                       }
-                      <div className="bg-white/80 rounded-lg shadow-md px-4 border border-slate-300 font-semibold">
+                      <div className="whitespace-nowrap bg-white/80 rounded-lg shadow-md px-4 border border-slate-300 font-semibold text-xl">
                          { carrier.isdryrun ? 'Dry Run' : carrier.carrier }
                       </div>
                     </div>
@@ -386,13 +391,21 @@ const CarrierDashboard = () => {
                         </div> 
                       </div>
                    :
-                    <div className="flex items-center gap-4 h-full box-border scale-90 ">
-                      <div className="text-4xl font-bold text-slate-700 bg-white px-4 py-4 rounded-lg shadow-md h-24 flex flex-col justify-center items-center">
-                        <div >คิวที่ {carrier.queuenumber}</div>
-                      </div>
-                      <div className='text-right '>
-                        <div className="text-3xl text-left font-semibold text-slate-600 bg-white px-2 py-1 rounded-md shadow-md">หน้า { carrier.frontlicense }</div>
-                        <div className="text-3xl text-left font-semibold text-slate-600 mt-2 bg-white px-2 py-1 rounded-md shadow-md">หลัง { carrier.rearlicense ? carrier.rearlicense : '---' }</div>
+                    <div className="min-w-[380px] flex justify-end items-center gap-4 h-full box-border scale-90 ">
+                      { carrier.queuenumber < 10 ?
+                        <div className="text-4xl font-bold text-slate-700 bg-white px-4 py-4 rounded-lg shadow-md h-24 flex flex-col justify-center items-center">
+                          <div className='w-[124px]'>คิวที่ {carrier.queuenumber}  </div>
+                        </div> :
+                        <div className="text-4xl font-bold text-slate-700 bg-white px-4 py-4 rounded-lg shadow-md h-24 flex flex-col justify-center items-center">
+                          <div className='w-[124px]'>คิวที่ {carrier.queuenumber}</div>
+                        </div>
+                      }
+                      <div className='text-left '>
+                        { carrier.frontlicense.length < 8 ?
+                          <div className="text-3xl font-semibold text-slate-600 bg-white px-2 py-1 rounded-md shadow-md">หัว { carrier.frontlicense }  </div>
+                          : <div className="text-3xl font-semibold text-slate-600 bg-white px-2 py-1 rounded-md shadow-md">หัว { carrier.frontlicense }</div>
+                        }
+                        <div className="text-3xl font-semibold text-slate-600 mt-2 bg-white px-2 py-1 rounded-md shadow-md">หาง { carrier.rearlicense??'---' }</div>
                       </div>
                     </div>
                   }
@@ -402,7 +415,7 @@ const CarrierDashboard = () => {
           </div>
           {/* Upcoming Slots */}
           <div className="bg-white rounded-2xl shadow-xl p-4">
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-5 gap-4 min-h-[120px]">
               <div
                 className={`p-2 rounded-xl border-2 transition-all duration-300 ${
                   false 
@@ -426,13 +439,21 @@ const CarrierDashboard = () => {
                   }`}
                 >
                   <div className="div flex items-center justify-around h-full">
-                    <div className={`text-3xl font-bold mb-2 ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
+                    {/* <div className={`text-3xl font-bold mb-2 ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
                       คิวที่ {slot.Q_NO}
+                    </div> */}
+                    <div className={`text-2xl font-bold mb-2 flex flex-col items-center justify-between ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
+                      <div className='text-3xl'>คิวที่ {slot.Q_NO}</div>
+                      {slot.DRYRUN && slot.DRYRUN == 'y' && (
+                        <div className='w-full text-center text-xs rounded py-0.5 bg-blue-100 border-2 border-blue-600 mt-3'>
+                          dry run
+                        </div>
+                      )}
                     </div>
                     
                     <div className="space-y-2">
-                      <div className="text-slate-600 text-base font-semibold">ทะเบียนหน้า {slot.FRONT_LICENSE}</div>
-                      <div className="text-slate-600 text-base font-semibold">ทะเบียนหลัง {slot.REAR_LICENSE}</div>
+                      <div className="text-slate-600 text-base font-semibold">ทะเบียนหัว {slot.FRONT_LICENSE}</div>
+                      <div className="text-slate-600 text-base font-semibold">ทะเบียนหาง {slot.REAR_LICENSE}</div>
                       <div className="border-t border-slate-200 pt-3 mt-3">
                         <div className="text-slate-500 text-base font-semibold">รอประมาณ {slot.WAIT_TM} นาที</div>
                       </div>
@@ -449,11 +470,11 @@ const CarrierDashboard = () => {
           <div className="">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4" onClick={() => navigatePage('/')}>
-                <div className="bg-white p-3 rounded-xl shadow-lg">
-                  <Truck className="w-8 h-8 text-blue-600" />
+                <div className="bg-white p-3 rounded-xl ">
+                  <img alt='logo' src={logoImg} width={100} height={100} className=''/>
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-800">Queue Dashboard</h1>
+                  <h1 className="text-3xl font-bold text-slate-800">PTTLNG Truck Queuing Dashboard</h1>
                   <p className="text-xl text-slate-600">รายการสถานะคิว</p>
                 </div>
               </div>
@@ -472,12 +493,12 @@ const CarrierDashboard = () => {
             {bayDatas.map((carrier) => (
               <div
                 key={carrier.id}
-                className={`${ 
-                  carrier.state === 'finished' ? 'bg-emerald-50' : 
-                    carrier.state === 'loading' ? 'bg-amber-50' : 
-                      carrier.state === 'maintenance' ? 'bg-red-100' : 
+                className={`${  
+                  carrier.state === 'finished' ? 'bg-emerald-400' : 
+                    carrier.state === 'loading' ? 'bg-emerald-200' : 
+                      carrier.state === 'maintenance' ? 'bg-red-600' : 
                         carrier.state === 'dry-run' ? 'bg-blue-100' : 
-                         carrier.state === 'pending' ? 'bg-indigo-200' : 'bg-slate-50'
+                         carrier.state === 'pending' ? 'bg-amber-500' : 'bg-slate-50'
                 } ${ carrier.status === 'เรียกคิว' ? 'animate-blink' : '' } rounded-2xl pl-4 py-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${ carrier.abnormal ? 'border-4 border-solid border-red-500' : 'border border-white/50' }`}
               >
                 <div className="flex items-center justify-between ">
@@ -486,10 +507,10 @@ const CarrierDashboard = () => {
                       key={carrier.id} 
                       className={`w-16 h-16  bg-gradient-to-r ${ 
                         carrier.state === 'finished' ? 'from-emerald-400 to-emerald-600' : 
-                          carrier.state === 'loading' ? 'from-amber-400 to-orange-500' : 
+                          carrier.state === 'loading' ? 'from-emerald-400 to-emerald-500' : 
                             carrier.state === 'maintenance' ? 'from-red-400 to-red-600': 
                               carrier.state === 'dry-run' ? 'from-blue-400 to-blue-600' :
-                                carrier.state === 'pending' ? 'from-indigo-400 to-indigo-600'  : 'from-slate-400 to-slate-600'
+                                carrier.state === 'pending' ? 'from-amber-400 to-amber-600'  : 'from-slate-400 to-slate-600'
                         } rounded-lg flex items-center justify-center text-white font-bold text-5xl shadow-lg `}>
                       {carrier.id}
                     </div>
@@ -557,25 +578,28 @@ const CarrierDashboard = () => {
                       </div> : null
                     }
                     <div className='flex items-center justify-between'>
-                      <div className={`text-2xl font-semibold ${ 
-                        carrier.state === 'finished' ? 'text-emerald-800' : 
-                          carrier.state === 'loading' ? 'text-amber-800' : 
-                            carrier.state === 'maintenance' ? 'text-red-800 -translate-x-7' : 
+                      <div className={`text-3xl font-semibold ${ 
+                        carrier.state === 'finished' ? 'text-white' : 
+                          carrier.state === 'loading' ? 'text-black' : 
+                            carrier.state === 'maintenance' ? 'text-white -translate-x-9' : 
                               carrier.state === 'dry-run' ? 'text-blue-800 ' :
-                                carrier.state === 'pending' ? 'text-indigo-800' : 'text-slate-800 -translate-x-7'
+                                carrier.state === 'pending' ? 'text-white' : 'text-slate-800 -translate-x-7'
                       }`}>สถานะ: {carrier.status}</div>
-                      <div className={`text-2xl font-semibold ${ 
-                        carrier.state === 'finished' ? 'text-emerald-800' : 
-                          carrier.state === 'loading' ? 'text-amber-800' : 
-                            carrier.state === 'maintenance' ? 'text-indigo-800' : 
+                      <div className={`text-3xl font-semibold ${ 
+                        carrier.state === 'finished' ? 'text-white' : 
+                          carrier.state === 'loading' ? 'text-black' : 
+                            carrier.state === 'maintenance' ? 'text-white' : 
                               carrier.state === 'dry-run' ? 'text-blue-800' : 'text-slate-800'
-                      }`}> { carrier.state === 'loading' || carrier.state === 'finished' ? carrier.timeLoading : '' } </div>
+                      }`}> { 
+                        carrier.loading >= 0 && carrier.maxLoading >= 0 && carrier.verified &&  carrier.state != 'maintenance' &&  carrier.state != 'dry-run' &&  carrier.state != 'free' &&  carrier.state != 'pending' ? 
+                        carrier.timeLoading : '' } 
+                      </div>
                     </div>
                   </div>             
                   <div className='w-1/4 min-h-24 h-full relative scale-75'>
                     { carrier.abnormal &&(
                       <div>
-                        <div className={` ${ carrier.state == 'free' ? '-translate-x-20' : '' } `}>
+                        <div className={` ${ carrier.state == 'free' ? '-translate-x-20' : '-translate-x-12' } `}>
                             <img src={alertImg} alt='truck' className='h-24' />
                         </div> 
                       </div>
@@ -592,11 +616,11 @@ const CarrierDashboard = () => {
                     </div> : 
                     carrier.state === 'free' ? 
                     <div className='absolute top-1/2 left-1/3 -translate-y-1/2 flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden '>
-                      <div className="bg-white/80 rounded-lg p-2 shadow-md">
+                      <div className="bg-white/80 rounded-lg p-2 shadow-md invisible">
                           <Loader className="w-24 h-24 text-slate-500" style={{animationDuration: '4s'}} />
                       </div> 
                     </div> : 
-                    <div className='absolute top-1/2 left-1/3 -translate-y-1/2 flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden'>
+                    <div className='absolute top-1/2 left-1/3 -translate-y-1/2 -translate-x-8 flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden '>
                       {carrier.state != 'pending' && carrier.weight >= carrier.startweight ? (
                         <div className="animate-truck-enter">
                           <TruckModel key={carrier.id} product={carrier.product}/>
@@ -610,7 +634,7 @@ const CarrierDashboard = () => {
                           <TruckModel key={carrier.id} product={carrier.product}/>
                         </div>
                       }
-                      <div className="bg-white/80 rounded-lg shadow-md px-4 border border-slate-300 font-semibold">
+                      <div className="whitespace-nowrap bg-white/80 rounded-lg shadow-md px-4 border border-slate-200 font-semibold text-xl">
                         { carrier.isdryrun ? 'Dry Run' : carrier.carrier }
                       </div>
                     </div>
@@ -632,13 +656,21 @@ const CarrierDashboard = () => {
                         </div> 
                       </div>
                    :
-                    <div className="min-w-[380px] flex justify-end items-center gap-4 h-full box-border scale-90 ">
-                      <div className="text-4xl font-bold text-slate-700 bg-white px-4 py-4 rounded-lg shadow-md h-24 flex flex-col justify-center items-center">
-                        <div >คิวที่ {carrier.queuenumber}</div>
-                      </div>
+                    <div className="min-w-[380px] flex justify-end items-center gap-4 h-full box-border scale-90 border-red-500">
+                      { carrier.queuenumber < 10 ?
+                        <div className="text-4xl font-bold text-slate-700 bg-white px-4 py-4 rounded-lg shadow-md h-24 flex flex-col justify-center items-center">
+                          <div >คิวที่ {carrier.queuenumber}  </div>
+                        </div> :
+                        <div className="text-4xl font-bold text-slate-700 bg-white px-4 py-4 rounded-lg shadow-md h-24 flex flex-col justify-center items-center">
+                          <div >คิวที่ {carrier.queuenumber}</div>
+                        </div>
+                      }
                       <div className='text-left '>
-                        <div className="text-3xl font-semibold text-slate-600 bg-white px-2 py-1 rounded-md shadow-md">หน้า { carrier.frontlicense }</div>
-                        <div className="text-3xl font-semibold text-slate-600 mt-2 bg-white px-2 py-1 rounded-md shadow-md">หลัง { carrier.rearlicense??'---' }</div>
+                        { carrier.frontlicense.length < 8 ?
+                          <div className="text-3xl font-semibold text-slate-600 bg-white px-2 py-1 rounded-md shadow-md">หัว { carrier.frontlicense }  </div>
+                          : <div className="text-3xl font-semibold text-slate-600 bg-white px-2 py-1 rounded-md shadow-md">หัว { carrier.frontlicense }</div>
+                        }
+                        <div className="text-3xl font-semibold text-slate-600 mt-2 bg-white px-2 py-1 rounded-md shadow-md">หาง { carrier.rearlicense??'---' }</div>
                       </div>
                     </div>
                   }
@@ -648,7 +680,7 @@ const CarrierDashboard = () => {
           </div>
           {/* Upcoming Slots */}
           <div className="bg-white rounded-2xl shadow-xl p-2">
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-5 gap-3 min-h-[120px]">
               <div
                 className={`p-2 rounded-xl border-2 transition-all duration-300 ${
                   false 
@@ -672,14 +704,21 @@ const CarrierDashboard = () => {
                   }`}
                 >
                   <div className="div flex items-center justify-around h-full">
-                    <div className={`text-2xl font-bold mb-2 flex flex-col items-center ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
-                      <div>คิวที่</div>
-                      <div className='text-3xl'>{slot.Q_NO}</div>
+                    <div className={`text-2xl font-bold mb-2 flex flex-col items-center justify-between ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
+                      <div className='flex flex-col items-center'>
+                        <div>คิวที่</div>
+                        <div className='text-3xl'>{slot.Q_NO}</div>
+                      </div>
+                      {slot.DRYRUN && slot.DRYRUN == 'y' && (
+                        <div className='w-full text-center text-xs rounded py-0.5 bg-blue-100 border-2 border-blue-600 '>
+                          dry run
+                        </div>
+                      )}
                     </div>
                     
                     <div className="space-y-2">
-                      <div className="text-slate-600 text-sm font-semibold">ทะเบียนหน้า {slot.FRONT_LICENSE}</div>
-                      <div className="text-slate-600 text-sm font-semibold">ทะเบียนหลัง {slot.REAR_LICENSE}</div>
+                      <div className="text-slate-600 text-sm font-semibold">ทะเบียนหัว {slot.FRONT_LICENSE}</div>
+                      <div className="text-slate-600 text-sm font-semibold">ทะเบียนหาง {slot.REAR_LICENSE}</div>
                       <div className="border-t border-slate-200 pt-3 mt-3">
                         <div className="text-slate-500 text-sm font-semibold">รอประมาณ {slot.WAIT_TM} นาที</div>
                       </div>

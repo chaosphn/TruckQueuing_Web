@@ -35,11 +35,12 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
     const result = await getAllRegisteredQueueData();
     if(result && result.length > 0){
       if(mode !== 'cancle'){
-        if(data?.isdryrun){
-          setQueueData(result.filter(x => x.DRYRUN === 'y'));
-        } else {
-          setQueueData(result.filter(x => x.DRYRUN === 'n'));
-        }
+        // if(data?.isdryrun){
+        //   setQueueData(result.filter(x => x.DRYRUN === 'y'));
+        // } else {
+        //   setQueueData(result.filter(x => x.DRYRUN === 'n'));
+        // }
+        setQueueData(result);
       } else {
         setQueueData(result);
       }
@@ -175,7 +176,7 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
         {/* SEARCH SECTION*/}
         <div className='w-full flex justify-between items-center'>
           <div className='flex items-center gap-4 font-semibold text-xl'>
-            { mode === 'cancle' ? 'Remove Queues' : 'Queues Assign at Bay '+bay }
+            { mode === 'cancle' ? 'Waiting Queue' : 'Queues Assign at Bay '+bay }
           </div>
         </div>  
         {/* TABLE SECTION*/}

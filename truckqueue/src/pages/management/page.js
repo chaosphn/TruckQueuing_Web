@@ -19,6 +19,7 @@ import { QueueContext } from '../../utils/AppContext';
 import { getPeriodQueueData, getTotalQueueData, setTASMode } from '../../services/http-service';
 import { dateFormatParser } from '../../services/date-service';
 import { set } from 'date-fns';
+import logoImg from '../../assets/logo.png';
 
 const CarrierManagement = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -88,7 +89,8 @@ const CarrierManagement = () => {
           isauto: findBayData.QUEUE_AUTO === 'y',
           memo: findBayData.MEMO,
           cnt: findBayData.CNT,
-          lastchange: findBayData.LAST_CHANG2 ? findBayData.LAST_CHANG2 : findBayData.LAST_CHANGE1 ? findBayData.LAST_CHANGE1 : '---',
+          lastchange1: findBayData.LAST_CHANGE1 ? findBayData.LAST_CHANGE1 : '---',
+          lastchange2: findBayData.LAST_CHANGE2 ? findBayData.LAST_CHANGE2 : '---',
           startweight: findBayData.SET_START_WEIGHT,
           existweight: findBayData.SET_FINISH_WEIGHT,
           autodelay: findBayData.SET_AUTO_DELAY,
@@ -339,12 +341,12 @@ const CarrierManagement = () => {
       <div className="">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4" onClick={() => navigatePage('/overview')}>
-            <div className="bg-white p-3 rounded-xl shadow-lg">
-              <Truck className="w-8 h-8 text-blue-600" />
-            </div>
+            <div className="bg-white p-3 rounded-xl">
+                  <img alt='logo' src={logoImg} width={100} height={100} className=''/>
+                </div>
             <div>
-              <h1 className="text-3xl font-bold text-slate-800">Queue Management</h1>
-              <p className="text-xl text-slate-600">ระบบบริหารคิวรถขนส่ง</p>
+              <h1 className="text-3xl font-bold text-slate-800">PTTLNG Truck Queuing Management</h1>
+              <p className="text-xl text-slate-600">ระบบบริหารจัดการคิว</p>
             </div>
           </div>
           <div className="text-right">
@@ -365,11 +367,11 @@ const CarrierManagement = () => {
             onClick={() => setSelectBayData(carrier)}
             key={carrier.id}
             className={`bg-${ 
-               carrier.state === 'finished' ? 'emerald-50' : 
-                    carrier.state === 'loading' ? 'amber-50' : 
-                      carrier.state === 'maintenance' ? 'red-100' : 
+               carrier.state === 'finished' ? 'emerald-400' : 
+                    carrier.state === 'loading' ? 'emerald-200' : 
+                      carrier.state === 'maintenance' ? 'red-600' : 
                         carrier.state === 'dry-run' ? 'blue-100' : 
-                         carrier.state === 'pending' ? 'indigo-200' : 'slate-50'
+                         carrier.state === 'pending' ? 'amber-500' : 'slate-50'
             } rounded-2xl px-6 py-4 shadow-lg border border-white/50`}
           >
             <div className="flex items-center justify-between">
@@ -378,19 +380,19 @@ const CarrierManagement = () => {
                   key={carrier.id} 
                   className={`w-16 h-16 bg-gradient-to-r ${ 
                     carrier.state === 'finished' ? 'from-emerald-400 to-emerald-600' : 
-                        carrier.state === 'loading' ? 'from-amber-400 to-orange-500' : 
+                        carrier.state === 'loading' ? 'from-emerald-400 to-emerald-600' : 
                           carrier.state === 'maintenance' ? 'from-red-400 to-red-600': 
                             carrier.state === 'dry-run' ? 'from-blue-400 to-blue-600' :
-                              carrier.state === 'pending' ? 'from-indigo-400 to-indigo-600'  : 'from-slate-400 to-slate-600'
+                              carrier.state === 'pending' ? 'from-amber-400 to-amber-600'  : 'from-slate-400 to-slate-600'
                     } rounded-xl flex items-center justify-center text-white font-bold text-3xl shadow-lg`}>
                   {carrier.id}
                 </div>
                 <div className={`text-xl font-bold ${ 
-                    carrier.state === 'finished' ? 'text-emerald-800' : 
-                          carrier.state === 'loading' ? 'text-amber-800' : 
-                            carrier.state === 'maintenance' ? 'text-red-800' : 
-                              carrier.state === 'dry-run' ? 'text-blue-800 ' :
-                                carrier.state === 'pending' ? 'text-indigo-800' : 'text-slate-800'
+                    carrier.state === 'finished' ? 'text-white' : 
+                          carrier.state === 'loading' ? 'text-white' : 
+                            carrier.state === 'maintenance' ? 'text-white' : 
+                              carrier.state === 'dry-run' ? 'text-black' :
+                                carrier.state === 'pending' ? 'text-white' : 'text-slate-800'
                 }`}>BAYLOAD: {carrier.usage}</div>
               </div>
               {
@@ -403,8 +405,8 @@ const CarrierManagement = () => {
                 </div>  :
                 <div className="text-center box-border">
                   <div className="text-3xl font-bold text-slate-700 pb-2">คิวที่ { carrier.queuenumber }</div>
-                  <div className="text-lg font-semibold text-slate-500">ทะเบียนหน้า { carrier.frontlicense }</div>
-                  <div className="text-lg font-semibold text-slate-500">ทะเบียนหลัง { carrier.rearlicense ? carrier.rearlicense : '---' }</div>
+                  <div className="text-lg font-semibold text-slate-500">ทะเบียนหัว { carrier.frontlicense }</div>
+                  <div className="text-lg font-semibold text-slate-500">ทะเบียนหาง { carrier.rearlicense ? carrier.rearlicense : '---' }</div>
                 </div>
               }
               <div className={`w-1/5 h-full flex flex-col item-center justify-between bg-white/60 backdrop-blur-sm rounded-xl px-4 py-4 shadow-md border border-white/30`}>
@@ -472,19 +474,22 @@ const CarrierManagement = () => {
                 <div className="">
                   <div className='flex items-center justify-between'>
                     <div className={`text-lg font-semibold ${ 
-                      carrier.state === 'finished' ? 'text-emerald-800' : 
-                          carrier.state === 'loading' ? 'text-amber-800' : 
-                            carrier.state === 'maintenance' ? 'text-red-800' : 
+                      carrier.state === 'finished' ? 'text-emerald-600' : 
+                          carrier.state === 'loading' ? 'text-emerald-600' : 
+                            carrier.state === 'maintenance' ? 'text-red-600' : 
                               carrier.state === 'dry-run' ? 'text-blue-800 ' :
-                                carrier.state === 'pending' ? 'text-indigo-800' : 'text-slate-800'
+                                carrier.state === 'pending' ? 'text-amber-600' : 'text-slate-800'
                     }`}>สถานะ: {carrier.status}</div>
                     <div className={`text-lg font-semibold ${ 
-                      carrier.state === 'finished' ? 'text-emerald-800' : 
-                          carrier.state === 'loading' ? 'text-amber-800' : 
-                            carrier.state === 'maintenance' ? 'text-red-800' : 
+                      carrier.state === 'finished' ? 'text-emerald-600' : 
+                          carrier.state === 'loading' ? 'text-emerald-600' : 
+                            carrier.state === 'maintenance' ? 'text-red-600' : 
                               carrier.state === 'dry-run' ? 'text-blue-800 ' :
-                                carrier.state === 'pending' ? 'text-indigo-800' : 'text-slate-800'
-                    }`}>{carrier.state === 'loading' || carrier.state === 'finished' ? carrier.timeLoading : ''}</div>
+                                carrier.state === 'pending' ? 'text-amber-600' : 'text-slate-800'
+                    }`}>{
+                      carrier.loading >= 0 && carrier.maxLoading >= 0 && carrier.verified &&  carrier.state != 'maintenance' &&  carrier.state != 'dry-run' &&  carrier.state != 'free' &&  carrier.state != 'pending' ? 
+                        carrier.timeLoading : ''}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -500,7 +505,7 @@ const CarrierManagement = () => {
                   </div> : 
                   carrier.state === 'free' ? 
                   <div className='absolute top-1/2 left-1/3 -translate-y-1/2 flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden'>
-                    <div className="bg-white/80 rounded-lg p-2 shadow-md">
+                    <div className="bg-white/80 rounded-lg p-2 shadow-md invisible">
                         <Loader className="w-24 h-24 text-slate-500" style={{animationDuration: '4s'}} />
                     </div>
                   </div> : 
@@ -585,7 +590,7 @@ const CarrierManagement = () => {
                   setOpenModeDialog(true)
                 }} className={`w-full py-1.5 text-sm text-center font-bold rounded-md  ${ statusMode ? 'text-slate-200 bg-red-500 border-white' : 'text-black bg-emerald-400 border-emerald-600' } 
                   shadow-black/30 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>{ !statusMode ? 'Online' : 'Offline'} Mode</div>
-                <div onClick={() => setOpenQueueDialog(true)} className='w-full py-1.5 text-sm text-center font-bold rounded-md text-slate-200 border-slate-200 bg-black/50 shadow-black/30 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>Wait for Queue</div>
+                <div onClick={() => setOpenQueueDialog(true)} className='w-full py-1.5 text-sm text-center font-bold rounded-md text-slate-200 border-slate-200 bg-black/50 shadow-black/30 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>Waiting Queue</div>
               </div>
             </div>
           </div>
@@ -599,14 +604,21 @@ const CarrierManagement = () => {
               }`}
             >
               <div className="div flex items-center justify-around h-full">
-                <div className={`text-3xl font-bold mb-2 flex flex-col items-center ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
-                  <div>คิวที่</div>
-                  <div className='text-4xl'>{slot.Q_NO}</div>
+                <div className={`text-2xl font-bold mb-2 flex flex-col items-center justify-between ${slot.available ? 'text-slate-700' : 'text-slate-900'}`}>
+                  <div className='flex flex-col items-center'>
+                    <div>คิวที่</div>
+                    <div className='text-3xl'>{slot.Q_NO}</div>
+                  </div>
+                  {slot.DRYRUN && slot.DRYRUN == 'y' && (
+                    <div className='w-full text-center text-xs rounded py-0.5 bg-blue-100 border-2 border-blue-600 mt-3'>
+                      dry run
+                    </div>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
-                  <div className="text-slate-600 text-base font-semibold">ทะเบียนหน้า {slot.FRONT_LICENSE}</div>
-                  <div className="text-slate-600 text-base font-semibold">ทะเบียนหลัง {slot.REAR_LICENSE}</div>
+                  <div className="text-slate-600 text-base font-semibold">ทะเบียนหัว {slot.FRONT_LICENSE}</div>
+                  <div className="text-slate-600 text-base font-semibold">ทะเบียนหาง {slot.REAR_LICENSE}</div>
                   <div className="border-t border-slate-200 pt-3 mt-3">
                     <div className="text-slate-500 text-base font-semibold">รอประมาณ {slot.WAIT_TM} นาที</div>
                   </div>
@@ -622,7 +634,7 @@ const CarrierManagement = () => {
             }`}
           >
             <div className="flex flex-col items-center gap-2.5 justify-between h-full">
-              <div className='w-full text-2xl text-center font-bold text-slate-600'>Bay Usage: {totalBay??0}</div>
+              <div className='w-full text-xl text-center font-bold text-slate-600'>Truck entries (period): {totalBay??0}</div>
               <div className='w-full flex flex-col cursor-pointer'>
                 <div className='gap-2 flex mb-2'>
                   {
@@ -730,8 +742,8 @@ const CarrierManagement = () => {
           }`}
         >
           <div className="div flex flex-col items-center justify-around h-full">
-            <div className={`text-3xl font-bold ${true ? 'text-slate-700' : 'text-slate-900'}`}>
-              Total
+            <div className={`text-2xl font-bold ${true ? 'text-slate-700' : 'text-slate-900'}`}>
+              Truck entries (Accumulate)
             </div>
             <div className={`text-3xl font-bold mb-2 ${true ? 'text-slate-700' : 'text-slate-900'}`}>
               {totalQueue??0}

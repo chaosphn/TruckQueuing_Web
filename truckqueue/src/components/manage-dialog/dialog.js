@@ -148,6 +148,18 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
     }
     handleClose();
   };
+
+  const checkBayStatus = () => {
+    if(data.state == 'free' || data.state == 'maintenance'){
+      return true;
+    } else if(data.state == 'pending' && data.weight >= data.startweight){
+      return false;
+    } else if(data.weight >= data.startweight){
+      return false;
+    } else {
+      return true;
+    }
+  }
   
 
   if (!open) {
@@ -182,8 +194,8 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                         <div className="col-span-6 row-span-6 text-3xl font-bold text-slate-700 flex items-center justify-center">
                           <div>คิวที่ {data.queuenumber}</div>
                         </div>
-                        <div className="col-span-6 row-span-3 text-lg text-left font-semibold text-slate-500">ทะเบียนหน้า 67-6255</div>
-                        <div className="col-span-6 row-span-3 text-lg text-left font-semibold text-slate-500">ทะเบียนหลัง 67-6520</div>
+                        <div className="col-span-6 row-span-3 text-lg text-left font-semibold text-slate-500">ทะเบียนหน้า {data.frontlicense??'---'}</div>
+                        <div className="col-span-6 row-span-3 text-lg text-left font-semibold text-slate-500">ทะเบียนหลัง {data.rearlicense??'---'}</div>
                       </div>
                   }
                   <div className={`w-full flex flex-col item-center justify-between mb-6 px-20`}>
@@ -283,7 +295,9 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                         </div>
                     }
                   </div>
-                  <div className={`w-full flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden ${data.state == 'free' || data.state == 'maintenance' ? 'hidden' : 'visible'} `}>
+                  <div className={`w-full flex flex-col items-center justify-center h-auto gap-2 overflow-x-hidden ${
+                    checkBayStatus() ? 'invisible' : 'visible'
+                  } `}>
                     <div className="animate-truck-enter">
                       <TruckModel />
                     </div>
@@ -368,7 +382,8 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                           setExistWeigth(e.target.value);
                         }
                       }} />
-                      <span className='font-semibold'>Last Update: {data?.lastchange??'---'}</span>
+                      <span className='font-semibold'>Last Update 1: {data?.lastchange1??'---'}</span>
+                      <span className='font-semibold'>Last Update 2: {data?.lastchange2??'---'}</span>
                     </div>
                   </div>
                 </div>
@@ -376,7 +391,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                 <div className='w-full col-span-5 row-span-4 '>
                   <div className="bg-gray-100 rounded-lg px-4 py-4">
                     <h4 className="text-lg font-bold text-gray-700 mb-3">Queuing {type == 'SETTING' ? 'Setting' : 'Management'}</h4>
-                    <button 
+                    {/* <button 
                       disabled={data.state === 'maintenance' ? true : false}
                       className={`w-full mb-3 flex-1 py-1.5 px-3 text-md font-semibold rounded border-2 border-x-zinc-400 shadow-sm shadow-black bg-gradient-to-b ${ data.isdryrun ? 'from-blue-400 to-blue-800 text-white' : 'from-gray-100 to-gray-400 text-gray-800' }`}
                       onClick={() => {
@@ -388,7 +403,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                       }
                     >
                       Dry Run Mode
-                    </button>
+                    </button> */}
                     <div className="grid grid-cols-2 gap-6 mb-3">
                       <button
                         disabled={data.state === 'maintenance' || data.state === 'free' ? true : false}

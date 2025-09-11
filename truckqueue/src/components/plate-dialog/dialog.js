@@ -43,8 +43,13 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
       }
     } else {
       if( tasStatus && tasStatus.OfflineMode === true ){
-        if(plateHeadNumber > 0 && plateTailNumber > 0){
-          const result = await selectOffLineModeQueue(plateHeadNumber, plateTailNumber, truck_type);
+        const data = {
+          type: activeTab,
+          headnumber: plateHeadNumber,
+          tailnumber: truck_type == '10-Wheel' ? plateHeadNumber : plateTailNumber
+        };
+        if(data.headnumber > 0 && data.tailnumber > 0){
+          const result = await selectOffLineModeQueue(data.headnumber, data.tailnumber, truck_type);
           if(result){
             setQueuingData(result);
             setOpenDataDialog(true);
@@ -58,9 +63,9 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
         const data = {
           type: activeTab,
           headnumber: plateHeadNumber,
-          tailnumber: plateTailNumber
+          tailnumber: truck_type == '10-Wheel' ? plateHeadNumber : plateTailNumber
         };
-        if(plateHeadNumber > 0 && plateTailNumber > 0){
+        if(data.headnumber > 0 && data.tailnumber > 0){
           const result = await getQueueDataByLicense(data.headnumber, data.tailnumber);
           if(result && result.length > 0){
             const filteredData = result.filter(x => new Date(x.DATEARRIVE).getTime() < getTomorrowMidnight());
@@ -116,7 +121,7 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
           <div className="space-y-6">
             <div>
               <label className="block text-gray-700 font-medium mb-3 text-lg">
-                ป้อนเลขทะเบียนหัว
+                ป้อนเลขทะเบียนหัว (เฉพาะตัวเลข ไม่ต้องใส่ -)
               </label>
               <input
                 type="number"
@@ -126,9 +131,9 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
                 placeholder="กรุณาใส่เลขทะเบียนหัว"
               />
             </div>
-            <div className={ ishead ? 'invisible' : '' }>
+            <div className={ ishead || truck_type == '10-Wheel' ? 'invisible' : '' }>
               <label className="block text-gray-700 font-medium mb-3 text-lg">
-                ป้อนเลขทะเบียนหาง
+                ป้อนเลขทะเบียนหาง (เฉพาะตัวเลข ไม่ต้องใส่ -)
               </label>
               <input
                 type="number"
