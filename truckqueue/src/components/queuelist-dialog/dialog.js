@@ -12,6 +12,7 @@ import DataDetailDialog from '../detail-dialog/dialog';
 import { order_Data } from '../../mockup/orderData';
 import ManageDialog from '../confirm-dialog/dialog';
 import { Button } from '@mui/material';
+import AlertDialog from '../alert-dialog/dialog';
 
 const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,6 +26,8 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
   const [selectionRow, setSelectionRow] = useState(null);
   const [selectedAction, setSelectedAction] = useState('');
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
+  const [messageAlert, setMessageAlert] = useState('');
+  const [openAlert2, setOpenAlert2] = useState(false);
 
   useEffect(() => {
     //console.log(mode, bay, data);
@@ -91,8 +94,9 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
     const status = check ? 'y' : 'n';
     const result = await assignQueueDataToBay(selectionRow.Q_ID, bay, status);
     if(result && result.Message){
-      alert(result.Message);
-      handleClose();
+      //alert(result.Message);
+      setMessageAlert(result.Message);
+      setOpenAlert2(true);
     } else {
       handleClose();
     }
@@ -101,8 +105,9 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
   const handleCancelQueue = async () => {
     const result = await deleteQueueFromRegister(selectionRow.Q_ID);
     if(result && result.Message){
-      alert(result.Message);
-      handleClose();
+      //alert(result.Message);
+      setMessageAlert(result.Message);
+      setOpenAlert2(true);
     } else {
       handleClose();
     }
@@ -211,6 +216,11 @@ const QueueListDialog = ({ open, data, mode, type, bay, onSave, onClose }) => {
           </button>
         </div>       
       </div>
+      <AlertDialog opens={openAlert2} message={messageAlert} onSave={() => {
+        setOpenAlert2(false);
+        setMessageAlert('');
+        handleClose();
+      }} />
       <ManageDialog opens={openDataDialog} selectedAction={selectedAction} chaeckbox={ mode !== 'cancle' ? true : false } count={mode == 'cancle' ? 10 : 0} 
         onSave2={(d) => setIsAbnormal(d) }
         onSave={(st, check) => {

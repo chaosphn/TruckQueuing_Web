@@ -18,7 +18,7 @@ const CarrierDashboard = () => {
 
   useEffect(() => {
     const screen = window.innerWidth/window.innerHeight;
-    //console.log('Screen ratio:', screen);
+    console.log('Screen ratio:',  window.innerWidth,  window.innerHeight);
     //updateQueueData();
     setScreenRatio(screen);
     const timer = setInterval(() => {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { getDatabyOrder, getDatabyPlateNumber, getQueueDataByOrder } from '../../services/http-service';
 import NotFoundDialog from '../notfound-dialog/dialog';
+import AlertDialog from '../alert-dialog/dialog';
 
 const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,6 +10,8 @@ const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
   const [plateTailNumber, setPlateTailNumber] = useState('');
   const [orderNumber, setOrderNumber] = useState(null);
   const [openAlert, setOpenAlert] = useState(false);
+  const [messageAlert, setMessageAlert] = useState('');
+  const [openAlert2, setOpenAlert2] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const openDialog = () => setIsOpen(true);
@@ -37,7 +40,9 @@ const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
       }
     } else {
       setIsLoading(false);
-      alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+      //alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+      setMessageAlert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+      setOpenAlert2(true);
     }
   };
 
@@ -141,6 +146,10 @@ const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
         </div>
       </div>
       <NotFoundDialog opens={openAlert} onSave={() => setOpenAlert(false)}></NotFoundDialog>
+      <AlertDialog opens={openAlert2} message={messageAlert} onSave={() => {
+        setOpenAlert2(false);
+        setMessageAlert('');
+      }} />
     </div>
   );
 };

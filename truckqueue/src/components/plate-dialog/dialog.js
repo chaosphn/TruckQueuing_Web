@@ -3,6 +3,7 @@ import { getDatabyOrder, getDatabyPlateNumber, getQueueDataByLicense, selectDryR
 import NotFoundDialog from '../notfound-dialog/dialog';
 import DataDetailDialog from '../detail-dialog/dialog';
 import { QueueContext } from '../../utils/AppContext';
+import AlertDialog from '../alert-dialog/dialog';
 
 const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryRun, truck_type }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +12,8 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
   const [plateTailNumber, setPlateTailNumber] = useState(null);
   const [orderNumber, setOrderNumber] = useState('');
   const [openAlert, setOpenAlert] = useState(false);
+  const [messageAlert, setMessageAlert] = useState('');
+  const [openAlert2, setOpenAlert2] = useState(false);
   const [ openDataDialog, setOpenDataDialog ] = useState(false);
   const [queuingData ,setQueuingData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +42,9 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
         setIsLoading(false);
       } else {
         setIsLoading(false);
-        alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+        //alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+        setMessageAlert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+        setOpenAlert2(true);
       }
     } else {
       if( tasStatus && tasStatus.OfflineMode === true ){
@@ -57,7 +62,9 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
           setIsLoading(false);
         } else {
           setIsLoading(false);
-          alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+          //alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+          setMessageAlert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+          setOpenAlert2(true);
         }
       } else {
         const data = {
@@ -78,7 +85,9 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
           }
         } else {
           setIsLoading(false);
-          alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+          //alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+          setMessageAlert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนและตรวจสอบความถูกต้องอีกครั้ง !');
+          setOpenAlert2(true);
         }
       }
     }
@@ -201,6 +210,10 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
         </div>
       </div>
       <NotFoundDialog opens={openAlert && !isDryRun} onSave={() => setOpenAlert(false)}></NotFoundDialog>
+      <AlertDialog opens={openAlert2} message={messageAlert} onSave={() => {
+        setOpenAlert2(false);
+        setMessageAlert('');
+      }} />
       <DataDetailDialog open={openDataDialog} data={null} mode={null} type={null} truck={truck_type} resultData={queuingData}
         onClose={() => {
           setOpenDataDialog(false);

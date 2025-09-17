@@ -7,6 +7,7 @@ import { Search, Settings } from 'lucide-react';
 import ManageDialog from '../confirm-dialog/dialog';
 import { InputAdornment, TextField } from '@mui/material';
 import QueueListDialog from '../queuelist-dialog/dialog';
+import AlertDialog from '../alert-dialog/dialog';
 
 const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +23,8 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const [startWeigth, setStartWeigth] = useState(0);
   const [existWeigth, setExistWeigth] = useState(0);
   const [bayData, setBayData] = useState(null);
+  const [messageAlert, setMessageAlert] = useState('');
+  const [openAlert2, setOpenAlert2] = useState(false);
 
   useEffect(() => {
     //console.log(data)
@@ -93,7 +96,9 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const handleAutoQueue = async () => {
     const result = await setAutoModeToBay(data.id);
     if(result && result.Message){
-      alert(result.Message);
+      //alert(result.Message);
+      setMessageAlert(result.Message);
+      setOpenAlert2(true);
     }
     handleClose();
   };
@@ -101,7 +106,9 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const handleManualQueue = async () => {
     const result = await setManualModeToBay(data.id);
     if(result && result.Message){
-      alert(result.Message);
+      //alert(result.Message);
+      setMessageAlert(result.Message);
+      setOpenAlert2(true);
     }
     handleClose();
   };
@@ -109,7 +116,9 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const handleFinishQueue = async () => {
     const result = await finishQueueDataAtBay(data.id);
     if(result && result.Message){
-      alert(result.Message);
+      //alert(result.Message);
+      setMessageAlert(result.Message);
+      setOpenAlert2(true);
     }
     handleClose();
   };
@@ -117,7 +126,9 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const handleCancleToQueue = async () => {
     const result = await cancleQueueAtBay(data.id);
     if(result && result.Message){
-      alert(result.Message);
+      //alert(result.Message);
+      setMessageAlert(result.Message);
+      setOpenAlert2(true);
     }
     handleClose();
   };
@@ -125,7 +136,9 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const handleCancleToRegister = async () => {
     const result = await cancleQueueToRegister(data.id);
     if(result && result.Message){
-      alert(result.Message);
+      //alert(result.Message);
+      setMessageAlert(result.Message);
+      setOpenAlert2(true);
     }
     handleClose();
   };
@@ -133,7 +146,9 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const handleDryRunMode = async (st) => {
     const result = await setDryRunModeToBay(data.id, st);
     if(result && result.Message){
-      alert(result.Message);
+      //alert(result.Message);
+      setMessageAlert(result.Message);
+      setOpenAlert2(true);
     }
     handleClose();
   };
@@ -144,7 +159,9 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
     const enWeigth = existWeigth;
     const result = await setBaySettingData(data.id, delay, stWeigth, enWeigth);
     if(result && result.Message){
-      alert(result.Message);
+      //alert(result.Message);
+      setMessageAlert(result.Message);
+      setOpenAlert2(true);
     }
     handleClose();
   };
@@ -490,6 +507,10 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
           setcountAction(0);
           handleSave(st);
         }}></ManageDialog>
+        <AlertDialog opens={openAlert2} message={messageAlert} onSave={() => {
+          setOpenAlert2(false);
+          setMessageAlert('');
+        }} />
         <QueueListDialog open={openQueueDialog} data={data} mode={'assign'} bay={data.id} onClose={handleClose}></QueueListDialog>
       </div>
     </div>

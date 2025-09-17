@@ -20,6 +20,7 @@ import { getPeriodQueueData, getTotalQueueData, setTASMode } from '../../service
 import { dateFormatParser } from '../../services/date-service';
 import { set } from 'date-fns';
 import logoImg from '../../assets/logo.png';
+import AlertDialog from '../../components/alert-dialog/dialog';
 
 const CarrierManagement = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -41,6 +42,8 @@ const CarrierManagement = () => {
   const [ summaryMode, setSummaryMode ] = useState('load');
   const [ totalQueue, setTotalQueue ] = useState(0);
   const [ totalBay, setTotalbay ] = useState(0);
+  const [messageAlert, setMessageAlert] = useState('');
+  const [openAlert2, setOpenAlert2] = useState(false);
   const { queue, updateQueueData, bayData, waitingQueue, updateBayData, tasStatus, updateTASStatus } = useContext(QueueContext);
   
   
@@ -173,8 +176,10 @@ const CarrierManagement = () => {
       await updateTASStatus();
       setOpenModeDialog(false);
     } else {
-      alert('เกิดข้อผิดพลาดในการเปลี่ยนโหมด กรุณาลองใหม่อีกครั้ง');
+      //alert('เกิดข้อผิดพลาดในการเปลี่ยนโหมด กรุณาลองใหม่อีกครั้ง');
       setOpenModeDialog(false);
+      setMessageAlert('เกิดข้อผิดพลาดในการเปลี่ยนโหมด กรุณาลองใหม่อีกครั้ง');
+      setOpenAlert2(true);
     }
   };
 
@@ -311,7 +316,9 @@ const CarrierManagement = () => {
           setTotalbay(result.QueueUsage);
         }
       } else {
-        alert('กรุณาเลือกวันที่เริ่มต้นให้น้อยกว่าวันที่สิ้นสุด');
+        //alert('กรุณาเลือกวันที่เริ่มต้นให้น้อยกว่าวันที่สิ้นสุด');
+        setMessageAlert('กรุณาเลือกวันที่เริ่มต้นให้น้อยกว่าวันที่สิ้นสุด');
+        setOpenAlert2(true);
         setStartDate(endDate);
       }
     } else {
@@ -750,6 +757,10 @@ const CarrierManagement = () => {
             </div>
           </div>
         </div>
+        <AlertDialog opens={openAlert2} message={messageAlert} onSave={() => {
+          setOpenAlert2(false);
+          setMessageAlert('');
+        }} />
         <QueueListDialog open={openQueueDialog} data={selectBayData} mode={'cancle'} onClose={() => {setOpenQueueDialog(false)}}></QueueListDialog>
         <ManageDialog opens={openModeDialog}  selectedAction={
           selectedMode === 'Online' ? 'เปลี่ยนเป็น Offline Mode' : 
