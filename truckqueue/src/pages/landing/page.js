@@ -224,14 +224,19 @@ const LandingPage = () => {
             <div className="text-white/80 text-base drop-shadow">
               © 2025 PTTLNG Truck Queuing System
             </div>
-            <div className="flex items-center space-x-4 text-white/80 text--batext-base drop-shadow">
+            <div className="flex items-center space-x-4 text-white/80 text-base drop-shadow">
               <span>Version 1.0.0</span>
               <span>•</span>
               <span className='font-semibold'>Mode : { tasStatus && tasStatus.OfflineMode == false ? 'Online' : tasStatus && tasStatus.OfflineMode == true ? 'Offline' : 'Unknow' }</span>
               <span>•</span>
-              <span className='font-semibold'>{ apiStatus == true ? 'System Online' : 'System Offline' }</span>
-              <div className={`w-4 h-4 ${ apiStatus == true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
-              { apiStatus != true && (<span> : Can't Connect to TAS Server</span>)}
+              <span className='font-semibold'>{ apiStatus && apiStatus.SystemOnline === true ? 'System Online' : 'System Offline' }</span>
+              <div className={`w-4 h-4 ${ apiStatus && apiStatus.SystemOnline === true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
+              <span>•</span>
+              <span className='font-semibold'>{ apiStatus && apiStatus.NetworkOnline === true ? 'Network Online' : 'Network Offline' }</span>
+              <div className={`w-4 h-4 ${ apiStatus && apiStatus.NetworkOnline === true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
+              { apiStatus && apiStatus.DBOnline !== true && (
+                <span>: Cannot connect to TAS Server database</span>
+              )}
             </div>
           </div>
         </div>

@@ -140,14 +140,14 @@ export const getQueueInfomation = async () => {
 
 export const getTASApiStatus = async () => {
     try {
-        const result = await api.post('/dashboard/online', {}, { timeout: 2000 });
-        if(result && result.data && result.data.Message == "OK"){
-            return true;
+        const result = await api.post('/dashboard/online');
+        if(result && result.data ){
+            return result.data;
         } else {
-            return false;
+            return null;
         }
     } catch (error) {
-        return false;
+        return null;
     }
 }
 

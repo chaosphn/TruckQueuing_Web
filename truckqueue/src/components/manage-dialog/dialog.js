@@ -99,8 +99,11 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
       //alert(result.Message);
       setMessageAlert(result.Message);
       setOpenAlert2(true);
+    } else {
+      setMessageAlert('No response from server.');
+      setOpenAlert2(true);
     }
-    handleClose();
+    //handleClose();
   };
 
   const handleManualQueue = async () => {
@@ -109,8 +112,11 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
       //alert(result.Message);
       setMessageAlert(result.Message);
       setOpenAlert2(true);
+    } else {
+      setMessageAlert('No response from server.');
+      setOpenAlert2(true);
     }
-    handleClose();
+    //handleClose();
   };
 
   const handleFinishQueue = async () => {
@@ -119,8 +125,11 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
       //alert(result.Message);
       setMessageAlert(result.Message);
       setOpenAlert2(true);
+    } else {
+      setMessageAlert('No response from server.');
+      setOpenAlert2(true);
     }
-    handleClose();
+    //handleClose();
   };
 
   const handleCancleToQueue = async () => {
@@ -129,8 +138,11 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
       //alert(result.Message);
       setMessageAlert(result.Message);
       setOpenAlert2(true);
+    } else {
+      setMessageAlert('No response from server.');
+      setOpenAlert2(true);
     }
-    handleClose();
+    //handleClose();
   };
 
   const handleCancleToRegister = async () => {
@@ -139,8 +151,11 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
       //alert(result.Message);
       setMessageAlert(result.Message);
       setOpenAlert2(true);
+    } else {
+      setMessageAlert('No response from server.');
+      setOpenAlert2(true);
     }
-    handleClose();
+    //handleClose();
   };
 
   const handleDryRunMode = async (st) => {
@@ -149,8 +164,11 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
       //alert(result.Message);
       setMessageAlert(result.Message);
       setOpenAlert2(true);
+    } else {
+      setMessageAlert('No response from server.');
+      setOpenAlert2(true);
     }
-    handleClose();
+    //handleClose();
   };
 
   const handleSettingBayData = async () => {
@@ -162,8 +180,11 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
       //alert(result.Message);
       setMessageAlert(result.Message);
       setOpenAlert2(true);
+    } else {
+      setMessageAlert('No response from server.');
+      setOpenAlert2(true);
     }
-    handleClose();
+    //handleClose();
   };
 
   const checkBayStatus = () => {
@@ -510,6 +531,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
         <AlertDialog opens={openAlert2} message={messageAlert} onSave={() => {
           setOpenAlert2(false);
           setMessageAlert('');
+          handleClose();
         }} />
         <QueueListDialog open={openQueueDialog} data={data} mode={'assign'} bay={data.id} onClose={handleClose}></QueueListDialog>
       </div>

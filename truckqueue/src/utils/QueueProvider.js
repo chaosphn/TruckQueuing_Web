@@ -16,7 +16,7 @@ export const QueueProvider = ({ children }) => {
     if(result){
       setApiStatus(result);
     } else {
-      setApiStatus(false);
+      setApiStatus(null);
     }
   };
 

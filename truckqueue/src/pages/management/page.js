@@ -44,7 +44,7 @@ const CarrierManagement = () => {
   const [ totalBay, setTotalbay ] = useState(0);
   const [messageAlert, setMessageAlert] = useState('');
   const [openAlert2, setOpenAlert2] = useState(false);
-  const { queue, updateQueueData, bayData, waitingQueue, updateBayData, tasStatus, updateTASStatus } = useContext(QueueContext);
+  const { queue, updateQueueData, bayData, waitingQueue, updateBayData, tasStatus, updateTASStatus, apiStatus, updateApiStatus } = useContext(QueueContext);
   
   
   useEffect(() => {
@@ -343,7 +343,7 @@ const CarrierManagement = () => {
   
 
   return (
-    <div className="max-w-screen mx-auto w-full min-h-screen h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 py-4 flex flex-col justify-between">
+    <div className="max-w-screen mx-auto w-full min-h-screen h-screen overflow-y-auto bg-gradient-to-br from-slate-50 to-slate-100 px-6 py-4 flex flex-col justify-between">
       {/* Header */}
       <div className="">
         <div className="flex items-center justify-between">
@@ -772,6 +772,28 @@ const CarrierManagement = () => {
               handleSelectMode();
             }
         }}></ManageDialog>
+      </div>
+
+      <div className="bg-white mx-auto px-8 py-4 w-full rounded-2xl shadow-xl">
+        <div className="flex items-center justify-between">
+          <div className="text-slate-800 text-base drop-shadow">
+            © 2025 PTTLNG Truck Queuing System
+          </div>
+          <div className="flex items-center space-x-4 text-slate-800 text-base drop-shadow">
+            <span>Version 1.0.0</span>
+            <span>•</span>
+            <span className='font-semibold'>Mode : { tasStatus && tasStatus.OfflineMode == false ? 'Online' : tasStatus && tasStatus.OfflineMode == true ? 'Offline' : 'Unknow' }</span>
+            <span>•</span>
+            <span className='font-semibold'>{ apiStatus && apiStatus.SystemOnline === true ? 'System Online' : 'System Offline' }</span>
+            <div className={`w-4 h-4 ${ apiStatus && apiStatus.SystemOnline === true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
+            <span>•</span>
+            <span className='font-semibold'>{ apiStatus && apiStatus.NetworkOnline === true ? 'Network Online' : 'Network Offline' }</span>
+            <div className={`w-4 h-4 ${ apiStatus && apiStatus.NetworkOnline === true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
+            { apiStatus && apiStatus.DBOnline !== true && (
+              <span>: Cannot connect to TAS Server database</span>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
