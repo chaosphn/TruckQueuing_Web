@@ -45,6 +45,7 @@ const CarrierManagement = () => {
   const [messageAlert, setMessageAlert] = useState('');
   const [openAlert2, setOpenAlert2] = useState(false);
   const { queue, updateQueueData, bayData, waitingQueue, updateBayData, tasStatus, updateTASStatus, apiStatus, updateApiStatus } = useContext(QueueContext);
+  const minDate = new Date().setFullYear(2012, 0, 1);
   
   
   useEffect(() => {
@@ -200,10 +201,7 @@ const CarrierManagement = () => {
       verified: true,
       frontlicense: '54-1564',
       rearlicense: '54-1563',
-      queuenumber: 21,
-      usage: 13,
-      mode: 'OPERATING MODE',
-      type: 'auto',
+      queuenumber: 1,
       product: 'LNG',
       abnormal: false,
     },
@@ -219,51 +217,42 @@ const CarrierManagement = () => {
       verified: true,
       frontlicense: '67-6512',
       rearlicense: '67-6252',
-      queuenumber: 12,
-      usage: 1,
-      mode: 'OPERATING MODE',
-      type: 'manual',
+      queuenumber: 2,
       product: 'LNG',
-       abnormal: true,
+      abnormal: false,
     },
     {
       id: 'C',
-      status: 'อยู่ระหว่างซ่อมบำรุง',
+      status: 'ว่าง',
       weight: 0,
       loading: null,
       maxLoading: 17221, 
       timeLoading: '',
-      state: 'maintenance',
+      state: 'free',
       carrier: '',
-      verified: true,
-      frontlicense: '403 83-1985',
-      rearlicense: '5002 83-4329',
-      queuenumber: 3,
-      usage: 0,
-      mode: 'MAINTENANCE MODE',
-      type: '',
+      verified: false,
+      frontlicense: '67-9607',
+      rearlicense: '53-1217',
+      queuenumber: 0,
       product: 'LNG',
       abnormal: false,
     },
     {
       id: 'D',
-      status: 'Dry Run',
+      status: 'เรียกคิว',
       weight: 0,
-      loading: 0,
+      loading: 1000,
       maxLoading: 17221, 
       timeLoading: '',
-      state: 'dry-run',
-      carrier: 'DRY RUN',
-      verified: true,
+      state: 'pending',
+      verified: false,
       frontlicense: '67-9607',
       rearlicense: '53-1217',
-      queuenumber: 4,
-      usage: 1,
-      mode: 'OPERATING MODE',
-      type: 'auto',
+      queuenumber: 16,
+      carrier: 'CARRIER-TEST1',
       product: 'LNG',
       abnormal: false,
-    },
+    }
   ];
 
   const formatDate = (date) => {
@@ -324,7 +313,8 @@ const CarrierManagement = () => {
     } else {
       const date = startDate.toDate();
       const st = date.setFullYear(date.getFullYear(), 0, 1);
-      const en = date.setFullYear(date.getFullYear()+1, 0, 1);
+      const en = date.setFullYear(date.getFullYear(), 11, 31);
+      //const en = new Date(date.getFullYear(), 11, 31);
       const start = dateFormatParser(new Date(st), 'dd-MMM-yyyy');
       const end = dateFormatParser(new Date(en), 'dd-MMM-yyyy');
       const mode = summaryMode === "load" ? "n" : "y";
@@ -379,7 +369,7 @@ const CarrierManagement = () => {
                       carrier.state === 'maintenance' ? 'red-600' : 
                         carrier.state === 'dry-run' ? 'blue-100' : 
                          carrier.state === 'pending' ? 'amber-500' : 'slate-50'
-            } rounded-2xl px-6 py-4 shadow-lg border border-white/50`}
+            } ${ carrier.status === 'เรียกคิว' ? 'animate-blink-red-orange' : '' } rounded-2xl px-6 py-4 shadow-lg border border-white/50`}
           >
             <div className="flex items-center justify-between">
               <div className="flex flex-col items-center gap-3" onClick={() => downLoadBayData(carrier.id)}>
@@ -648,6 +638,7 @@ const CarrierManagement = () => {
                     datePickerMoedl === 'period' ? 
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
+                        minDate={dayjs(minDate)}
                         label="Start"
                         value={startDate}
                         onChange={(d) => {
@@ -658,10 +649,10 @@ const CarrierManagement = () => {
                             size: 'small',
                             sx: {
                               '& .MuiPickersInputBase-root': {
-                                padding: '0px 8px',
+                                padding: '0px 4px',
                                 fontSize: '0.75rem',
                                 height: '28px',
-                                overflow: 'hidden',
+                                overflow: 'visible',
                                 fontWeight: 'bold',
                                 backgroundColor: 'whitesmoke'
                               }
@@ -670,6 +661,7 @@ const CarrierManagement = () => {
                         }}
                       />
                       <DatePicker
+                        minDate={dayjs(minDate)}
                         label="End"
                         value={endDate}
                         onChange={(d) => {
@@ -680,10 +672,10 @@ const CarrierManagement = () => {
                             size: 'small',
                             sx: {
                               '& .MuiPickersInputBase-root': {
-                                padding: '0px 8px',
+                                padding: '0px 4px',
                                 fontSize: '0.75rem',
                                 height: '28px',
-                                overflow: 'hidden',
+                                overflow: 'visible',
                                 fontWeight: 'bold',
                                 backgroundColor: 'whitesmoke'
                               }
@@ -695,6 +687,7 @@ const CarrierManagement = () => {
                     datePickerMoedl === 'year' ? 
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
+                        minDate={dayjs(minDate)}
                         label="Year"
                         views={['year']}
                         value={startDate}
@@ -719,7 +712,7 @@ const CarrierManagement = () => {
                     </LocalizationProvider> : null
                   }
                 </div>
-                <div className='gap-2 flex'>
+                <div className='gap-2 flex items-center'>
                   <button 
                     onClick={() => { setSummaryMode('load')}}
                     className={`w-full py-1.5 px-1 text-xs text-center font-bold rounded-sm text-slate-200 border-slate-200 shadow-black/30 shadow-md ${summaryMode === 'load' ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-black/50 hover:bg-black/60'}`}
@@ -728,6 +721,7 @@ const CarrierManagement = () => {
                     onClick={() => { setSummaryMode('dryrun')}}
                     className={`w-full py-1.5 px-1 text-xs text-center font-bold rounded-sm text-slate-200 border-slate-200 shadow-black/30 shadow-md ${summaryMode === 'dryrun' ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-black/50 hover:bg-black/60'}`}
                   >DryRun</button>
+                  <div className='font-bold text-lg text-slate-600'>|</div>
                   <button 
                     onClick={() => { setDatePickerModel('period')}}
                     className={`w-full py-1.5 px-1 text-xs text-center font-bold rounded-sm text-slate-200 border-slate-200 shadow-black/30 shadow-md ${datePickerMoedl === 'period' ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-black/50 hover:bg-black/60'}`}
@@ -790,7 +784,7 @@ const CarrierManagement = () => {
             <span className='font-semibold'>{ apiStatus && apiStatus.NetworkOnline === true ? 'Network Online' : 'Network Offline' }</span>
             <div className={`w-4 h-4 ${ apiStatus && apiStatus.NetworkOnline === true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
             { apiStatus && apiStatus.DBOnline !== true && (
-              <span>: Cannot connect to TAS Server database</span>
+              <span> Cannot connect to TAS Server database</span>
             )}
           </div>
         </div>

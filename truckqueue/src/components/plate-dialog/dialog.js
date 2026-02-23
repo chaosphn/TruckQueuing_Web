@@ -135,7 +135,11 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
               <input
                 type="number"
                 value={plateHeadNumber}
-                onChange={(e) => setPlateHeadNumber(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const clean = val.replace(/[^\d.]/g, '');
+                  setPlateHeadNumber(clean)
+                }}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg focus:border-blue-500 focus:outline-none transition-colors bg-gray-50"
                 placeholder="กรุณาใส่เลขทะเบียนหัว"
               />
@@ -147,7 +151,11 @@ const PlateDialog = ({ open, mode, title, onSave, onClose, ishead, topic, isDryR
               <input
                 type="number"
                 value={plateTailNumber}
-                onChange={(e) => setPlateTailNumber(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const clean = val.replace(/[^\d.]/g, '');
+                  setPlateTailNumber(clean)
+                }}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg focus:border-blue-500 focus:outline-none transition-colors bg-gray-50"
                 placeholder="กรุณาใส่เลขทะเบียนหาง"
               />

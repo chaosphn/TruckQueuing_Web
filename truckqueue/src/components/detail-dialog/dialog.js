@@ -203,7 +203,7 @@ const DataDetailDialog = ({ open, data, mode, type, truck, onSave, onClose, resu
               </div>
               <div className='flex text-center'>
                 <div className="w-2/5 border border-gray-500 block text-gray-700 font-bold text-lg py-1">Quantity of Product</div>
-                <div className="w-3/5 border border-gray-500 block text-gray-700 font-medium text-lg py-1">{queueData?.FULLTANK == 'y' ? 'FULL TANK' : 'NULL' || '---'}</div>
+                <div className="w-3/5 border border-gray-500 block text-gray-700 font-medium text-lg py-1">{queueData?.FULLTANK == 'y' ? 'FULL TANK' : queueData?.QNTY ? queueData?.QNTY : '---'}</div>
               </div>
               <div className='flex text-center'>
                 <div className="w-2/5 border border-gray-500 block text-gray-700 font-bold text-lg py-1">น้ำหนักรถเปล่าชั่งครั้งแรก</div>

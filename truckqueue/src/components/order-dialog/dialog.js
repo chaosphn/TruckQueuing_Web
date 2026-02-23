@@ -83,7 +83,11 @@ const OrderDialog = ({ open, mode, title, onSave, onClose }) => {
                 <input
                   type="number"
                   value={orderNumber}
-                  onChange={(e) => setOrderNumber(e.target.value)}
+                  onChange={(e) => {
+                  const val = e.target.value;
+                  const clean = val.replace(/[^\d.]/g, '');
+                  setOrderNumber(clean)
+                }}
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg focus:border-blue-500 focus:outline-none transition-colors bg-gray-50"
                   placeholder="กรุณาใส่เลขออเดอร์"
                 />

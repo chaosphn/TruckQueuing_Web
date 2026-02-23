@@ -26,12 +26,29 @@ function App() {
     //console.log(bayData)
   }, []);
 
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     updateBayData();
+  //     updateApiStatus();
+  //     updateTASStatus();
+  //   }, config?.INTERVAL??5000);
+  //   return () => clearInterval(timer);
+  // }, [config]);
   useEffect(() => {
-    const timer = setInterval(() => {
+    const runTasks = () => {
       updateBayData();
       updateApiStatus();
       updateTASStatus();
-    }, config?.INTERVAL??5000);
+    };
+
+    // ทำงานทุกวินาที แต่เช็คว่าเป็นวินาทีที่ต้องการหรือไม่
+    const timer = setInterval(() => {
+      const seconds = new Date().getSeconds();
+      if (seconds % 5 === 0) {
+        runTasks();
+      }
+    }, 1000); // เช็คทุกวินาที
+
     return () => clearInterval(timer);
   }, [config]);
 

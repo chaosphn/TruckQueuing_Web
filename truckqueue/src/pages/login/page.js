@@ -100,8 +100,8 @@ const LoginPage = () => {
                 </div> */}
                 <img alt='logo' src={logoImg} width={100} height={100} className=''/>
                 <div>
-                  <h1 className="text-2xl font-bold text-white drop-shadow-lg">PTT LNG</h1>
-                  <p className="text-blue-100 text-xl drop-shadow mt-1">ระบบบริหารจัดการคิวรถบรรทุก</p>
+                  <h1 className="text-2xl font-bold text-white drop-shadow-lg">PTTLNG Truck Queuing System</h1>
+                  <p className="text-blue-100 text-xl drop-shadow mt-1">ระบบบริหารจัดการคิวรถ</p>
                 </div>
               </div>
             </div>
@@ -244,9 +244,14 @@ const LoginPage = () => {
               <span>•</span>
               <span className='font-semibold'>Mode : { tasStatus && tasStatus.OfflineMode == false ? 'Online' : tasStatus && tasStatus.OfflineMode == true ? 'Offline' : 'Unknow' }</span>
               <span>•</span>
-              <span className='font-semibold'>{ apiStatus === true ? 'System Operational' : 'System Unavailable' }</span>
-              <div className={`w-4 h-4 ${ apiStatus === true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
-              { apiStatus !== true && (<span > : Unable to establish connection with TAS Server </span>)}
+              <span className='font-semibold'>{ apiStatus && apiStatus.SystemOnline === true ? 'System Online' : 'System Offline' }</span>
+              <div className={`w-4 h-4 ${ apiStatus && apiStatus.SystemOnline === true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
+              <span>•</span>
+              <span className='font-semibold'>{ apiStatus && apiStatus.NetworkOnline === true ? 'Network Online' : 'Network Offline' }</span>
+              <div className={`w-4 h-4 ${ apiStatus && apiStatus.NetworkOnline === true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
+              { apiStatus && apiStatus.DBOnline !== true && (
+                <span> Cannot connect to TAS Server database</span>
+              )}
             </div>
           </div>
         </div>

@@ -234,7 +234,7 @@ const CarrierDashboard = () => {
                       carrier.state === 'maintenance' ? 'bg-red-600' : 
                         carrier.state === 'dry-run' ? 'bg-blue-100' : 
                          carrier.state === 'pending' ? 'bg-amber-500' : 'bg-slate-50'
-                } ${ carrier.status === 'เรียกคิว' ? 'animate-blink' : '' } rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${ carrier.abnormal ? 'border-4 border-solid border-red-500' : 'border border-white/50' } `}
+                } ${ carrier.status === 'เรียกคิว' ? 'animate-blink-red-orange' : '' } rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${ carrier.abnormal ? 'border-4 border-solid border-red-500' : 'border border-white/50' } `}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3" onClick={() => downLoadBayData(carrier.id)}>
@@ -318,7 +318,7 @@ const CarrierDashboard = () => {
                           carrier.state === 'loading' ? 'text-black' : 
                             carrier.state === 'maintenance' ? 'text-white -translate-x-9' : 
                               carrier.state === 'dry-run' ? 'text-blue-800 ' :
-                                carrier.state === 'pending' ? 'text-white' : 'text-slate-800 -translate-x-7'
+                                carrier.state === 'pending' ? 'text-white animate-blink-red-orange2' : 'text-slate-800 -translate-x-7'
                       }`}>สถานะ: {carrier.status}</div>
                       <div className={`text-3xl font-semibold ${ 
                         carrier.state === 'finished' ? 'text-white' : 
@@ -425,7 +425,7 @@ const CarrierDashboard = () => {
               >
                 <div className="div flex items-center justify-around h-full" >
                   <div className={`text-3xl font-bold mb-2 ${true ? 'text-slate-700' : 'text-slate-900'}`}>
-                    คิวที่ถัดไป
+                    คิวถัดไป
                   </div>
                 </div>
               </div>
@@ -499,7 +499,7 @@ const CarrierDashboard = () => {
                       carrier.state === 'maintenance' ? 'bg-red-600' : 
                         carrier.state === 'dry-run' ? 'bg-blue-100' : 
                          carrier.state === 'pending' ? 'bg-amber-500' : 'bg-slate-50'
-                } ${ carrier.status === 'เรียกคิว' ? 'animate-blink' : '' } rounded-2xl pl-4 py-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${ carrier.abnormal ? 'border-4 border-solid border-red-500' : 'border border-white/50' }`}
+                } ${ carrier.status === 'เรียกคิว' ? 'animate-blink-red-orange' : '' } rounded-2xl pl-4 py-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${ carrier.abnormal ? 'border-4 border-solid border-red-500' : 'border border-white/50' }`}
               >
                 <div className="flex items-center justify-between ">
                   <div className="flex items-center gap-3" onClick={() => downLoadBayData(carrier.id)}>
@@ -583,7 +583,7 @@ const CarrierDashboard = () => {
                           carrier.state === 'loading' ? 'text-black' : 
                             carrier.state === 'maintenance' ? 'text-white -translate-x-9' : 
                               carrier.state === 'dry-run' ? 'text-blue-800 ' :
-                                carrier.state === 'pending' ? 'text-white' : 'text-slate-800 -translate-x-7'
+                                carrier.state === 'pending' ? 'text-white animate-blink-red-orange2' : 'text-slate-800 -translate-x-7'
                       }`}>สถานะ: {carrier.status}</div>
                       <div className={`text-3xl font-semibold ${ 
                         carrier.state === 'finished' ? 'text-white' : 
@@ -690,7 +690,7 @@ const CarrierDashboard = () => {
               >
                 <div className="div flex items-center justify-around h-full">
                   <div className={`text-2xl font-bold mb-2 ${true ? 'text-slate-700' : 'text-slate-900'}`}>
-                    คิวที่ถัดไป
+                    คิวถัดไป
                   </div>
                 </div>
               </div>

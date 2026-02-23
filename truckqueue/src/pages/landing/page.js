@@ -235,7 +235,7 @@ const LandingPage = () => {
               <span className='font-semibold'>{ apiStatus && apiStatus.NetworkOnline === true ? 'Network Online' : 'Network Offline' }</span>
               <div className={`w-4 h-4 ${ apiStatus && apiStatus.NetworkOnline === true ? 'bg-green-400' : 'bg-red-500' } rounded-full`}></div>
               { apiStatus && apiStatus.DBOnline !== true && (
-                <span>: Cannot connect to TAS Server database</span>
+                <span> Cannot connect to TAS Server database</span>
               )}
             </div>
           </div>

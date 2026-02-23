@@ -27,6 +27,27 @@ module.exports = {
           '20%, 60%': { transform: 'translateX(-8px)' },
           '40%, 80%': { transform: 'translateX(8px)' },
         },
+        // 🟠✨ เพิ่มตรงนี้
+        'blink-red-orange': {
+          '0%, 100%': {
+            backgroundColor: '#ff9900', // แดง,
+            color: '#000000',
+          },
+          '50%': {
+            backgroundColor: '#ffffff', // ส้ม
+            color: '#000000',
+          },
+        },
+        'blink-red-orange2': {
+          '0%, 100%': {
+           
+            color: '#000000',
+          },
+          '50%': {
+            
+            color: '#000000',
+          },
+        },
       },
       animation: {
         'truck-enter': 'truck-enter 1.25s ease-in-out',
@@ -34,8 +55,11 @@ module.exports = {
         'blink': 'blink 1s linear infinite',
         slideDownFade: 'slideDownFade 0.3s ease-out',
         shake: 'shake 0.4s ease-in-out',
-      }
-    }
+        // 🟡 เพิ่มอันนี้
+        'blink-red-orange': 'blink-red-orange 1s ease-in-out infinite',
+        'blink-red-orange2': 'blink-red-orange2 1s ease-in-out infinite',
+      },
+    },
   },
   plugins: [],
 }

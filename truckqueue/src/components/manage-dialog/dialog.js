@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { cancleQueueAtBay, cancleQueueToRegister, finishQueueDataAtBay, getDatabyOrder, getDatabyPlateNumber, setAutoModeToBay, setBaySettingData, setDryRunModeToBay, setManualModeToBay } from '../../services/http-service';
 import bayImg from '../../assets/bay.png';
 import TruckModel from '../truck/truck-model';
@@ -8,6 +8,7 @@ import ManageDialog from '../confirm-dialog/dialog';
 import { InputAdornment, TextField } from '@mui/material';
 import QueueListDialog from '../queuelist-dialog/dialog';
 import AlertDialog from '../alert-dialog/dialog';
+import { QueueContext } from '../../utils/AppContext';
 
 const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,9 +23,10 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
   const [delayTime, setDelayTime] = useState(0);
   const [startWeigth, setStartWeigth] = useState(0);
   const [existWeigth, setExistWeigth] = useState(0);
-  const [bayData, setBayData] = useState(null);
+  const [bayDatas, setBayData] = useState(null);
   const [messageAlert, setMessageAlert] = useState('');
   const [openAlert2, setOpenAlert2] = useState(false);
+  const { queue, updateQueueData, bayData, waitingQueue, updateBayData, tasStatus, updateTASStatus, apiStatus, updateApiStatus } = useContext(QueueContext);
 
   useEffect(() => {
     //console.log(data)
@@ -35,6 +37,95 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
     setStartWeigth(data?.startweight??0);
     setExistWeigth(data?.existweight??0);
   }, [data]);
+
+  useEffect(() => {
+    const findBayData = bayData.find(x => x.METER_NAME == data?.id);
+    if(findBayData){
+      const bayData1 = {
+        id: data.id,
+        status: 
+          findBayData.STATUS == 'CALLING' && findBayData.MAINTENANCE == 'n' ? 'เรียกคิว' : 
+          findBayData.STATUS == 'READY'&& findBayData.MAINTENANCE == 'n' ? 'พร้อมโหลด' : 
+          findBayData.STATUS == 'DRYRUN'&& findBayData.MAINTENANCE == 'n' && findBayData.DRYRUN == 'y' ? 'Dry Run' : 
+          findBayData.STATUS == 'LOADING'&& findBayData.MAINTENANCE == 'n' ? 'กำลังโหลด' : 
+          findBayData.STATUS == 'LOADED'&& findBayData.MAINTENANCE == 'n' ? 'โหลดเสร็จสิ้น' : 
+          findBayData.STATUS == 'EMPTY'&& findBayData.MAINTENANCE == 'n' ? 'ว่าง' : 'อยู่ระหว่างซ่อมบำรุง',
+        weight: findBayData.CURRENT_WEIGHT,
+        loading: findBayData.CURRENT_QNTY,
+        maxLoading: findBayData.FINISH_QNTY, 
+        timeLoading: findBayData?.CURRENT_TIME !== null ? `${findBayData.CURRENT_TIME}/${findBayData.FINISH_TIME} นาที` : '',
+        state: 
+          findBayData.STATUS == 'CALLING' && findBayData.MAINTENANCE == 'n' ? 'pending' : 
+          findBayData.STATUS == 'READY' && findBayData.MAINTENANCE == 'n' ? 'pending' : 
+          findBayData.STATUS == 'DRYRUN' && findBayData.MAINTENANCE == 'n' && findBayData.DRYRUN == 'y' ? 'dry-run' : 
+          findBayData.STATUS == 'LOADING' && findBayData.MAINTENANCE == 'n' ? 'loading' : 
+          findBayData.STATUS == 'LOADED' && findBayData.MAINTENANCE == 'n' ? 'finished' : 
+          findBayData.STATUS == 'EMPTY' && findBayData.MAINTENANCE == 'n' ? 'free' : 'maintenance',
+        carrier: findBayData.CARRIER,
+        verified: findBayData.STATUS === 'LOADING',
+        frontlicense: findBayData.FRONT_LICENSE,
+        rearlicense: findBayData.REAR_LICENSE,
+        queuenumber: findBayData.Q_NO,
+        product: findBayData.PRODUCT,
+        abnormal: true,
+        maintenance: findBayData.MAINTENANCE === 'y',
+        isdryrun: findBayData.DRYRUN === 'y',
+        isauto: findBayData.QUEUE_AUTO === 'y',
+        memo: findBayData.MEMO,
+        cnt: findBayData.CNT,
+        lastchange1: findBayData.LAST_CHANGE1 ? findBayData.LAST_CHANGE1 : '---',
+        lastchange2: findBayData.LAST_CHANGE2 ? findBayData.LAST_CHANGE2 : '---',
+        startweight: findBayData.SET_START_WEIGHT,
+        existweight: findBayData.SET_FINISH_WEIGHT,
+        autodelay: findBayData.SET_AUTO_DELAY,
+        flowrate: findBayData.SET_FLOW_RATE,
+        sq_tare: findBayData.SQ_TARE,
+        sq_start: findBayData.SQ_START,
+        q_date: findBayData.Q_DATE,
+        order: findBayData.ORDER_CODE,
+        usage: findBayData.CNT,
+        mode: findBayData.MAINTENANCE === 'y' ? 'MAINTENANCE MODE' : 'OPERATING MODE',
+        type: findBayData.QUEUE_AUTO === 'y' ? 'auto' : 'manual',
+      };
+      setBayData(bayData1);
+    } else {
+      const bayData1 = {
+          id: data?.id,
+          status: 'ว่าง',
+          weight: 0,
+          loading: 0,
+          maxLoading: 0, 
+          timeLoading: '',
+          state: 'free',
+          carrier: '',
+          verified: false,
+          frontlicense: '',
+          rearlicense: '',
+          queuenumber: 0,
+          product: '',
+          abnormal: false,
+          maintenance: false,
+          isdryrun: false,
+          isauto: false,
+          memo: null,
+          cnt: 0,
+          lastchange: '---',
+          startweight: 0,
+          existweight: 0,
+          autodelay: 0,
+          flowrate: 0,
+          sq_tare: 0,
+          sq_start: '',
+          q_date: '',
+          order: '',
+          usage: 0,
+          mode: 'OPERATING MODE',
+          type: 'auto'
+        };
+      setBayData(bayData1);
+    }
+    //console.log(bayDatas)
+  }, [bayData, data]);
 
   const handleClose = () => {
     setSelectedAction('');
@@ -238,8 +329,7 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                   }
                   <div className={`w-full flex flex-col item-center justify-between mb-6 px-20`}>
                     {
-                      data.state == 'free' || data.state == 'maintenance' || data.state == 'dry-run' ? null :
-                        data.loading !== null && data.maxLoading !== null && data.verified ?
+                      bayDatas.loading >= 0 && bayDatas.maxLoading >= 0 && bayDatas.verified &&  bayDatas.state != 'maintenance' &&  bayDatas.state != 'dry-run' &&  bayDatas.state != 'free' &&  bayDatas.state != 'pending' ?
                           <div className=''>
                             <Slider
                               sx={{
@@ -248,9 +338,9 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                                 '& .MuiSlider-track': {
                                   height: 24,
                                   borderRadius: 4,
-                                  backgroundImage: `linear-gradient(to right, ${data.state === 'finished' ? '#34d399' :
-                                      data.state === 'loading' ? '#fbbf24' : '#e0e0e0'}, ${data.state === 'finished' ? '#059669' :
-                                      data.state === 'loading' ? '#f97316' : '#e0e0e0'
+                                  backgroundImage: `linear-gradient(to right, ${bayDatas.state === 'finished' ? '#34d399' :
+                                      bayDatas.state === 'loading' ? '#fbbf24' : '#e0e0e0'}, ${bayDatas.state === 'finished' ? '#059669' :
+                                      bayDatas.state === 'loading' ? '#f97316' : '#e0e0e0'
                                     })`,
                                 },
                                 '& .MuiSlider-rail': {
@@ -262,14 +352,14 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                                   height: 32,
                                   width: 32,
                                   backgroundColor: '#fff',
-                                  border: `4px solid ${data.state === 'finished' ? '#059669' :
-                                      data.state === 'loading' ? '#f97316' : '#e0e0e0'
+                                  border: `4px solid ${bayDatas.state === 'finished' ? '#059669' :
+                                      bayDatas.state === 'loading' ? '#f97316' : '#e0e0e0'
                                     }`,
                                   boxShadow: '0px 2px 2px rgba(0,0,0,0.2)',
                                 },
                                 '& .MuiSlider-valueLabel': {
-                                  backgroundColor: `${data.state === 'finished' ? '#059669' :
-                                      data.state === 'loading' ? '#f97316' : '#e0e0e0'
+                                  backgroundColor: `${bayDatas.state === 'finished' ? '#059669' :
+                                      bayDatas.state === 'loading' ? '#f97316' : '#e0e0e0'
                                     }`,
                                   color: '#fff',
                                   borderRadius: '8px',
@@ -285,11 +375,11 @@ const QueueManageDialog = ({ open, data, type, onSave, onClose }) => {
                               }}
                               aria-label="Always visible"
                               defaultValue={0}
-                              value={data.loading}
+                              value={bayDatas.loading}
                               min={0}
-                              max={data.maxLoading + (data.maxLoading * 0.05)}
-                              getAriaValueText={(value) => `${data.loading} / ${data.maxLoading} kg.`}
-                              valueLabelFormat={(value) => `${data.loading} / ${data.maxLoading} kg.`}
+                              max={bayDatas.maxLoading + (bayDatas.maxLoading * 0.05)}
+                              getAriaValueText={(value) => `${bayDatas.loading} / ${bayDatas.maxLoading} kg.`}
+                              valueLabelFormat={(value) => `${bayDatas.loading} / ${bayDatas.maxLoading} kg.`}
                               step={10}
                               valueLabelDisplay="on"
                             />
